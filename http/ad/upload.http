@@ -1,8 +1,0 @@
-### 광고 등록 요청
-POST localhost:8080/api/v1/ad
-Content-Type: application/json
-
-{
-  "title": "testAdTitle",
-  "desc": "test add desc"
-}

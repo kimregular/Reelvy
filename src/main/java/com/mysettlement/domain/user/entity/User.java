@@ -40,7 +40,7 @@ public class User implements UserDetails {
 
 
     @Builder
-    private User(String name, String email, String password, UserRole userRole) {
+    public User(String name, String email, String password, UserRole userRole) {
         this.name = name;
         this.email = email;
         this.password = password;
