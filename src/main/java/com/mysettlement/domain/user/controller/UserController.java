@@ -33,5 +33,4 @@ public class UserController {
     public MySettlementGlobalResponse<UserResponseDto> changeUserStatue(@PathVariable Long userId) {
         return MySettlementGlobalResponse.success(userService.changeUserStatus(userId, UserRole.DEFAULT));
     }
-
 }

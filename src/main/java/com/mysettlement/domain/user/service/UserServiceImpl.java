@@ -1,17 +1,15 @@
 package com.mysettlement.domain.user.service;
 
+import com.mysettlement.domain.user.dto.request.UserSigninRequestDto;
+import com.mysettlement.domain.user.dto.response.UserResponseDto;
 import com.mysettlement.domain.user.entity.User;
 import com.mysettlement.domain.user.entity.UserRole;
 import com.mysettlement.domain.user.exception.DuplicateUserException;
 import com.mysettlement.domain.user.exception.NoUserFoundException;
 import com.mysettlement.domain.user.repository.UserRepository;
-import com.mysettlement.domain.user.dto.request.UserSigninRequestDto;
-import com.mysettlement.domain.user.dto.response.UserResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import static com.mysettlement.domain.user.entity.UserRole.GUEST;
 
 @Service
 @Transactional(readOnly = true)
@@ -33,13 +31,7 @@ public class UserServiceImpl implements UserService {
         if (isExistUser(userSigninRequestDto)) {
             throw new DuplicateUserException();
         }
-
-        User newUser = User.builder()
-                .name(userSigninRequestDto.getName())
-                .email(userSigninRequestDto.getEmail())
-                .password(userSigninRequestDto.getPassword())
-                .userRole(GUEST)
-                .build();
+        User newUser = User.of(userSigninRequestDto);
         userRepository.save(newUser);
         return UserResponseDto.of(newUser);
     }

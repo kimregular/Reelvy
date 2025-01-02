@@ -1,5 +1,6 @@
 package com.mysettlement.domain.user.entity;
 
+import com.mysettlement.domain.user.dto.request.UserSigninRequestDto;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,6 +35,15 @@ public class User {
         this.email = email;
         this.password = password;
         this.userRole = userRole;
+    }
+
+    public static User of(UserSigninRequestDto dto) {
+        return User.builder()
+                   .name(dto.getName())
+                   .email(dto.getEmail())
+                   .password(dto.getPassword())
+                   .userRole(UserRole.GUEST)
+                   .build();
     }
 
     public void update(UserRole userRole) {
