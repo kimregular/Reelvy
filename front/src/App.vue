@@ -1,16 +1,4 @@
 <script setup lang="ts">
-
-import axios from "axios";
-import {onBeforeMount, ref} from "vue";
-
-const welcome = ref("");
-
-onBeforeMount(async () => {
-  await axios.get("http://localhost:8080").then((res) => {
-    welcome.value = res.data;
-    console.log(welcome);
-  });
-})
 </script>
 
 <template>
@@ -41,7 +29,7 @@ onBeforeMount(async () => {
     </div>
   </nav>
 
-  <h4>{{ welcome }}</h4>
+
 </template>
 
 <style scoped>
