@@ -1,14 +1,19 @@
 package com.mysettlement.domain.user.controller;
 
-import com.mysettlement.global.response.MySettlementGlobalResponse;
-import com.mysettlement.domain.user.entity.UserRole;
-import com.mysettlement.domain.user.dto.request.UserSigninRequestDto;
-import com.mysettlement.domain.user.dto.response.UserResponseDto;
+import com.mysettlement.domain.user.dto.request.EmailCheckRequestDto;
+import com.mysettlement.domain.user.dto.request.UserSignUpRequestDto;
+import com.mysettlement.domain.user.dto.response.EmailCheckResponseDto;
+import com.mysettlement.domain.user.dto.response.UserSignUpResponseDto;
 import com.mysettlement.domain.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 
 @Slf4j
@@ -19,18 +24,15 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping
-    public MySettlementGlobalResponse<UserResponseDto> signsin(@RequestBody @Valid UserSigninRequestDto userSigninRequestDto) {
-        return MySettlementGlobalResponse.success(userService.signinUser(userSigninRequestDto));
+    @PostMapping("/signup")
+    public ResponseEntity<UserSignUpResponseDto> singUp(@RequestBody @Valid UserSignUpRequestDto userSignupRequestDto) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                             .body(userService.signUp(userSignupRequestDto));
     }
 
-    @GetMapping("/{username}")
-    public MySettlementGlobalResponse<UserResponseDto> findUser(@PathVariable String username) {
-        return MySettlementGlobalResponse.success(userService.findByUserName(username));
-    }
-
-    @PatchMapping("/{userId}")
-    public MySettlementGlobalResponse<UserResponseDto> changeUserStatue(@PathVariable Long userId) {
-        return MySettlementGlobalResponse.success(userService.changeUserStatus(userId, UserRole.DEFAULT));
+    @PostMapping("/checkEmail")
+    public ResponseEntity<EmailCheckResponseDto> checkEmail(@RequestBody @Valid EmailCheckRequestDto emailCheckRequestDto) {
+        return ResponseEntity.status(HttpStatus.OK)
+                             .body(userService.checkEmail(emailCheckRequestDto));
     }
 }
