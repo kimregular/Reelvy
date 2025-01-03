@@ -1,9 +1,12 @@
 package com.mysettlement.domain.user.service;
 
 import com.mysettlement.domain.user.dto.request.EmailCheckRequestDto;
+import com.mysettlement.domain.user.dto.request.UserSignInRequestDto;
 import com.mysettlement.domain.user.dto.request.UserSignUpRequestDto;
+import com.mysettlement.domain.user.dto.response.UserSignInResponseDto;
 import com.mysettlement.domain.user.dto.response.UserSignUpResponseDto;
 import com.mysettlement.domain.user.exception.DuplicateUserException;
+import com.mysettlement.domain.user.exception.NoUserFoundException;
 import com.mysettlement.domain.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -80,5 +83,39 @@ class UserServiceTest {
         // then
         assertThat(userService.checkEmail(emailCheckRequestDto)
                               .isDuplicateEmail()).isTrue();
+    }
+
+    @Test
+    @DisplayName("로그인 테스트 - 성공")
+    void test5(){
+        // given
+        UserSignInRequestDto userSignInRequestDto = new UserSignInRequestDto("test0@test.com",
+                                                                             "12345678");
+        // when
+        UserSignInResponseDto userSignInResponseDto = userService.signIn(userSignInRequestDto);
+        // then
+        assertThat(userSignInResponseDto.getUsername()).isEqualTo("test0@test.com");
+    }
+
+    @Test
+    @DisplayName("틀린 비밀번호 로그인 테스트 - 실패")
+    void test6(){
+        // given
+        UserSignInRequestDto userSignInRequestDto = new UserSignInRequestDto("test0@test.com",
+                                                                             "qweqweqweqwe");
+        // when
+        // then
+        assertThatThrownBy(() -> userService.signIn(userSignInRequestDto)).isInstanceOf(NoUserFoundException.class);
+    }
+
+    @Test
+    @DisplayName("없는 이메일로 로그인 테스트 - 실패")
+    void test7(){
+        // given
+        UserSignInRequestDto userSignInRequestDto = new UserSignInRequestDto("test@test.com",
+                                                                             "12345678");
+        // when
+        // then
+        assertThatThrownBy(() -> userService.signIn(userSignInRequestDto)).isInstanceOf(NoUserFoundException.class);
     }
 }

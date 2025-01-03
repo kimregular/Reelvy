@@ -1,21 +1,17 @@
 package com.mysettlement.domain.user.dto.request;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class UserSigninRequestDto {
-
-    @NotBlank(message = "이름은 필수값입니다.")
-    private final String name;
+public class UserSignInRequestDto {
 
     @Email(message = "이메일 형식이 아닙니다.")
-    @NotBlank(message = "이메일은 필수값입니다.")
     private final String email;
 
-    @NotBlank(message = "비밀번호는 필수값입니다.")
+    @Size(min = 8, message = "비밀번호는 8자 이상입니다.")
     private final String password;
 }

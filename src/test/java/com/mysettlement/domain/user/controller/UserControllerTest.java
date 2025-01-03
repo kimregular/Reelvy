@@ -2,8 +2,10 @@ package com.mysettlement.domain.user.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mysettlement.domain.user.dto.request.EmailCheckRequestDto;
+import com.mysettlement.domain.user.dto.request.UserSignInRequestDto;
 import com.mysettlement.domain.user.dto.request.UserSignUpRequestDto;
 import com.mysettlement.domain.user.dto.response.EmailCheckResponseDto;
+import com.mysettlement.domain.user.dto.response.UserSignInResponseDto;
 import com.mysettlement.domain.user.exception.DuplicateUserException;
 import com.mysettlement.domain.user.repository.UserRepository;
 import com.mysettlement.domain.user.service.UserService;
@@ -220,5 +222,49 @@ class UserControllerTest {
         mockMvc.perform(request)
                .andExpect(status().isOk())
                .andExpect(jsonPath("$.isDuplicateEmail").value(true));
+    }
+
+    @Test
+    @DisplayName("유저 로그인 테스트 - 성공")
+    void test9() throws Exception {
+        // given
+        UserSignInRequestDto userSignInRequestDto = new UserSignInRequestDto("test@test.com",
+                                                                             "12346789");
+        UserSignInResponseDto userSignInResponseDto = UserSignInResponseDto.builder()
+                                                                           .username("kim")
+                                                                           .email("test@test.com")
+                                                                           .build();
+        Mockito.when(userService.signIn(any(UserSignInRequestDto.class)))
+               .thenReturn(userSignInResponseDto);
+        String json = objectMapper.writeValueAsString(userSignInRequestDto);
+        // when
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post("/api/v1/user/signin")
+                                                                      .contentType(MediaType.APPLICATION_JSON)
+                                                                      .content(json);
+
+        // then
+        mockMvc.perform(request)
+               .andExpect(status().isOk())
+               .andDo(print());
+    }
+
+    @Test
+    @DisplayName("유저 로그인 테스트 비밀번호 없음 - 실패")
+    void test10() throws Exception {
+        // given
+        UserSignInRequestDto userSignInRequestDto = new UserSignInRequestDto("test@test.com",
+                                                                             "");
+
+        String json = objectMapper.writeValueAsString(userSignInRequestDto);
+        // when
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post("/api/v1/user/signin")
+                                                                      .contentType(MediaType.APPLICATION_JSON)
+                                                                      .content(json);
+
+        // then
+        mockMvc.perform(request)
+               .andExpect(status().isBadRequest())
+               .andExpect(jsonPath("$.validation.password").value("비밀번호는 8자 이상입니다."))
+               .andDo(print());
     }
 }
