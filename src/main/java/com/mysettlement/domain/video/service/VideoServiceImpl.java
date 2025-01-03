@@ -3,22 +3,22 @@ package com.mysettlement.domain.video.service;
 import com.mysettlement.domain.user.entity.User;
 import com.mysettlement.domain.user.exception.NoUserFoundException;
 import com.mysettlement.domain.user.repository.UserRepository;
-import com.mysettlement.domain.video.entity.Video;
-import com.mysettlement.domain.video.exception.InvalidVideoUpdateRequestException;
-import com.mysettlement.domain.video.exception.NoVideoFoundException;
-import com.mysettlement.domain.video.exception.DefaultRoleRequiredException;
-import com.mysettlement.domain.video.repository.VideoRepository;
 import com.mysettlement.domain.video.dto.request.VideoStatusChangeRequestDto;
 import com.mysettlement.domain.video.dto.request.VideoUpdateRequestDto;
 import com.mysettlement.domain.video.dto.request.VideoUploadRequestDto;
 import com.mysettlement.domain.video.dto.response.VideoResponseDto;
+import com.mysettlement.domain.video.entity.Video;
+import com.mysettlement.domain.video.exception.DefaultRoleRequiredException;
+import com.mysettlement.domain.video.exception.InvalidVideoUpdateRequestException;
+import com.mysettlement.domain.video.exception.NoVideoFoundException;
+import com.mysettlement.domain.video.repository.VideoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.mysettlement.domain.user.entity.UserRole.GUEST;
+import static com.mysettlement.domain.user.entity.UserRole.USER;
 import static com.mysettlement.domain.video.entity.VideoStatus.AVAILABLE;
 import static com.mysettlement.domain.video.entity.VideoStatus.isAvailableStatus;
 
@@ -78,6 +78,6 @@ public class VideoServiceImpl implements VideoService {
     }
 
     private boolean isGuest(User user) {
-        return user.getUserRole() == GUEST;
+        return user.getUserRole() == USER;
     }
 }

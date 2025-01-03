@@ -25,50 +25,51 @@ import static org.springframework.boot.autoconfigure.security.servlet.PathReques
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
-    private final UserRepository userRepository;
+	private final UserRepository userRepository;
 
-    @Bean
-    public WebSecurityCustomizer configure() {
-        return web -> web.ignoring()
-                         .requestMatchers("/favicon.ico")
-                         .requestMatchers("/error")
-                         .requestMatchers(toH2Console());
-    }
+	@Bean
+	public WebSecurityCustomizer configure() {
+		return web -> web.ignoring()
+		                 .requestMatchers("/favicon.ico")
+		                 .requestMatchers("/error")
+		                 .requestMatchers(toH2Console());
+	}
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http.authorizeHttpRequests(auth -> auth.requestMatchers(new AntPathRequestMatcher("/api/v1/user/login"),
-                                                                       new AntPathRequestMatcher("/api/v1/user/signup"),
-                                                                       new AntPathRequestMatcher("/user"))
-                                                      .permitAll()
-                                                      .anyRequest()
-                                                      .authenticated())
-                   .csrf(AbstractHttpConfigurer::disable)
-                   .build();
-    }
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+		return http.authorizeHttpRequests(auth -> auth.requestMatchers(new AntPathRequestMatcher("/api/v1/user/login"),
+		                                                               new AntPathRequestMatcher("/api/v1/user/signup"),
+		                                                               new AntPathRequestMatcher("/api/v1/user/checkEmail"),
+		                                                               new AntPathRequestMatcher("/"))
+		                                              .permitAll()
+		                                              .anyRequest()
+		                                              .authenticated())
+		           .csrf(AbstractHttpConfigurer::disable)
+		           .build();
+	}
 
-    @Bean
-    public AuthenticationManager authenticationManager() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userDetailsService(userRepository));
-        provider.setPasswordEncoder(bCryptPasswordEncoder());
-        return new ProviderManager(provider);
-    }
+	@Bean
+	public AuthenticationManager authenticationManager() {
+		DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+		provider.setUserDetailsService(userDetailsService(userRepository));
+		provider.setPasswordEncoder(bCryptPasswordEncoder());
+		return new ProviderManager(provider);
+	}
 
-    @Bean
-    public UserDetailsService userDetailsService(UserRepository userRepository) {
-        return username -> {
-            User user = userRepository.findByEmail(username)
-                                      .orElseThrow(() -> new UsernameNotFoundException(username + "을 찾을 수 없습니다."));
-            return new org.springframework.security.core.userdetails.User(user.getEmail(),
-                                                                          user.getPassword(),
-                                                                          user.getAuthorities());
-        };
-    }
+	@Bean
+	public UserDetailsService userDetailsService(UserRepository userRepository) {
+		return username -> {
+			User user = userRepository.findByEmail(username)
+			                          .orElseThrow(() -> new UsernameNotFoundException(username + "을 찾을 수 없습니다."));
+			return new org.springframework.security.core.userdetails.User(user.getEmail(),
+			                                                              user.getPassword(),
+			                                                              user.getAuthorities());
+		};
+	}
 
 
-    @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+	@Bean
+	public BCryptPasswordEncoder bCryptPasswordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
 }

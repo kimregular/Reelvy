@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
+import static com.mysettlement.domain.user.entity.UserRole.*;
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
@@ -82,11 +83,7 @@ public class User implements UserDetails {
                    .name(dto.getName())
                    .email(dto.getEmail())
                    .password(dto.getPassword())
-                   .userRole(UserRole.GUEST)
+                   .userRole(USER)
                    .build();
-    }
-
-    public void update(UserRole userRole) {
-        this.userRole = userRole;
     }
 }
