@@ -52,7 +52,7 @@ public class UserService {
 	}
 
 	public UserSignInResponseDto signIn(@Valid UserSignInRequestDto userSignInRequestDto) {
-        User user = userRepository.findByEmail(userSignInRequestDto.getEmail())
+        User user = userRepository.findByEmail(userSignInRequestDto.email())
                                   .orElseThrow(NoUserFoundException::new);
         if(isInvalidPassword(user, userSignInRequestDto)) throw new NoUserFoundException();
         return UserSignInResponseDto.of(user);
@@ -60,7 +60,7 @@ public class UserService {
 
     private boolean isInvalidPassword(User user, UserSignInRequestDto userSignInRequestDto) {
 	    String savedPassword = user.getPassword();
-	    String inputPassword = userSignInRequestDto.getPassword();
+	    String inputPassword = userSignInRequestDto.password();
 	    return !bCryptPasswordEncoder.matches(inputPassword, savedPassword);
     }
 }
