@@ -3,7 +3,6 @@ import {ref, watch} from "vue";
 import {BASE_URL} from "@/constants/server.ts";
 import axios from "axios";
 import router from "@/router";
-import {PASSWORD_SALT} from "@/constants/passwordSalt.ts";
 
 const isInvalidInfo = ref(true); // 회원가입 버튼 비활성화 여부
 
@@ -73,11 +72,14 @@ watch(
 );
 
 const handleSignUp = async () => {
-  if (isInvalidInfo.value) return;
+  if (isInvalidInfo.value) {
+    alert("회원가입 폼을 작성해주세요");
+    return;
+  }
 
   const payload = {
     email: email.value,
-    username: username.value + PASSWORD_SALT,
+    username: username.value,
     password: password.value
   };
 
