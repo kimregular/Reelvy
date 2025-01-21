@@ -12,7 +12,7 @@ import com.mysettlement.domain.user.exception.NoUserFoundException;
 import com.mysettlement.domain.user.repository.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +24,7 @@ import static com.mysettlement.domain.user.entity.UserRole.USER;
 public class UserService {
 
 	private final UserRepository userRepository;
-	private final BCryptPasswordEncoder bCryptPasswordEncoder;
+	private final PasswordEncoder passwordEncoder;
 
 	public UserSignUpResponseDto signUp(UserSignUpRequestDto userSignupRequestDto) {
 		if (isExistUser(userSignupRequestDto.email())) {
@@ -33,7 +33,7 @@ public class UserService {
 		User newUser = User.builder()
 		                   .name(userSignupRequestDto.username())
 		                   .email(userSignupRequestDto.email())
-		                   .password(bCryptPasswordEncoder.encode(userSignupRequestDto.password()))
+		                   .password(passwordEncoder.encode(userSignupRequestDto.password()))
 		                   .userRole(USER)
 		                   .build();
 
@@ -41,14 +41,8 @@ public class UserService {
 		return new UserSignUpResponseDto(newUser);
 	}
 
-	private boolean isExistUser(String email) {
-		return userRepository.findByEmail(email)
-		                     .isPresent();
-	}
-
 	public EmailCheckResponseDto checkEmail(EmailCheckRequestDto target) {
-		return new EmailCheckResponseDto(userRepository.findByEmail(target.email())
-		                                               .isPresent());
+		return new EmailCheckResponseDto(isExistUser(target.email()));
 	}
 
 	public UserSignInResponseDto signIn(@Valid UserSignInRequestDto userSignInRequestDto) {
@@ -61,6 +55,10 @@ public class UserService {
     private boolean isInvalidPassword(User user, UserSignInRequestDto userSignInRequestDto) {
 	    String savedPassword = user.getPassword();
 	    String inputPassword = userSignInRequestDto.password();
-	    return !bCryptPasswordEncoder.matches(inputPassword, savedPassword);
+	    return !passwordEncoder.matches(inputPassword, savedPassword);
     }
+
+	private boolean isExistUser(String email) {
+		return userRepository.existsByEmail(email);
+	}
 }
