@@ -18,7 +18,7 @@ class JwtPropertiesTest {
 		assertThat(jwtProperties.HEADER()).isEqualTo("Authorization");
 		assertThat(jwtProperties.BEARER()).isEqualTo("Bearer ");
 		assertThat(jwtProperties.ISSUER()).isEqualTo("com.MyVideos");
-		assertThat(jwtProperties.TOKEN_LIFETIME()).isEqualTo(36000L);
+		assertThat(jwtProperties.TOKEN_LIFETIME()).isEqualTo(10800000L);
 		assertThat(jwtProperties.SECRET_KEY()).isNotBlank(); // 비밀 키는 빈 문자열이 아니어야 함
 
 		// SecretKey 객체 생성 확인
