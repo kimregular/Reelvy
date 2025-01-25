@@ -19,72 +19,41 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class JwtUtils {
 
-	private final JwtProperties jwtProperties;
-	private final UserDetailService userDetailService;
+    private final JwtProperties jwtProperties;
+    private final UserDetailService userDetailService;
 
-	public String createJwt(String username, String role, long tokenLifetime) {
-		Date now = new Date();
-		Date expiredAt = new Date(now.getTime() + tokenLifetime);
-		return makeToken(username,
-		                 role,
-		                 expiredAt);
-	}
+    public String createJwt(String username, String role, Date now) {
+        Date expiry = new Date(now.getTime() + jwtProperties.TOKEN_LIFETIME());
+        return Jwts.builder().claim("username", username).claim("role", role).claim("issuer", jwtProperties.ISSUER()).issuedAt(now).expiration(expiry).signWith(jwtProperties.getSigningKey()).compact();
+    }
 
-	private String makeToken(String username, String role, Date expiry) {
-		Date now = new Date();
-		return Jwts
-				.builder()
-				.claim("username",
-				       username)
-				.claim("role",
-				       role)
-				.claim("issuer",
-				       jwtProperties.ISSUER())
-				.issuedAt(now)
-				.expiration(expiry)
-				.signWith(jwtProperties.getSigningKey())
-				.compact();
-	}
+    private Claims getClaims(String token) {
+        return Jwts.parser().verifyWith(jwtProperties.getSigningKey()).build().parseSignedClaims(token).getPayload();
+    }
 
-	private Claims getClaims(String token) {
-		return Jwts
-				.parser()
-				.verifyWith(jwtProperties.getSigningKey())
-				.build()
-				.parseSignedClaims(token)
-				.getPayload();
-	}
+    public String getUsername(String token) {
+        return getClaims(token).get("username", String.class);
+    }
 
-	public String getUsername(String token) {
-		return getClaims(token).get("username",
-		                            String.class);
-	}
+    public Boolean isExpired(String token) {
+        return getClaims(token).getExpiration().before(new Date());
+    }
 
-	public Boolean isExpired(String token) {
-		return getClaims(token)
-				.getExpiration()
-				.before(new Date());
-	}
+    public Authentication getAuthentication(String token) {
+        String username = getUsername(token);
 
-	public Authentication getAuthentication(String token) {
-		String username = getUsername(token);
+        UserDetail userDetails = (UserDetail) userDetailService.loadUserByUsername(username);
+        log.info("userDetails {} {}", userDetails.getUsername(), userDetails.getAuthorities());
 
-		UserDetail userDetails = (UserDetail) userDetailService.loadUserByUsername(username);
-		log.info("userDetails {} {}",
-		         userDetails.getUsername(),
-		         userDetails.getAuthorities());
+        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+    }
 
-		return new UsernamePasswordAuthenticationToken(userDetails,
-		                                               "",
-		                                               userDetails.getAuthorities());
-	}
-
-	public boolean isInvalidToken(String token) {
-		try {
-			getClaims(token);
-			return false; // 토큰이 유효하면 false 반환
-		} catch (JwtException e) {
-			return true; // 토큰이 유효하지 않으면 true 반환
-		}
-	}
+    public boolean isInvalidToken(String token) {
+        try {
+            getClaims(token);
+            return false; // 토큰이 유효하면 false 반환
+        } catch (JwtException e) {
+            return true; // 토큰이 유효하지 않으면 true 반환
+        }
+    }
 }
