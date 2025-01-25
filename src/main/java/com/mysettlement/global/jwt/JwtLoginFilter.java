@@ -3,9 +3,7 @@ package com.mysettlement.global.jwt;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mysettlement.domain.user.exception.NoUserFoundException;
-import com.mysettlement.global.util.JwtUtils;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -25,61 +23,67 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
 
-	private final AuthenticationManager authenticationManager;
-	private final JwtProperties jwtProperties;
-	private final JwtUtils jwtUtils;
-	private final ObjectMapper objectMapper;
+    private final AuthenticationManager authenticationManager;
+    private final JwtProperties jwtProperties;
+    private final ObjectMapper objectMapper;
+    private final JwtProvider jwtProvider;
 
-	@Override
-	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws
-	                                                                                                      AuthenticationException {
-		try {
-			// JSON 데이터를 읽어서 파싱
-			JsonNode jsonNode = objectMapper.readTree(request.getInputStream());
+    private static final String LOGIN_ENDPOINT = "/login";
+    private static final String EMAIL_KEY = "email";
+    private static final String PASSWORD_KEY = "password";
 
-			// 특정 키값 추출
-			String username = jsonNode.get("email").asText(); // JSON의 "email" 값
-			String password = jsonNode.get("password").asText(); // JSON의 "password" 값
+    @Override
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
+        JsonNode jsonNode = parseRequest(request);
 
+        String email = getRequiredField(jsonNode, EMAIL_KEY);
+        String password = getRequiredField(jsonNode, PASSWORD_KEY);
 
-			// UsernamePasswordAuthenticationToken 생성
-			UsernamePasswordAuthenticationToken authenticationToken =
-					new UsernamePasswordAuthenticationToken(username, password);
+        log.info("Attempting authentication for user: {}", email);
 
-			// AuthenticationManager를 통해 인증 시도
-			return authenticationManager.authenticate(authenticationToken);
-		} catch (IOException e) {
-			throw new AuthenticationServiceException("Failed to parse authentication request body", e);
-		}
-	}
+        return authenticate(email, password);
+    }
 
-	@Override
-	protected void successfulAuthentication(HttpServletRequest request,
-	                                        HttpServletResponse response,
-	                                        FilterChain chain,
-	                                        Authentication authResult) throws IOException, ServletException {
+    private JsonNode parseRequest(HttpServletRequest request) {
+        try {
+            return objectMapper.readTree(request.getInputStream());
+        } catch (IOException e) {
+            log.error("Failed to parse authentication request body", e);
+            throw new AuthenticationServiceException("Invalid request payload", e);
+        }
+    }
 
-		UserDetail user = (UserDetail) authResult.getPrincipal();
+    private String getRequiredField(JsonNode jsonNode, String fieldName) {
+        return jsonNode.path(fieldName).asText(null);
+    }
 
-		String username = user.getUsername();
-		String role = user
-				.getAuthorities()
-				.stream()
-				.findFirst()
-				.map(GrantedAuthority::getAuthority)
-				.orElseThrow(NoUserFoundException::new);
+    private Authentication authenticate(String username, String password) {
+        if (username == null || password == null) {
+            throw new AuthenticationServiceException("Username or password is missing");
+        }
+        return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+    }
 
-		log.info("success {} {}", username, role);
+    @Override
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) {
+        UserDetail user = (UserDetail) authResult.getPrincipal();
 
-		response.addHeader(jwtProperties.HEADER(),
-		                   jwtProperties.BEARER() + jwtUtils.createJwt(username, role, new Date()));
-	}
+        String token = createJwtToken(user);
+        response.addHeader(jwtProperties.HEADER(), jwtProperties.BEARER() + token);
 
-	@Override
-	protected void unsuccessfulAuthentication(HttpServletRequest request,
-	                                          HttpServletResponse response,
-	                                          AuthenticationException failed) throws IOException, ServletException {
-		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-		response.setHeader("Location", "/login");
-	}
+        log.info("Authentication succeeded for user: {}", user.getUsername());
+    }
+
+    private String createJwtToken(UserDetail user) {
+        String role = user.getAuthorities().stream().map(GrantedAuthority::getAuthority).findFirst().orElseThrow(NoUserFoundException::new);
+
+        return jwtProvider.createJwt(user.getUsername(), role, new Date());
+    }
+
+    @Override
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
+        log.info("Failed cause {}", failed.getMessage());
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setHeader("Location", LOGIN_ENDPOINT);
+    }
 }

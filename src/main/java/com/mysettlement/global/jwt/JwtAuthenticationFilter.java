@@ -19,34 +19,26 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-	private final JwtProperties jwtProperties;
-	private final JwtUtils jwtUtils;
+    private final JwtProperties jwtProperties;
+    private final JwtUtils jwtUtils;
 
-	@Override
-	protected void doFilterInternal(HttpServletRequest request,
-	                                HttpServletResponse response,
-	                                FilterChain filterChain) throws ServletException, IOException {
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-		String authHeader = request.getHeader(jwtProperties.HEADER());
+        String token = resolveToken(request);
 
-		if (authHeader == null || !authHeader.startsWith(jwtProperties.BEARER())) {
-			filterChain.doFilter(request, response);
-			return;
+        if (jwtUtils.isValidToken(token)) {
+			Authentication authentication = jwtUtils.getAuthentication(token);
+			SecurityContextHolder.getContext().setAuthentication(authentication);
+		} else {
+			log.info("Invalid or Missing JWT Token");
 		}
 
-		String token = authHeader.substring(jwtProperties.BEARER().length());
+        filterChain.doFilter(request, response);
+    }
 
-		if (jwtUtils.isExpired(token) || jwtUtils.isInvalidToken(token)) {
-			filterChain.doFilter(request, response);
-			return;
-		}
-
-		log.info("로그인 후 요청 실행!");
-		Authentication authentication = jwtUtils.getAuthentication(token);
-		SecurityContextHolder
-				.getContext()
-				.setAuthentication(authentication);
-		filterChain.doFilter(request,
-		                     response);
-	}
+    private String resolveToken(HttpServletRequest request) {
+        String authHeader = request.getHeader(jwtProperties.HEADER());
+        return authHeader != null && authHeader.startsWith(jwtProperties.BEARER()) ? authHeader.substring(jwtProperties.BEARER().length()) : null;
+    }
 }
