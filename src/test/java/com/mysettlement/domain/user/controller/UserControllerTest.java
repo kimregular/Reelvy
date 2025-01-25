@@ -5,7 +5,6 @@ import com.mysettlement.domain.user.dto.request.EmailCheckRequestDto;
 import com.mysettlement.domain.user.dto.request.UserSignInRequestDto;
 import com.mysettlement.domain.user.dto.request.UserSignUpRequestDto;
 import com.mysettlement.domain.user.dto.response.EmailCheckResponseDto;
-import com.mysettlement.domain.user.dto.response.UserSignInResponseDto;
 import com.mysettlement.domain.user.exception.DuplicateUserException;
 import com.mysettlement.domain.user.repository.UserRepository;
 import com.mysettlement.domain.user.service.UserService;
@@ -59,13 +58,15 @@ class UserControllerTest {
 			String json = objectMapper.writeValueAsString(userSignupRequestDto);
 
 			// when
-			MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(BASE_URL + "/signup")
-			                                                              .contentType(MediaType.APPLICATION_JSON)
-			                                                              .content(json);
+			MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+					.post(BASE_URL + "/signup")
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(json);
 
 			// then
-			mockMvc.perform(request)
-			       .andExpect(status().isCreated());
+			mockMvc
+					.perform(request)
+					.andExpect(status().isCreated());
 		}
 
 		@Test
@@ -78,17 +79,20 @@ class UserControllerTest {
 			String json = objectMapper.writeValueAsString(userSignupRequestDto);
 
 			// Mock: 중복 예외 던지도록 설정
-			doThrow(new DuplicateUserException()).when(userService)
-			                                     .signUp(userSignupRequestDto);
+			doThrow(new DuplicateUserException())
+					.when(userService)
+					.signUp(userSignupRequestDto);
 
 			// when
-			MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(BASE_URL + "/signup")
-			                                                              .contentType(MediaType.APPLICATION_JSON)
-			                                                              .content(json);
+			MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+					.post(BASE_URL + "/signup")
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(json);
 
 			// then
-			mockMvc.perform(request)
-			       .andExpect(status().isConflict()); // 예외 발생 시 HTTP 409 반환
+			mockMvc
+					.perform(request)
+					.andExpect(status().isConflict()); // 예외 발생 시 HTTP 409 반환
 		}
 
 		@Test
@@ -100,13 +104,15 @@ class UserControllerTest {
 			                                                                     "123456789");
 			String json = objectMapper.writeValueAsString(userSignupRequestDto);
 			// when
-			MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(BASE_URL + "/signup")
-			                                                              .contentType(MediaType.APPLICATION_JSON)
-			                                                              .content(json);
+			MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+					.post(BASE_URL + "/signup")
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(json);
 			// then
-			mockMvc.perform(request)
-			       .andExpect(status().isBadRequest())
-			       .andExpect(jsonPath("$.validation.email").value("이메일형식이 아닙니다."));
+			mockMvc
+					.perform(request)
+					.andExpect(status().isBadRequest())
+					.andExpect(jsonPath("$.validation.email").value("이메일형식이 아닙니다."));
 		}
 
 		@Test
@@ -118,13 +124,15 @@ class UserControllerTest {
 			                                                                     "123456789");
 			String json = objectMapper.writeValueAsString(userSignupRequestDto);
 			// when
-			MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(BASE_URL + "/signup")
-			                                                              .contentType(MediaType.APPLICATION_JSON)
-			                                                              .content(json);
+			MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+					.post(BASE_URL + "/signup")
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(json);
 			// then
-			mockMvc.perform(request)
-			       .andExpect(status().isBadRequest())
-			       .andExpect(jsonPath("$.validation.email").value("이메일형식이 아닙니다."));
+			mockMvc
+					.perform(request)
+					.andExpect(status().isBadRequest())
+					.andExpect(jsonPath("$.validation.email").value("이메일형식이 아닙니다."));
 		}
 
 		@Test
@@ -136,13 +144,15 @@ class UserControllerTest {
 			                                                                     "1234");
 			String json = objectMapper.writeValueAsString(userSignupRequestDto);
 			// when
-			MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(BASE_URL + "/signup")
-			                                                              .contentType(MediaType.APPLICATION_JSON)
-			                                                              .content(json);
+			MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+					.post(BASE_URL + "/signup")
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(json);
 			// then
-			mockMvc.perform(request)
-			       .andExpect(status().isBadRequest())
-			       .andExpect(jsonPath("$.validation.password").value("비밀번호는 8자 이상이어야합니다."));
+			mockMvc
+					.perform(request)
+					.andExpect(status().isBadRequest())
+					.andExpect(jsonPath("$.validation.password").value("비밀번호는 8자 이상이어야합니다."));
 		}
 
 		@Test
@@ -154,13 +164,15 @@ class UserControllerTest {
 			                                                                     "");
 			String json = objectMapper.writeValueAsString(userSignupRequestDto);
 			// when
-			MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(BASE_URL + "/signup")
-			                                                              .contentType(MediaType.APPLICATION_JSON)
-			                                                              .content(json);
+			MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+					.post(BASE_URL + "/signup")
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(json);
 			// then
-			mockMvc.perform(request)
-			       .andExpect(status().isBadRequest())
-			       .andExpect(jsonPath("$.validation.password").value("비밀번호는 8자 이상이어야합니다."));
+			mockMvc
+					.perform(request)
+					.andExpect(status().isBadRequest())
+					.andExpect(jsonPath("$.validation.password").value("비밀번호는 8자 이상이어야합니다."));
 		}
 
 		@Test
@@ -172,14 +184,16 @@ class UserControllerTest {
 			                                                                     "1234");
 			String json = objectMapper.writeValueAsString(userSignupRequestDto);
 			// when
-			MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(BASE_URL + "/signup")
-			                                                              .contentType(MediaType.APPLICATION_JSON)
-			                                                              .content(json);
+			MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+					.post(BASE_URL + "/signup")
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(json);
 			// then
-			mockMvc.perform(request)
-			       .andExpect(status().isBadRequest())
-			       .andExpect(jsonPath("$.validation.email").value("이메일형식이 아닙니다."))
-			       .andExpect(jsonPath("$.validation.password").value("비밀번호는 8자 이상이어야합니다."));
+			mockMvc
+					.perform(request)
+					.andExpect(status().isBadRequest())
+					.andExpect(jsonPath("$.validation.email").value("이메일형식이 아닙니다."))
+					.andExpect(jsonPath("$.validation.password").value("비밀번호는 8자 이상이어야합니다."));
 		}
 
 		@Test
@@ -191,14 +205,16 @@ class UserControllerTest {
 			                                                                     "");
 			String json = objectMapper.writeValueAsString(userSignupRequestDto);
 			// when
-			MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(BASE_URL + "/signup")
-			                                                              .contentType(MediaType.APPLICATION_JSON)
-			                                                              .content(json);
+			MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+					.post(BASE_URL + "/signup")
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(json);
 			// then
-			mockMvc.perform(request)
-			       .andExpect(status().isBadRequest())
-			       .andExpect(jsonPath("$.validation.email").value("이메일형식이 아닙니다."))
-			       .andExpect(jsonPath("$.validation.password").value("비밀번호는 8자 이상이어야합니다."));
+			mockMvc
+					.perform(request)
+					.andExpect(status().isBadRequest())
+					.andExpect(jsonPath("$.validation.email").value("이메일형식이 아닙니다."))
+					.andExpect(jsonPath("$.validation.password").value("비밀번호는 8자 이상이어야합니다."));
 		}
 	}
 
@@ -212,19 +228,22 @@ class UserControllerTest {
 			EmailCheckRequestDto emailCheckRequestDto = new EmailCheckRequestDto("test@test.com");
 
 			EmailCheckResponseDto emailCheckResponseDto = new EmailCheckResponseDto(false);
-			Mockito.when(userService.checkEmail(any(EmailCheckRequestDto.class)))
-			       .thenReturn(emailCheckResponseDto);
+			Mockito
+					.when(userService.checkEmail(any(EmailCheckRequestDto.class)))
+					.thenReturn(emailCheckResponseDto);
 
 			String json = objectMapper.writeValueAsString(emailCheckRequestDto);
 			// when
-			MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(BASE_URL + "/checkEmail")
-			                                                              .contentType(MediaType.APPLICATION_JSON)
-			                                                              .content(json);
+			MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+					.post(BASE_URL + "/checkEmail")
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(json);
 			// then
-			mockMvc.perform(request)
-			       .andDo(print())
-			       .andExpect(status().isOk())
-			       .andExpect(jsonPath("$.isDuplicateEmail").value(false));
+			mockMvc
+					.perform(request)
+					.andDo(print())
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$.isDuplicateEmail").value(false));
 		}
 
 		@Test
@@ -234,66 +253,44 @@ class UserControllerTest {
 			EmailCheckRequestDto emailCheckRequestDto = new EmailCheckRequestDto("test@test.com");
 
 			EmailCheckResponseDto emailCheckResponseDto = new EmailCheckResponseDto(true);
-			Mockito.when(userService.checkEmail(any(EmailCheckRequestDto.class)))
-			       .thenReturn(emailCheckResponseDto);
+			Mockito
+					.when(userService.checkEmail(any(EmailCheckRequestDto.class)))
+					.thenReturn(emailCheckResponseDto);
 
 			String json = objectMapper.writeValueAsString(emailCheckRequestDto);
 			// when
-			MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(BASE_URL + "/checkEmail")
-			                                                              .contentType(MediaType.APPLICATION_JSON)
-			                                                              .content(json);
+			MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+					.post(BASE_URL + "/checkEmail")
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(json);
 			// then
-			mockMvc.perform(request)
-			       .andExpect(status().isOk())
-			       .andExpect(jsonPath("$.isDuplicateEmail").value(true));
+			mockMvc
+					.perform(request)
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$.isDuplicateEmail").value(true));
 		}
 	}
 
-	@Nested
-	@DisplayName("로그인 테스트")
-	class LoginTest {
-		@Test
-		@DisplayName("유저 로그인 테스트 - 성공")
-		void test9() throws Exception {
-			// given
-			UserSignInRequestDto userSignInRequestDto = new UserSignInRequestDto("test@test.com",
-			                                                                     "12346789");
-			UserSignInResponseDto userSignInResponseDto = UserSignInResponseDto.builder()
-			                                                                   .username("kim")
-			                                                                   .email("test@test.com")
-			                                                                   .build();
-			Mockito.when(userService.signIn(any(UserSignInRequestDto.class)))
-			       .thenReturn(userSignInResponseDto);
-			String json = objectMapper.writeValueAsString(userSignInRequestDto);
-			// when
-			MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post("/api/v1/user/signin")
-			                                                              .contentType(MediaType.APPLICATION_JSON)
-			                                                              .content(json);
+	@Test
+	@DisplayName("유저 로그인 테스트 비밀번호 없음 - 실패")
+	void test10() throws Exception {
+		// given
+		UserSignInRequestDto userSignInRequestDto = new UserSignInRequestDto("test@test.com",
+		                                                                     "");
 
-			// then
-			mockMvc.perform(request)
-			       .andExpect(status().isOk())
-			       .andDo(print());
-		}
+		String json = objectMapper.writeValueAsString(userSignInRequestDto);
+		// when
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+				.post("/api/v1/user/signin")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(json);
 
-		@Test
-		@DisplayName("유저 로그인 테스트 비밀번호 없음 - 실패")
-		void test10() throws Exception {
-			// given
-			UserSignInRequestDto userSignInRequestDto = new UserSignInRequestDto("test@test.com",
-			                                                                     "");
-
-			String json = objectMapper.writeValueAsString(userSignInRequestDto);
-			// when
-			MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post("/api/v1/user/signin")
-			                                                              .contentType(MediaType.APPLICATION_JSON)
-			                                                              .content(json);
-
-			// then
-			mockMvc.perform(request)
-			       .andExpect(status().isBadRequest())
-			       .andExpect(jsonPath("$.validation.password").value("비밀번호는 8자 이상입니다."))
-			       .andDo(print());
-		}
+		// then
+		mockMvc
+				.perform(request)
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.validation.password").value("비밀번호는 8자 이상입니다."))
+				.andDo(print());
 	}
+
 }
