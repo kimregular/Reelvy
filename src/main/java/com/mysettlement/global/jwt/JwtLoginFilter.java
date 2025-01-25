@@ -19,6 +19,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
+import java.util.Date;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -71,7 +72,7 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
 		log.info("success {} {}", username, role);
 
 		response.addHeader(jwtProperties.HEADER(),
-		                   jwtProperties.BEARER() + jwtUtils.createJwt(username, role, jwtProperties.TOKEN_LIFETIME()));
+		                   jwtProperties.BEARER() + jwtUtils.createJwt(username, role, new Date()));
 	}
 
 	@Override
@@ -79,5 +80,6 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
 	                                          HttpServletResponse response,
 	                                          AuthenticationException failed) throws IOException, ServletException {
 		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+		response.setHeader("Location", "/login");
 	}
 }
