@@ -1,21 +1,18 @@
 package com.mysettlement.domain.user.controller;
 
 import com.mysettlement.domain.user.dto.request.EmailCheckRequestDto;
-import com.mysettlement.domain.user.dto.request.UserSignInRequestDto;
 import com.mysettlement.domain.user.dto.request.UserSignUpRequestDto;
 import com.mysettlement.domain.user.dto.response.EmailCheckResponseDto;
-import com.mysettlement.domain.user.dto.response.UserSignInResponseDto;
 import com.mysettlement.domain.user.dto.response.UserSignUpResponseDto;
 import com.mysettlement.domain.user.service.UserService;
+import com.mysettlement.global.jwt.UserDetail;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 
 @Slf4j
@@ -38,9 +35,8 @@ public class UserController {
 		                     .body(userService.checkEmail(emailCheckRequestDto));
 	}
 
-	@PostMapping("/signin")
-	public ResponseEntity<UserSignInResponseDto> signIn(@RequestBody @Valid UserSignInRequestDto userSignInRequestDto) {
-        return ResponseEntity.status(HttpStatus.OK)
-                             .body(userService.signIn(userSignInRequestDto));
+	@GetMapping("/getInfo")
+	public String getUserInfo(@AuthenticationPrincipal UserDetail userDetail) {
+		return userDetail.getUsername();
 	}
 }
