@@ -4,15 +4,12 @@ import com.mysettlement.global.jwt.JwtProperties;
 import com.mysettlement.global.jwt.UserDetail;
 import com.mysettlement.global.service.UserDetailService;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
-
-import java.util.Date;
 
 @Slf4j
 @Component
@@ -22,21 +19,13 @@ public class JwtUtils {
     private final JwtProperties jwtProperties;
     private final UserDetailService userDetailService;
 
-    public String createJwt(String username, String role, Date now) {
-        Date expiry = new Date(now.getTime() + jwtProperties.TOKEN_LIFETIME());
-        return Jwts.builder().claim("username", username).claim("role", role).claim("issuer", jwtProperties.ISSUER()).issuedAt(now).expiration(expiry).signWith(jwtProperties.getSigningKey()).compact();
-    }
 
     private Claims getClaims(String token) {
         return Jwts.parser().verifyWith(jwtProperties.getSigningKey()).build().parseSignedClaims(token).getPayload();
     }
 
-    public String getUsername(String token) {
+    private String getUsername(String token) {
         return getClaims(token).get("username", String.class);
-    }
-
-    public Boolean isExpired(String token) {
-        return getClaims(token).getExpiration().before(new Date());
     }
 
     public Authentication getAuthentication(String token) {
@@ -48,12 +37,12 @@ public class JwtUtils {
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
-    public boolean isInvalidToken(String token) {
+    public boolean isValidToken(String token) {
         try {
-            getClaims(token);
-            return false; // 토큰이 유효하면 false 반환
-        } catch (JwtException e) {
-            return true; // 토큰이 유효하지 않으면 true 반환
+            getClaims(token); // 파싱에 성공하면 유효성 검사 완료!
+            return true;
+        } catch (Exception e) {
+            return false;
         }
     }
 }
