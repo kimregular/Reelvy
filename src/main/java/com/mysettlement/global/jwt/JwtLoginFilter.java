@@ -66,7 +66,7 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) {
-        UserDetail user = (UserDetail) authResult.getPrincipal();
+        UserDetailsImpl user = (UserDetailsImpl) authResult.getPrincipal();
 
         String token = createJwtToken(user);
         response.addHeader(jwtProperties.HEADER(), jwtProperties.BEARER() + token);
@@ -74,7 +74,7 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
         log.info("Authentication succeeded for user: {}", user.getUsername());
     }
 
-    private String createJwtToken(UserDetail user) {
+    private String createJwtToken(UserDetailsImpl user) {
         String role = user.getAuthorities().stream().map(GrantedAuthority::getAuthority).findFirst().orElseThrow(NoUserFoundException::new);
 
         return jwtProvider.createJwt(user.getUsername(), role, new Date());

@@ -5,7 +5,7 @@ import com.mysettlement.domain.user.dto.request.UserSignUpRequestDto;
 import com.mysettlement.domain.user.dto.response.EmailCheckResponseDto;
 import com.mysettlement.domain.user.dto.response.UserSignUpResponseDto;
 import com.mysettlement.domain.user.service.UserService;
-import com.mysettlement.global.jwt.UserDetail;
+import com.mysettlement.global.jwt.UserDetailsImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +36,7 @@ public class UserController {
 	}
 
 	@GetMapping("/getInfo")
-	public String getUserInfo(@AuthenticationPrincipal UserDetail userDetail) {
-		return userDetail.getUsername();
+	public String getUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetailsImpl) {
+		return userDetailsImpl.getUsername();
 	}
 }

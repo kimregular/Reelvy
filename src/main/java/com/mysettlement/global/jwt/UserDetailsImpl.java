@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 @RequiredArgsConstructor
-public class UserDetail implements UserDetails {
+public class UserDetailsImpl implements UserDetails {
 
 	private final User user;
 

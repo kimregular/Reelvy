@@ -1,8 +1,8 @@
 package com.mysettlement.global.util;
 
 import com.mysettlement.global.jwt.JwtProperties;
-import com.mysettlement.global.jwt.UserDetail;
-import com.mysettlement.global.service.UserDetailService;
+import com.mysettlement.global.jwt.UserDetailsImpl;
+import com.mysettlement.global.service.UserDetailsServiceImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 public class JwtUtils {
 
     private final JwtProperties jwtProperties;
-    private final UserDetailService userDetailService;
+    private final UserDetailsServiceImpl userDetailsServiceImpl;
 
 
     private Claims getClaims(String token) {
@@ -31,7 +31,7 @@ public class JwtUtils {
     public Authentication getAuthentication(String token) {
         String username = getUsername(token);
 
-        UserDetail userDetails = (UserDetail) userDetailService.loadUserByUsername(username);
+        UserDetailsImpl userDetails = (UserDetailsImpl) userDetailsServiceImpl.loadUserByUsername(username);
         log.info("userDetails {} {}", userDetails.getUsername(), userDetails.getAuthorities());
 
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
