@@ -7,6 +7,7 @@ import com.mysettlement.domain.user.dto.response.UserSignUpResponseDto;
 import com.mysettlement.domain.user.entity.User;
 import com.mysettlement.domain.user.exception.DuplicateUserException;
 import com.mysettlement.domain.user.repository.UserRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -43,5 +44,16 @@ public class UserService {
 
 	private boolean isExistUser(String email) {
 		return userRepository.existsByEmail(email);
+	}
+
+	@PostConstruct
+	private void initUser() {
+		User user = User.builder()
+				.name("qwe")
+				.email("qwe@qwe.com")
+				.password(passwordEncoder.encode("qweqweqwe"))
+				.userRole(USER)
+				.build();
+		userRepository.save(user);
 	}
 }
