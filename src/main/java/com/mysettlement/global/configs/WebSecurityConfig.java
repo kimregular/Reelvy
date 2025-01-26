@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,19 +38,20 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				.csrf(AbstractHttpConfigurer::disable)
-				.formLogin(AbstractHttpConfigurer::disable)
-				.httpBasic(AbstractHttpConfigurer::disable)
-				.authorizeHttpRequests(auth -> auth
-						.requestMatchers("/favicon.ico", "/error").permitAll()
-						.requestMatchers(toH2Console()).permitAll()
-						.requestMatchers(new AntPathRequestMatcher("/api/v1/user/login"),
-								new AntPathRequestMatcher("/api/v1/user/signup"),
-								new AntPathRequestMatcher("/api/v1/user/checkEmail"),
-								new AntPathRequestMatcher("/")).permitAll()
-						.anyRequest().authenticated())
-				.addFilterBefore(new JwtAuthenticationFilter(jwtProperties, jwtUtils), JwtLoginFilter.class)
-				.addFilterAt(jwtLoginFilter(authenticationManager(authenticationConfiguration)), UsernamePasswordAuthenticationFilter.class).build();
+                .headers(header -> header.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
+                .csrf(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/favicon.ico", "/error").permitAll()
+                        .requestMatchers(toH2Console()).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/v1/user/login"),
+                                new AntPathRequestMatcher("/api/v1/user/signup"),
+                                new AntPathRequestMatcher("/api/v1/user/checkEmail"),
+                                new AntPathRequestMatcher("/")).permitAll()
+                        .anyRequest().authenticated())
+                .addFilterBefore(new JwtAuthenticationFilter(jwtProperties, jwtUtils), JwtLoginFilter.class)
+                .addFilterAt(jwtLoginFilter(authenticationManager(authenticationConfiguration)), UsernamePasswordAuthenticationFilter.class).build();
     }
 
     @Bean
