@@ -1,12 +1,20 @@
 <script setup lang="ts">
 import {onBeforeMount, ref} from "vue";
 import axios from "axios";
+import {BASE_URL} from "@/constants/server.ts";
 
 const welcome = ref("");
 
 onBeforeMount( async () => {
   try {
-    const response = await axios.get("http://localhost:8080");
+    const token = document.cookie.split("=")[1];
+    console.log(token);
+    const response = await axios.get(`${BASE_URL}/v1/user/getInfo`, {
+      headers : {
+        Authorization: token,
+      }
+    });
+    console.log(response);
     welcome.value = response.data;
   } catch (error){
     welcome.value = "error has occured";
