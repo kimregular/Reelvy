@@ -28,7 +28,6 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
     private final ObjectMapper objectMapper;
     private final JwtProvider jwtProvider;
 
-    private static final String LOGIN_ENDPOINT = "/login";
     private static final String EMAIL_KEY = "email";
     private static final String PASSWORD_KEY = "password";
 
@@ -84,6 +83,5 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
         log.info("Failed cause {}", failed.getMessage());
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.setHeader("Location", LOGIN_ENDPOINT);
     }
 }
