@@ -69,9 +69,7 @@ class JwtProviderTest {
         String token = jwtProvider.createJwt(username, role, now);
 
         // when & then
-        Exception exception = assertThrows(io.jsonwebtoken.ExpiredJwtException.class, () -> {
-            Jwts.parser().verifyWith(signingKey).build().parseSignedClaims(token);
-        });
+        Exception exception = assertThrows(io.jsonwebtoken.ExpiredJwtException.class, () -> Jwts.parser().verifyWith(signingKey).build().parseSignedClaims(token));
 
         assertThat(exception).isInstanceOf(io.jsonwebtoken.ExpiredJwtException.class);
     }
