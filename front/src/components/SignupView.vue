@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import {ref, watch} from "vue";
+import {BASE_URL} from "@/constants/server.ts";
 import axios from "axios";
 import router from "@/router";
 
@@ -30,7 +31,7 @@ const hasDuplicateEmail = async (email: string) => {
   isValidEmailStructure.value = true;
   showEmailWarning.value = true;
   try {
-    const response = await axios.post("http://localhost:8080/api/v1/user/checkEmail", {email});
+    const response = await axios.post(BASE_URL + "/v1/user/checkEmail", {email});
     isDuplicateEmail.value = response.data.isDuplicateEmail;
   } catch (error) {
     isDuplicateEmail.value = true;
@@ -71,7 +72,10 @@ watch(
 );
 
 const handleSignUp = async () => {
-  if (isInvalidInfo.value) return;
+  if (isInvalidInfo.value) {
+    alert("회원가입 폼을 작성해주세요");
+    return;
+  }
 
   const payload = {
     email: email.value,
@@ -80,8 +84,7 @@ const handleSignUp = async () => {
   };
 
   try {
-    const response = await axios.post("http://localhost:8080/api/v1/user/signup", payload);
-    console.log(response.data);
+    const response = await axios.post(BASE_URL + "/v1/user/signup", payload);
     await router.push("/login");
   } catch (error) {
     alert("error!");
@@ -117,7 +120,8 @@ const handleSignUp = async () => {
 
       <!-- 비밀번호 입력 -->
       <div class="mb-3">
-        <label for="password-input" class="form-label">비밀번호</label>
+        <label for="password-input" class="form-label me-3">비밀번호</label>
+        <span v-if="showPasswordWarning && !isPasswordValidLength" class="text-danger">비밀번호는 8자 이상이어야 합니다.</span>
         <input
           v-model="password"
           type="password"
@@ -127,7 +131,6 @@ const handleSignUp = async () => {
         >
 
         <label for="password-check" class="form-label me-3">비밀번호 확인</label>
-        <span v-if="showPasswordWarning && !isPasswordValidLength" class="text-danger me-3">비밀번호는 8자 이상이어야 합니다.</span>
         <span v-if="showPasswordWarning && !isPasswordMatch" class="text-danger">비밀번호가 일치하지 않습니다.</span>
         <input
           v-model="passwordCheck"
