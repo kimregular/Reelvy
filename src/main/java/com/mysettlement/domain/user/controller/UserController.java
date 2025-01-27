@@ -5,13 +5,13 @@ import com.mysettlement.domain.user.dto.request.UserSignUpRequestDto;
 import com.mysettlement.domain.user.dto.response.EmailCheckResponseDto;
 import com.mysettlement.domain.user.dto.response.UserSignUpResponseDto;
 import com.mysettlement.domain.user.service.UserService;
-import com.mysettlement.global.jwt.UserDetailsImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -36,7 +36,7 @@ public class UserController {
 	}
 
 	@GetMapping("/getInfo")
-	public String getUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetailsImpl) {
-		return userDetailsImpl.getUsername();
+	public String getUserInfo(@AuthenticationPrincipal UserDetails userDetails) {
+		return userDetails.getUsername();
 	}
 }
