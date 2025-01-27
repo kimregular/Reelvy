@@ -1,5 +1,6 @@
-package com.mysettlement.global.jwt;
+package com.mysettlement.global.jwt.filters;
 
+import com.mysettlement.global.jwt.JwtProperties;
 import com.mysettlement.global.util.JwtUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
