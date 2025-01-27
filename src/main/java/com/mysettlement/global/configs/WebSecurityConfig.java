@@ -1,8 +1,8 @@
 package com.mysettlement.global.configs;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mysettlement.global.jwt.JwtAuthenticationFilter;
-import com.mysettlement.global.jwt.JwtLoginFilter;
+import com.mysettlement.global.jwt.filters.JwtAuthenticationFilter;
+import com.mysettlement.global.jwt.filters.JwtLoginFilter;
 import com.mysettlement.global.jwt.JwtProperties;
 import com.mysettlement.global.jwt.JwtProvider;
 import com.mysettlement.global.util.JwtUtils;
