@@ -3,9 +3,7 @@ package com.mysettlement.global.jwt.filters;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mysettlement.domain.user.exception.NoUserFoundException;
-import com.mysettlement.global.jwt.JwtProperties;
-import com.mysettlement.global.jwt.JwtProvider;
-import com.mysettlement.global.jwt.UserDetailsImpl;
+import com.mysettlement.global.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,6 +15,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
@@ -27,9 +26,8 @@ import java.util.Date;
 public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
-    private final JwtProperties jwtProperties;
+    private final JwtUtil jwtUtil;
     private final ObjectMapper objectMapper;
-    private final JwtProvider jwtProvider;
 
     private static final String EMAIL_KEY = "email";
     private static final String PASSWORD_KEY = "password";
@@ -68,18 +66,18 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) {
-        UserDetailsImpl user = (UserDetailsImpl) authResult.getPrincipal();
+        UserDetails user = (UserDetails) authResult.getPrincipal();
 
         String token = createJwtToken(user);
-        response.addHeader(jwtProperties.HEADER(), jwtProperties.BEARER() + token);
+        response.addHeader(jwtUtil.getJwtHeader(), jwtUtil.getJwtBearer() + token);
 
         log.info("Authentication succeeded for user: {}", user.getUsername());
     }
 
-    private String createJwtToken(UserDetailsImpl user) {
+    private String createJwtToken(UserDetails user) {
         String role = user.getAuthorities().stream().map(GrantedAuthority::getAuthority).findFirst().orElseThrow(NoUserFoundException::new);
 
-        return jwtProvider.createJwt(user.getUsername(), role, new Date());
+        return jwtUtil.createJwt(user.getUsername(), role, new Date());
     }
 
     @Override
