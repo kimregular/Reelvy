@@ -40,15 +40,15 @@ CorsConfig 설정
 @Configuration
 public class CorsConfig implements WebMvcConfigurer {
 
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOriginPatterns("http://localhost:5173")
-                .allowedMethods("*")
-                .exposedHeaders("Authorization", "Content-Type")
-                // 노출시킬 헤더명을 명시
-                .allowCredentials(true);
-    }
+	@Override
+	public void addCorsMappings(CorsRegistry registry) {
+		registry.addMapping("/**")
+				.allowedOriginPatterns("http://localhost:5173")
+				.allowedMethods("*")
+				.exposedHeaders("Authorization", "Content-Type")
+				// 노출시킬 헤더명을 명시
+				.allowCredentials(true);
+	}
 }
 ```
 
@@ -146,3 +146,97 @@ vue의 라우터에서 클라이언트가 로그인했는지 확인하는 로직
     }
 }]
 ```
+
+### LoginFilter 동작하지 않는 문제
+
+```java
+
+@Bean
+public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+	return http // 설명을 위해 불필요한 설정 코드는 제외함
+			.addFilterBefore(jwtAuthenticationFilter(), JwtLoginFilter.class)
+			.addFilterAt(jwtLoginFilter(authenticationManager(authenticationConfiguration)), UsernamePasswordAuthenticationFilter.class).build();
+}
+```
+
+#### 필터의 동작 순서
+
+위 코드를 보면 필터는 아래와 같이 동작한다.
+
+1. `jwtAuthenticationFilter` 먼저 jwt 확인
+2. `jwtLoginFilter` 위 필터에서 확인이 안 되면 로그인 필터 동작
+
+#### 문제의 코드
+
+```java
+// JwtAuthenticationFilter.class
+
+@Override
+protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+
+	String token = jwtUtil.resolveToken(request);
+
+	if (jwtUtil.isValidToken(token)) {
+		Authentication authentication = jwtUtil.getAuthentication(token);
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+	} else {
+		log.info("Invalid or Missing JWT Token");
+	}
+
+	filterChain.doFilter(request, response);
+}
+```
+
+JwtAuthenticationFilter 가 먼저 동작하여 토큰을 확인한다.
+로그인을 하지 않았으므로 isValidToken에서 false가 출력되길 기대한다.
+
+```java
+// JwtUtil.class
+public boolean isValidToken(String token) {
+	try {
+		getClaims(token);
+		return true;
+	} catch (ExpiredJwtException e) {
+		throw new ExpiredJwtException(null, null, "Expired JWT token: 만료된 JWT token 입니다.");
+	} catch (MalformedJwtException e) { // MalformedJwtException을 명확하게 처리
+		throw new MalformedJwtException("Malformed JWT token: 잘못된 형식의 JWT 토큰입니다.");
+	} catch (SecurityException e) { // SecurityException을 따로 처리
+		throw new SecurityException("Invalid JWT signature: 유효하지 않은 JWT 서명입니다.");
+	} catch (UnsupportedJwtException e) {
+		throw new UnsupportedJwtException("Unsupported JWT token: 지원되지 않는 JWT 토큰입니다.");
+	} catch (Exception e) {
+		throw new RuntimeException("Unexpected error occurred while validating JWT token: " + e.getMessage());
+	}
+}
+```
+
+isValidToken 에서는 true만 반환하고 그 외에는 모두 예외를 던진다.
+따라서 JwtAuthenticationFilter에서 doFilter를 호출하지 못하고 로직 종료
+
+#### 해결
+
+```java
+public boolean isValidToken(String token) {
+	if (token == null || token.trim().isEmpty()) {
+		log.info("Token is null or empty");
+		return false; // false 출력을 안 하면 LoginFilter 동작 안 함
+	}
+
+	try {
+		getClaims(token);
+		return true;
+	} catch (ExpiredJwtException e) {
+		throw new ExpiredJwtException(null, null, "Expired JWT token: 만료된 JWT token 입니다.");
+	} catch (MalformedJwtException e) { // MalformedJwtException을 명확하게 처리
+		throw new MalformedJwtException("Malformed JWT token: 잘못된 형식의 JWT 토큰입니다.");
+	} catch (SecurityException e) { // SecurityException을 따로 처리
+		throw new SecurityException("Invalid JWT signature: 유효하지 않은 JWT 서명입니다.");
+	} catch (UnsupportedJwtException e) {
+		throw new UnsupportedJwtException("Unsupported JWT token: 지원되지 않는 JWT 토큰입니다.");
+	} catch (Exception e) {
+		throw new RuntimeException("Unexpected error occurred while validating JWT token: " + e.getMessage());
+	}
+}
+```
+
+토큰이 비어있을 경우에는 false를 반환하도록 로직 변경!
