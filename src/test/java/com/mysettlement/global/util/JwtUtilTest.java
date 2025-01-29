@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
-class JwtUtilFailureTest {
+class JwtUtilTest {
 
 	@Autowired
 	private JwtUtil jwtUtil;
@@ -164,22 +164,6 @@ class JwtUtilFailureTest {
 			assertThatThrownBy(() -> jwtUtil.isValidToken(unsupportedToken))
 					.isInstanceOf(UnsupportedJwtException.class)
 					.hasMessage("Unsupported JWT token: 지원되지 않는 JWT 토큰입니다.");
-		}
-
-		@Test
-		@DisplayName("토큰이 null이면 IllegalArgumentException을 던진다.")
-		void testNullTokenThrowsException() {
-			assertThatThrownBy(() -> jwtUtil.isValidToken(null))
-					.isInstanceOf(IllegalArgumentException.class)
-					.hasMessage("JWT claims is empty or token is malformed: 잘못된 JWT 토큰입니다.");
-		}
-
-		@Test
-		@DisplayName("토큰이 빈 문자열이면 IllegalArgumentException을 던진다.")
-		void testEmptyTokenThrowsException() {
-			assertThatThrownBy(() -> jwtUtil.isValidToken(""))
-					.isInstanceOf(IllegalArgumentException.class)
-					.hasMessage("JWT claims is empty or token is malformed: 잘못된 JWT 토큰입니다.");
 		}
 	}
 }

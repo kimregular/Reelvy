@@ -1,7 +1,6 @@
 package com.mysettlement.global.util;
 
 import com.mysettlement.global.jwt.JwtProperties;
-import com.mysettlement.global.service.UserDetailsService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -11,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -22,73 +22,76 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class JwtUtil {
 
-    private final JwtProperties jwtProperties;
-    private final UserDetailsService userDetailsService;
+	private final JwtProperties jwtProperties;
+	private final UserDetailsService userDetailsService;
 
-    private SecretKey secretKey;
+	private SecretKey secretKey;
 
-    @PostConstruct
-    private void init() {
-        secretKey = Keys.hmacShaKeyFor(jwtProperties.SECRET_KEY().getBytes(StandardCharsets.UTF_8));
-    }
+	@PostConstruct
+	private void init() {
+		secretKey = Keys.hmacShaKeyFor(jwtProperties.SECRET_KEY().getBytes(StandardCharsets.UTF_8));
+	}
 
-    public String getJwtHeader() {
-        return jwtProperties.HEADER();
-    }
+	public String getJwtHeader() {
+		return jwtProperties.HEADER();
+	}
 
-    public String getJwtBearer() {
-        return jwtProperties.BEARER();
-    }
+	public String getJwtBearer() {
+		return jwtProperties.BEARER();
+	}
 
-    public String createJwt(String username, String role, Date now) {
-        Date expiry = new Date(now.getTime() + jwtProperties.TOKEN_LIFETIME());
-        return Jwts.builder()
-                .claim("username", username)
-                .claim("role", role)
-                .claim("issuer", jwtProperties.ISSUER())
-                .issuedAt(now)
-                .expiration(expiry)
-                .signWith(secretKey)
-                .compact();
-    }
+	public String createJwt(String username, String role, Date now) {
+		Date expiry = new Date(now.getTime() + jwtProperties.TOKEN_LIFETIME());
+		return Jwts.builder()
+				.claim("username", username)
+				.claim("role", role)
+				.claim("issuer", jwtProperties.ISSUER())
+				.issuedAt(now)
+				.expiration(expiry)
+				.signWith(secretKey)
+				.compact();
+	}
 
-    public String resolveToken(HttpServletRequest request) {
-        String authHeader = request.getHeader(jwtProperties.HEADER());
-        return authHeader != null && authHeader.startsWith(jwtProperties.BEARER()) ?
-                authHeader.substring(jwtProperties.BEARER().length())
-                : null;
-    }
+	public String resolveToken(HttpServletRequest request) {
+		String authHeader = request.getHeader(jwtProperties.HEADER());
+		return authHeader != null && authHeader.startsWith(jwtProperties.BEARER()) ?
+				authHeader.substring(jwtProperties.BEARER().length())
+				: null;
+	}
 
-    public Claims getClaims(String token) {
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload();
-    }
+	public Claims getClaims(String token) {
+		return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload();
+	}
 
-    public Authentication getAuthentication(String token) {
-        Claims claims = getClaims(token);
+	public Authentication getAuthentication(String token) {
+		Claims claims = getClaims(token);
 
-        String username = claims.get("username", String.class);
+		String username = claims.get("username", String.class);
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+		UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
-    }
+		return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+	}
 
-    public boolean isValidToken(String token) {
-        try {
-            getClaims(token);
-            return true;
-        } catch (ExpiredJwtException e) {
-            throw new ExpiredJwtException(null, null, "Expired JWT token: 만료된 JWT token 입니다.");
-        } catch (MalformedJwtException e) { // MalformedJwtException을 명확하게 처리
-            throw new MalformedJwtException("Malformed JWT token: 잘못된 형식의 JWT 토큰입니다.");
-        } catch (SecurityException e) { // SecurityException을 따로 처리
-            throw new SecurityException("Invalid JWT signature: 유효하지 않은 JWT 서명입니다.");
-        } catch (UnsupportedJwtException e) {
-            throw new UnsupportedJwtException("Unsupported JWT token: 지원되지 않는 JWT 토큰입니다.");
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("JWT claims is empty or token is malformed: 잘못된 JWT 토큰입니다.");
-        } catch (Exception e) {
-            throw new RuntimeException("Unexpected error occurred while validating JWT token: " + e.getMessage());
-        }
-    }
+	public boolean isValidToken(String token) {
+		if (token == null || token.trim().isEmpty()) {
+			log.info("Token is null or empty");
+			return false; // false 출력을 안 하면 LoginFilter 동작 안 함
+		}
+
+		try {
+			getClaims(token);
+			return true;
+		} catch (ExpiredJwtException e) {
+			throw new ExpiredJwtException(null, null, "Expired JWT token: 만료된 JWT token 입니다.");
+		} catch (MalformedJwtException e) { // MalformedJwtException을 명확하게 처리
+			throw new MalformedJwtException("Malformed JWT token: 잘못된 형식의 JWT 토큰입니다.");
+		} catch (SecurityException e) { // SecurityException을 따로 처리
+			throw new SecurityException("Invalid JWT signature: 유효하지 않은 JWT 서명입니다.");
+		} catch (UnsupportedJwtException e) {
+			throw new UnsupportedJwtException("Unsupported JWT token: 지원되지 않는 JWT 토큰입니다.");
+		} catch (Exception e) {
+			throw new RuntimeException("Unexpected error occurred while validating JWT token: " + e.getMessage());
+		}
+	}
 }
