@@ -19,7 +19,7 @@ public class VideoController {
 
     private final VideoService videoService;
 
-    @PostMapping(value = "/videos", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<VideoResponseDto> uploadVideo(@ModelAttribute @Valid VideoUploadRequestDto videoUploadRequestDto,
                                                         @AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity

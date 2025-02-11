@@ -5,7 +5,7 @@
 - 백엔드 : 자바 스프링
 - 프론트엔드 : 뷰.js
 
-## Trouble Shooting
+## Trouble Shootings
 
 ### Intellij Http Client 응답 변수 설정하기
 
