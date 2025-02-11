@@ -6,17 +6,24 @@ import com.mysettlement.domain.user.repository.UserRepository;
 import com.mysettlement.domain.video.dto.request.VideoUploadRequestDto;
 import com.mysettlement.domain.video.dto.response.VideoResponseDto;
 import com.mysettlement.domain.video.entity.Video;
+import com.mysettlement.domain.video.exception.NoVideoFoundException;
 import com.mysettlement.domain.video.repository.VideoRepository;
+import com.mysettlement.domain.video.service.dto.response.VideoStreamingResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -60,6 +67,32 @@ public class VideoService {
 
         // 4. 저장된 파일 경로 반환
         return filePath.toString();
+    }
+
+    public VideoStreamingResponseDto watchVideo(Long videoId) {
+        Video foundVideo = videoRepository.findById(videoId)
+                .orElseThrow(NoVideoFoundException::new);
+
+        File videoFile = new File(foundVideo.getVideoPath());
+        if (!videoFile.isFile()) {
+            throw new NoVideoFoundException();
+        }
+
+        long fileSize = videoFile.length();
+
+        StreamingResponseBody streamingResponseBody = outputStream -> {
+            try (FileInputStream inputStream = new FileInputStream(videoFile)) {
+                FileCopyUtils.copy(inputStream, outputStream);
+            } catch (IOException e) {
+                throw new RuntimeException("Video streaming failed", e);
+            }
+        };
+
+        return new VideoStreamingResponseDto(streamingResponseBody, fileSize);
+    }
+
+    public List<VideoResponseDto> getVideos() {
+        return videoRepository.getVideos().stream().map(VideoResponseDto::of).toList();
     }
 
 //    @Transactional
