@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useAuthStore } from "@/stores/useAuthStore"; // Pinia store 경로에 맞게 수정하세요.
+import {useAuthStore} from "@/stores/useAuthStore";
 
 const authStore = useAuthStore();
 
@@ -12,7 +12,7 @@ const handleLogout = () => {
   <nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="container-fluid">
       <router-link class="navbar-brand" to="/">
-        <img src="./assets/icons/favicon-32x32.png" />
+        <img src="./assets/icons/favicon-32x32.png"/>
       </router-link>
       <button
         class="navbar-toggler"
