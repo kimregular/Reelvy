@@ -57,12 +57,17 @@ public class CorsConfig implements WebMvcConfigurer {
 로그인 후 pinia에 토큰을 저장한 후 새로고침하면 로그아웃됨
 새로고침하면 브라우저 메모리가 초기화되기 때문임
 
-서버에서 발급받은 jwt를 쿠키에 저장한 후 요청할 때마다 쿠키에 저장된 토큰을 헤더에 넣기로 결정
+서버에서 발급받은 jwt를 쿠키에 저장한 후 요청할 때마다 쿠키에 저장된 토큰을 헤더에
+넣기로 결정
 
 ```ts
 // useAuthStore.ts
 import {defineStore} from "pinia";
-import {setCookie, getCookie, deleteCookie} from "@/utils/cookieUtil.ts";
+import {
+    setCookie,
+    getCookie,
+    deleteCookie
+} from "@/utils/cookieUtil.ts";
 
 export const useAuthStore = defineStore("auth", {
     state: () => ({
@@ -198,9 +203,11 @@ public boolean isValidToken(String token) {
 		return true;
 	} catch (ExpiredJwtException e) {
 		throw new ExpiredJwtException(null, null, "Expired JWT token: 만료된 JWT token 입니다.");
-	} catch (MalformedJwtException e) { // MalformedJwtException을 명확하게 처리
+	} catch (
+			MalformedJwtException e) { // MalformedJwtException을 명확하게 처리
 		throw new MalformedJwtException("Malformed JWT token: 잘못된 형식의 JWT 토큰입니다.");
-	} catch (SecurityException e) { // SecurityException을 따로 처리
+	} catch (
+			SecurityException e) { // SecurityException을 따로 처리
 		throw new SecurityException("Invalid JWT signature: 유효하지 않은 JWT 서명입니다.");
 	} catch (UnsupportedJwtException e) {
 		throw new UnsupportedJwtException("Unsupported JWT token: 지원되지 않는 JWT 토큰입니다.");
@@ -211,7 +218,8 @@ public boolean isValidToken(String token) {
 ```
 
 isValidToken 에서는 true만 반환하고 그 외에는 모두 예외를 던진다.
-따라서 JwtAuthenticationFilter에서 doFilter를 호출하지 못하고 로직 종료
+따라서 JwtAuthenticationFilter에서 doFilter를 호출하지 못하고
+로직 종료
 
 #### 해결
 
@@ -227,9 +235,11 @@ public boolean isValidToken(String token) {
 		return true;
 	} catch (ExpiredJwtException e) {
 		throw new ExpiredJwtException(null, null, "Expired JWT token: 만료된 JWT token 입니다.");
-	} catch (MalformedJwtException e) { // MalformedJwtException을 명확하게 처리
+	} catch (
+			MalformedJwtException e) { // MalformedJwtException을 명확하게 처리
 		throw new MalformedJwtException("Malformed JWT token: 잘못된 형식의 JWT 토큰입니다.");
-	} catch (SecurityException e) { // SecurityException을 따로 처리
+	} catch (
+			SecurityException e) { // SecurityException을 따로 처리
 		throw new SecurityException("Invalid JWT signature: 유효하지 않은 JWT 서명입니다.");
 	} catch (UnsupportedJwtException e) {
 		throw new UnsupportedJwtException("Unsupported JWT token: 지원되지 않는 JWT 토큰입니다.");
