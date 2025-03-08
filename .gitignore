@@ -10,7 +10,7 @@ build/
 myVideos/*
 
 ### applications ###
-/src/main/resources/static/
+/src/main/resources/static/*
 *.yml
 .gradletasknamecache
 /build
