@@ -3,9 +3,6 @@ package com.mysettlement.global.util;
 import com.mysettlement.domain.user.entity.User;
 import com.mysettlement.domain.user.entity.UserRole;
 import com.mysettlement.domain.user.repository.UserRepository;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -140,30 +137,24 @@ class JwtUtilTest {
 		Date registeredTime = new Date();
 
 		@Test
-		@DisplayName("만료된 토큰은 ExpiredJwtException을 던진다.")
+		@DisplayName("만료된 토큰은 false 출력")
 		void testExpiredTokenThrowsException() {
 			String expiredToken = jwtUtil.createJwt(username, role, new Date(registeredTime.getTime() - 200000000)); // 실제 만료된 JWT 필요
-			assertThatThrownBy(() -> jwtUtil.isValidToken(expiredToken))
-					.isInstanceOf(ExpiredJwtException.class)
-					.hasMessageContaining("Expired JWT token: 만료된 JWT token 입니다.");
+			assertThat(jwtUtil.isValidToken(expiredToken)).isFalse();
 		}
 
 		@Test
-		@DisplayName("형식에 맞지 않는 토큰은 MalformedJwtException을 던진다.")
+		@DisplayName("형식에 맞지 않는 토큰은 false 출력")
 		void testMalformedTokenThrowsException() {
 			String malformedToken = "this.is.not.a.valid.jwt";
-			assertThatThrownBy(() -> jwtUtil.isValidToken(malformedToken))
-					.isInstanceOf(MalformedJwtException.class)
-					.hasMessage("Malformed JWT token: 잘못된 형식의 JWT 토큰입니다.");
+			assertThat(jwtUtil.isValidToken(malformedToken)).isFalse();
 		}
 
 		@Test
-		@DisplayName("지원되지 않는 형식의 JWT는 UnsupportedJwtException을 던진다.")
+		@DisplayName("지원되지 않는 형식의 JWT는 false 출력")
 		void testUnsupportedTokenThrowsException() {
 			String unsupportedToken = "eyJhbGciOiJQUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.J5W09-rNx0pt5_HBiydR-vOluS6oD-RpYNa8PVWwMcBDQSXiw6-EPW8iSsalXPspGj3ouQjAnOP_4-zrlUUlvUIt2T79XyNeiKuooyIFvka3Y5NnGiOUBHWvWcWp4RcQFMBrZkHtJM23sB5D7Wxjx0-HFeNk-Y3UJgeJVhg5NaWXypLkC4y0ADrUBfGAxhvGdRdULZivfvzuVtv6AzW6NRuEE6DM9xpoWX_4here-yvLS2YPiBTZ8xbB3axdM99LhES-n52lVkiX5AWg2JJkEROZzLMpaacA_xlbUz_zbIaOaoqk8gB5oO7kI6sZej3QAdGigQy-hXiRnW_L98d4GQ"; // 지원되지 않는 알고리즘으로 생성된 JWT 필요
-			assertThatThrownBy(() -> jwtUtil.isValidToken(unsupportedToken))
-					.isInstanceOf(UnsupportedJwtException.class)
-					.hasMessage("Unsupported JWT token: 지원되지 않는 JWT 토큰입니다.");
+			assertThat(jwtUtil.isValidToken(unsupportedToken)).isFalse();
 		}
 	}
 }

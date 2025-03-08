@@ -74,24 +74,20 @@ public class JwtUtil {
 	}
 
 	public boolean isValidToken(String token) {
-		if (token == null || token.trim().isEmpty()) {
-			log.info("Token is null or empty");
-			return false; // false 출력을 안 하면 LoginFilter 동작 안 함
-		}
-
 		try {
 			getClaims(token);
 			return true;
 		} catch (ExpiredJwtException e) {
-			throw new ExpiredJwtException(null, null, "Expired JWT token: 만료된 JWT token 입니다.");
-		} catch (MalformedJwtException e) { // MalformedJwtException을 명확하게 처리
-			throw new MalformedJwtException("Malformed JWT token: 잘못된 형식의 JWT 토큰입니다.");
-		} catch (SecurityException e) { // SecurityException을 따로 처리
-			throw new SecurityException("Invalid JWT signature: 유효하지 않은 JWT 서명입니다.");
+			log.info("Expired JWT token: 만료된 JWT token 입니다.");
+		} catch (MalformedJwtException e) {
+			log.info("Malformed JWT token: 잘못된 형식의 JWT 토큰입니다.");
+		} catch (SecurityException e) {
+			log.info("Invalid JWT signature: 유효하지 않은 JWT 서명입니다.");
 		} catch (UnsupportedJwtException e) {
-			throw new UnsupportedJwtException("Unsupported JWT token: 지원되지 않는 JWT 토큰입니다.");
+			log.info("Unsupported JWT token: 지원되지 않는 JWT 토큰입니다.");
 		} catch (Exception e) {
-			throw new RuntimeException("Unexpected error occurred while validating JWT token: " + e.getMessage());
+			log.info("Unexpected error occurred while validating JWT token: " + e.getMessage());
 		}
+		return false;
 	}
 }
