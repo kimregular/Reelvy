@@ -5,10 +5,10 @@ import com.mysettlement.domain.user.exception.NoUserFoundException;
 import com.mysettlement.domain.user.repository.UserRepository;
 import com.mysettlement.domain.video.dto.request.VideoUploadRequestDto;
 import com.mysettlement.domain.video.dto.response.VideoResponseDto;
+import com.mysettlement.domain.video.dto.response.VideoStreamingResponseDto;
 import com.mysettlement.domain.video.entity.Video;
 import com.mysettlement.domain.video.exception.NoVideoFoundException;
 import com.mysettlement.domain.video.repository.VideoRepository;
-import com.mysettlement.domain.video.dto.response.VideoStreamingResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -72,7 +72,7 @@ public class VideoService {
         return filePath.toString();
     }
 
-    public VideoStreamingResponseDto watch(Long videoId) {
+    public VideoStreamingResponseDto stream(Long videoId) {
         Video foundVideo = videoRepository.findById(videoId)
                 .orElseThrow(NoVideoFoundException::new);
 
@@ -102,7 +102,6 @@ public class VideoService {
         Video video = videoRepository.findById(videoId).orElseThrow(NoVideoFoundException::new);
         return VideoResponseDto.of(video);
     }
-
 //    @Transactional
 //    public VideoResponseDto chageStatus(Long videoId, VideoStatusChangeRequestDto videoStatusChangeRequestDto) {
 //        if(!isAvailableStatus(videoStatusChangeRequestDto.videoStatus()))

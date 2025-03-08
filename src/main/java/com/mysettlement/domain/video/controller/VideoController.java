@@ -47,7 +47,7 @@ public class VideoController {
 	@GetMapping(value = "/{videoId}/stream")
 	public ResponseEntity<StreamingResponseBody> getVideoStream(@PathVariable Long videoId,
                                                                 HttpServletRequest request) {
-		VideoStreamingResponseDto videoStreamingResponseDto = videoService.watch(videoId);
+		VideoStreamingResponseDto videoStreamingResponseDto = videoService.stream(videoId);
 
 		// Range 헤더 파싱
 		String rangeHeader = request.getHeader("Range");
