@@ -2,16 +2,17 @@
 import {onMounted, ref} from "vue";
 import axios from "axios";
 import {BASE_URL} from "@/constants/server.ts";
+import type Video from "@/types/video.ts";
 
-const videos = ref([]);
+const videos = ref<Video[]>([]);
 const loading = ref(true);
 
 const requestVideos = async () => {
   try {
-    let {data: videoDatas} = await axios.get(`${BASE_URL}/v1/video/videos`);
-    console.log(videoDatas);
+    const response = await axios.get(`${BASE_URL}/v1/video/videos`);
+    const videosDatas : Video[] = response.data;
     loading.value = false;
-    videos.value = videoDatas;
+    videos.value = videosDatas;
   } catch (error) {
     console.log("비디오 로딩 실패!")
   }
@@ -31,6 +32,7 @@ onMounted(requestVideos);
             <h5 class="card-title">{{ video.title }}</h5>
             <p class="card-text">{{ video.user.name }}</p>
             <p class="card-text">{{ video.desc }}</p>
+            <p class="card-text">{{ video.videoView }}</p>
           </div>
         </div>
       </div>
