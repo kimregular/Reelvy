@@ -22,16 +22,16 @@ onMounted(requestVideos);
 <template>
   <div>
     <div v-if="loading">loading...</div>
-    <div v-else>
-      <div v-for="(video, idx) in videos"
-         :key="idx"
-         class="video-link">
-        <div class="video-container">
-          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTvX7ghSY75PvK5S-RvhkFxNz88MWEALSBDvA&s" />
-          <div>{{ video.title }}</div>
-          <div>{{ video.user.name }}</div>
-          <div>{{ video.desc }}</div>
-          <div>{{ video.videoView }}</div>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-4" v-else>
+      <div class="col video-link" v-for="(video, idx) in videos" :key="idx">
+        <div class="card">
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTvX7ghSY75PvK5S-RvhkFxNz88MWEALSBDvA&s"
+               class="card-img-top" alt="...">
+          <div class="card-body">
+            <h5 class="card-title">{{ video.title }}</h5>
+            <p class="card-text">{{ video.user.name }}</p>
+            <p class="card-text">{{ video.desc }}</p>
+          </div>
         </div>
       </div>
     </div>
