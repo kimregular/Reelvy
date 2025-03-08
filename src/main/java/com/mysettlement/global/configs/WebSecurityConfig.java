@@ -45,6 +45,7 @@ public class WebSecurityConfig {
 								new AntPathRequestMatcher("/")).permitAll()
 						.requestMatchers("/api/v1/video/watch/*").permitAll()
 						.requestMatchers("/api/v1/video/videos").permitAll()
+						.requestMatchers("/api/v1/video/watch").permitAll()
 						.anyRequest().authenticated())
 				.addFilterBefore(jwtAuthenticationFilter(), JwtLoginFilter.class)
 				.addFilterAt(jwtLoginFilter(authenticationManager(authenticationConfiguration)), UsernamePasswordAuthenticationFilter.class).build();

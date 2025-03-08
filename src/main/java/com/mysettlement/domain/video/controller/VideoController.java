@@ -6,7 +6,6 @@ import com.mysettlement.domain.video.service.VideoService;
 import com.mysettlement.domain.video.service.dto.response.VideoStreamingResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -37,14 +36,14 @@ public class VideoController {
                 .body(videoService.uploadVideo(videoUploadRequestDto, userDetails));
     }
 
-    @GetMapping("/watch/{videoId}")
-    public ResponseEntity<StreamingResponseBody> watchOneVideo(@PathVariable Long videoId) {
-        VideoStreamingResponseDto videoStreamingResponseDto = videoService.watchVideo(videoId);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "video/mp4");
-        headers.add("Content-Length", String.valueOf(videoStreamingResponseDto.getFileSize()));
-
-        return ResponseEntity.ok().headers(headers).body(videoStreamingResponseDto.getStreamingResponseBody());
+    @GetMapping(value = "/watch")
+    public ResponseEntity<StreamingResponseBody> watchOneVideo(@RequestParam Long videoId) {
+        VideoStreamingResponseDto videoStreamingResponseDto = videoService.watch(videoId);
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.parseMediaType("video/mp4"))
+                .contentLength(videoStreamingResponseDto.getFileSize())
+                .body(videoStreamingResponseDto.getStreamingResponseBody());
     }
 
 //    @PatchMapping("/{videoId}/info")

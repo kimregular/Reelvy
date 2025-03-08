@@ -69,7 +69,7 @@ public class VideoService {
         return filePath.toString();
     }
 
-    public VideoStreamingResponseDto watchVideo(Long videoId) {
+    public VideoStreamingResponseDto watch(Long videoId) {
         Video foundVideo = videoRepository.findById(videoId)
                 .orElseThrow(NoVideoFoundException::new);
 
