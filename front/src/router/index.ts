@@ -1,7 +1,8 @@
 import {createRouter, createWebHistory} from 'vue-router'
-import SignupVue from "@/components/SignupView.vue";
-import HomeVue from "@/components/HomeView.vue";
-import LoginVue from "@/components/LoginView.vue";
+import SignupView from "@/components/SignupView.vue";
+import HomeView from "@/components/HomeView.vue";
+import LoginView from "@/components/LoginView.vue";
+import WatchView from "@/components/WatchView.vue";
 import {useAuthStore} from "@/stores/useAuthStore.ts";
 
 const router = createRouter({
@@ -9,18 +10,23 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      component: HomeVue,
+      component: HomeView,
       name: "HOME"
     },
     {
+      path: "/video/watch",
+      component: WatchView,
+      name:"WATCH"
+    },
+    {
       path: "/signup",
-      component: SignupVue,
+      component: SignupView,
       name: "SIGNUP"
     },
     {
       path: "/login",
       name: "LOGIN",
-      component: LoginVue,
+      component: LoginView,
       beforeEnter: (to, from, next) => {
         const authStore = useAuthStore();
         if (authStore.token) {
