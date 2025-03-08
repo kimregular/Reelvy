@@ -11,6 +11,7 @@ myVideos/*
 
 ### applications ###
 *.yml
+*.mp4
 .gradletasknamecache
 /build
 buildSrc/build
