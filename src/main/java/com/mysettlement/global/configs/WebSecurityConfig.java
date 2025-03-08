@@ -31,24 +31,30 @@ public class WebSecurityConfig {
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		return http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				.headers(header -> header.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
-				.csrf(AbstractHttpConfigurer::disable)
-				.formLogin(AbstractHttpConfigurer::disable)
-				.httpBasic(AbstractHttpConfigurer::disable)
-				.authorizeHttpRequests(auth -> auth
-						.requestMatchers("/favicon.ico", "/error").permitAll()
-						.requestMatchers("/h2-console/**").permitAll()
-						.requestMatchers(new AntPathRequestMatcher("/api/v1/user/login"),
-								new AntPathRequestMatcher("/api/v1/user/signup"),
-								new AntPathRequestMatcher("/api/v1/user/checkEmail"),
-								new AntPathRequestMatcher("/")).permitAll()
-						.requestMatchers("/api/v1/video/watch/*").permitAll()
-						.requestMatchers("/api/v1/video/videos").permitAll()
-						.requestMatchers("/api/v1/video/watch").permitAll()
-						.anyRequest().authenticated())
-				.addFilterBefore(jwtAuthenticationFilter(), JwtLoginFilter.class)
-				.addFilterAt(jwtLoginFilter(authenticationManager(authenticationConfiguration)), UsernamePasswordAuthenticationFilter.class).build();
+
+		http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+		http.headers(header -> header.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
+		http.csrf(AbstractHttpConfigurer::disable);
+		http.formLogin(AbstractHttpConfigurer::disable);
+		http.httpBasic(AbstractHttpConfigurer::disable);
+
+		http.authorizeHttpRequests(auth -> auth
+				.requestMatchers("/favicon.ico", "/error").permitAll()
+				.requestMatchers("/h2-console/**").permitAll()
+				.requestMatchers(new AntPathRequestMatcher("/api/v1/user/login"),
+						new AntPathRequestMatcher("/api/v1/user/signup"),
+						new AntPathRequestMatcher("/api/v1/user/checkEmail")
+				).permitAll()
+				.requestMatchers(new AntPathRequestMatcher("/api/v1/videos"),
+						new AntPathRequestMatcher("/api/v1/videos/*/info"),
+						new AntPathRequestMatcher("/api/v1/videos/*/stream")
+				).permitAll()
+				.anyRequest().authenticated());
+
+		http.addFilterBefore(jwtAuthenticationFilter(), JwtLoginFilter.class);
+		http.addFilterAt(jwtLoginFilter(authenticationManager(authenticationConfiguration)), UsernamePasswordAuthenticationFilter.class);
+
+		return http.build();
 	}
 
 	@Bean
