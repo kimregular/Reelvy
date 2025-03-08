@@ -10,6 +10,6 @@ public interface VideoRepository extends JpaRepository<Video, Long> {
 
     List<Video> findAllByUserId(Long id);
 
-	@Query(value = "select v from Video v order by v.videoTitle limit 10")
+	@Query(value = "select v from Video v order by v.videoTitle limit 50")
 	List<Video> getVideos();
 }
