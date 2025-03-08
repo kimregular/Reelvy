@@ -31,7 +31,7 @@ Content-Disposition: form-data; name="videoFile"; filename="video.mp4"
 Content-Type: video/mp4
 
 
-< /Users/regularkim/Library/Mobile Documents/com~apple~CloudDocs/Downloads/sampleVideo.mp4
+< ../../src/main/resources/static/video/sampleVideo.mp4
 --boundary--
 
 ### GET Videos
