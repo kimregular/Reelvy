@@ -37,19 +37,22 @@ public class VideoService {
     @Transactional
     public VideoResponseDto uploadVideo(VideoUploadRequestDto videoUploadRequestDto, UserDetails userDetails) {
         User user = userRepository.findByEmail(userDetails.getUsername()).orElseThrow(NoUserFoundException::new);
-        String videoPath = saveVideoFile(videoUploadRequestDto.videoFile(), user.getId());
-        Video newVideo = Video.builder()
-                              .videoTitle(videoUploadRequestDto.title())
-                              .videoDesc(videoUploadRequestDto.desc())
-                              .user(user)
-                              .videoPath(videoPath)
-                              .build();
-
+        Video newVideo = buildVideoWith(videoUploadRequestDto, user);
         videoRepository.save(newVideo);
         return VideoResponseDto.of(newVideo);
     }
 
-    private String saveVideoFile(MultipartFile videoFile, Long userId) {
+    private Video buildVideoWith(VideoUploadRequestDto videoUploadRequestDto, User user) {
+        String videoPath = saveVideoFileInLocal(videoUploadRequestDto.videoFile(), user.getId());
+        return Video.builder()
+                .videoTitle(videoUploadRequestDto.title())
+                .videoDesc(videoUploadRequestDto.desc())
+                .user(user)
+                .videoPath(videoPath)
+                .build();
+    }
+
+    private String saveVideoFileInLocal(MultipartFile videoFile, Long userId) {
         // 1. 저장 경로 생성
         String basePath = "myVideos/" + userId + "/videos/";
         String fileName = UUID.randomUUID() + "_" + videoFile.getOriginalFilename();

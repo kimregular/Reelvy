@@ -7,25 +7,25 @@ import lombok.Getter;
 @Getter
 public class VideoResponseDto {
 
-    private final String title;
-    private final UserResponseDto user;
-    private final String desc;
-    private final String videoPath;
-    private final long videoView;
+	private final Long id;
+	private final String title;
+	private final UserResponseDto user;
+	private final String desc;
+	private final long videoView;
 
-    private VideoResponseDto(String title, UserResponseDto user, String desc, String videoPath, long videoView) {
+    private VideoResponseDto(Long id, String title, UserResponseDto user, String desc, long videoView) {
+        this.id = id;
         this.title = title;
         this.user = user;
         this.desc = desc;
-        this.videoPath = videoPath;
-	    this.videoView = videoView;
+        this.videoView = videoView;
     }
 
-    public static VideoResponseDto of(Video video) {
-        return new VideoResponseDto(video.getVideoTitle(),
-                UserResponseDto.of(video.getUser()),
-                video.getVideoDesc(),
-                video.getVideoPath(),
-                video.getVideoView());
-    }
+	public static VideoResponseDto of(Video video) {
+		return new VideoResponseDto(video.getId(),
+				video.getVideoTitle(),
+				UserResponseDto.of(video.getUser()),
+				video.getVideoDesc(),
+				video.getVideoView());
+	}
 }
