@@ -20,7 +20,7 @@ onMounted(requestVideos);
 </script>
 
 <template>
-  <div>
+  <div style="padding: 15px">
     <div v-if="loading">loading...</div>
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-4" v-else>
       <div class="col video-link" v-for="(video, idx) in videos" :key="idx">
