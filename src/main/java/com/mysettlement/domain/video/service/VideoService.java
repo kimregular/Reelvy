@@ -8,7 +8,7 @@ import com.mysettlement.domain.video.dto.response.VideoResponseDto;
 import com.mysettlement.domain.video.entity.Video;
 import com.mysettlement.domain.video.exception.NoVideoFoundException;
 import com.mysettlement.domain.video.repository.VideoRepository;
-import com.mysettlement.domain.video.service.dto.response.VideoStreamingResponseDto;
+import com.mysettlement.domain.video.dto.response.VideoStreamingResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -91,11 +91,16 @@ public class VideoService {
             }
         };
 
-        return new VideoStreamingResponseDto(streamingResponseBody, fileSize);
+        return new VideoStreamingResponseDto(streamingResponseBody, fileSize, videoFile.getPath());
     }
 
     public List<VideoResponseDto> getVideos() {
         return videoRepository.getVideos().stream().map(VideoResponseDto::of).toList();
+    }
+
+    public VideoResponseDto getVideo(Long videoId) {
+        Video video = videoRepository.findById(videoId).orElseThrow(NoVideoFoundException::new);
+        return VideoResponseDto.of(video);
     }
 
 //    @Transactional
