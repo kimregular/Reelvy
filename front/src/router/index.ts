@@ -1,37 +1,48 @@
-import {createRouter, createWebHistory} from 'vue-router'
-import SignupVue from "@/components/SignupView.vue";
-import HomeVue from "@/components/HomeView.vue";
-import LoginVue from "@/components/LoginView.vue";
-import {useAuthStore} from "@/stores/useAuthStore.ts";
+import {
+  createRouter,
+  createWebHistory
+} from 'vue-router'
+
+import SignupView from "@/components/SignupView.vue";
+import HomeView from "@/components/HomeView.vue";
+import LoginView from "@/components/LoginView.vue";
+import WatchView from "@/components/WatchView.vue";
+import UploadView from "@/components/UploadView.vue";
+import {requireAnonymous, requireAuth} from "@/utils/routerUtil.ts";
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      component: HomeVue,
+      component: HomeView,
       name: "HOME"
     },
     {
+      path: "/video/watch",
+      component: WatchView,
+      name: "WATCH"
+    },
+    {
+      path: "/upload",
+      component: UploadView,
+      name: "UPLOAD",
+      beforeEnter: requireAuth
+    },
+    {
       path: "/signup",
-      component: SignupVue,
-      name: "SIGNUP"
+      component: SignupView,
+      name: "SIGNUP",
+      beforeEnter: requireAnonymous
     },
     {
       path: "/login",
       name: "LOGIN",
-      component: LoginVue,
-      beforeEnter: (to, from, next) => {
-        const authStore = useAuthStore();
-        if (authStore.token) {
-          // 로그인한 상태면 홈 페이지로 리다이렉트
-          next({path: "/"});
-        } else {
-          next(); // 로그인하지 않았으면 /login 접근 허용
-        }
-      },
+      component: LoginView,
+      beforeEnter: requireAnonymous
     },
   ],
-})
+});
 
 export default router

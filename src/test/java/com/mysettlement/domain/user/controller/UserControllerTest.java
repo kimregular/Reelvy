@@ -8,14 +8,12 @@ import com.mysettlement.domain.user.exception.DuplicateUserException;
 import com.mysettlement.domain.user.repository.UserRepository;
 import com.mysettlement.domain.user.service.UserService;
 import com.mysettlement.global.jwt.JwtProperties;
-import com.mysettlement.global.jwt.JwtProvider;
-import com.mysettlement.global.util.JwtUtils;
+import com.mysettlement.global.util.JwtUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -30,7 +28,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(UserController.class)
-@AutoConfigureMockMvc(addFilters = false)
 class UserControllerTest {
 
     private static final String BASE_URL = "/api/v1/user";
@@ -49,10 +46,7 @@ class UserControllerTest {
     UserRepository userRepository;
 
     @MockBean
-    JwtUtils jwtUtils;
-
-    @MockBean
-    JwtProvider jwtProvider;
+    JwtUtil jwtUtil;
 
     @MockBean
     JwtProperties jwtProperties;

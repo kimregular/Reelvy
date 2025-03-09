@@ -1,31 +1,31 @@
 package com.mysettlement.domain.video.dto.response;
 
-import com.mysettlement.domain.user.entity.User;
 import com.mysettlement.domain.user.dto.response.UserResponseDto;
 import com.mysettlement.domain.video.entity.Video;
-import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 public class VideoResponseDto {
 
-    private final String title;
-    private final UserResponseDto user;
-    private final String desc;
+	private final Long id;
+	private final String title;
+	private final UserResponseDto user;
+	private final String desc;
+	private final long videoView;
 
-
-    @Builder
-    private VideoResponseDto(String title, User user, String desc) {
+    private VideoResponseDto(Long id, String title, UserResponseDto user, String desc, long videoView) {
+        this.id = id;
         this.title = title;
-        this.user = UserResponseDto.of(user);
+        this.user = user;
         this.desc = desc;
+        this.videoView = videoView;
     }
 
-    public static VideoResponseDto of(Video video) {
-        return VideoResponseDto.builder()
-                .title(video.getVideoTitle())
-                .user(video.getUser())
-                .desc(video.getVideoDesc())
-                .build();
-    }
+	public static VideoResponseDto of(Video video) {
+		return new VideoResponseDto(video.getId(),
+				video.getVideoTitle(),
+				UserResponseDto.of(video.getUser()),
+				video.getVideoDesc(),
+				video.getVideoView());
+	}
 }

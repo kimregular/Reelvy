@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import { useAuthStore } from "@/stores/useAuthStore"; // Pinia store 경로에 맞게 수정하세요.
+import {useAuthStore} from "@/stores/useAuthStore";
+import router from "@/router";
+
+const handleUpload = () => {
+  router.push("UPLOAD");
+}
 
 const authStore = useAuthStore();
 
@@ -12,7 +17,7 @@ const handleLogout = () => {
   <nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="container-fluid">
       <router-link class="navbar-brand" to="/">
-        <img src="./assets/icons/favicon-32x32.png" />
+        <img src="./assets/icons/favicon-32x32.png"/>
       </router-link>
       <button
         class="navbar-toggler"
@@ -29,6 +34,9 @@ const handleLogout = () => {
         <ul class="navbar-nav ms-auto">
           <!-- 로그인 상태에 따라 버튼 표시 -->
           <template v-if="authStore.token">
+            <li class="nav-item">
+              <button class="nav-link btn btn-link" @click="handleUpload">Upload</button>
+            </li>
             <li class="nav-item">
               <button class="nav-link btn btn-link" @click="handleLogout">Logout</button>
             </li>

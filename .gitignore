@@ -6,7 +6,11 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+# MySettlement
+myVideos/*
+
 ### applications ###
+/src/main/resources/static/video/*
 *.yml
 .gradletasknamecache
 /build

@@ -1,0 +1,44 @@
+### Post Login Success
+POST http://localhost:8080/api/v1/user/login
+Content-Type: application/json
+
+{
+    "email" : "qwe@qwe.com",
+    "password" : "qweqweqwe"
+}
+
+> {%
+    // Authorization 헤더 값을 가져와 전역 변수에 저장
+    client.global.set("AUTH_HEADER", response.headers.valueOf("Authorization"));
+    console.log("Saved Authorization Header:", response.headers); // 디버깅용
+%}
+
+### Upload Test Video
+POST http://localhost:8080/api/v1/videos/upload
+Content-Type: multipart/form-data; boundary=boundary
+Authorization: {{AUTH_HEADER}}
+
+--boundary
+Content-Disposition: form-data; name="title"
+
+Sample Video
+--boundary
+Content-Disposition: form-data; name="desc"
+
+This is a test video
+--boundary
+Content-Disposition: form-data; name="videoFile"; filename="video.mp4"
+Content-Type: video/mp4
+
+
+< ../../src/main/resources/static/video/sampleVideo.mp4
+--boundary--
+
+### GET Videos
+GET http://localhost:8080/api/v1/videos
+
+### GET Video
+GET http://localhost:8080/api/v1/videos/1
+
+### GET Video stream
+GET http://localhost:8080/api/v1/videos/1/stream
