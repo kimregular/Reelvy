@@ -23,7 +23,7 @@
 
 ```http request
 ### Post Login Success
-POST http://localhost:8080/api/v1/user/login
+POST http://localhost:8080/api/v1/users/login
 Content-Type: application/json
 
 {
@@ -39,7 +39,7 @@ Content-Type: application/json
 
 
 ### Get userinfo
-GET http://localhost:8080/api/v1/user/getInfo
+GET http://localhost:8080/api/v1/users/getInfo
 Authorization: {{AUTH_HEADER}} // 응답으로 저장된 변수 사용하기
 ```
 
@@ -131,7 +131,7 @@ export const deleteCookie = (name: string) => {
 try {
     const token = document.cookie.split("=")[1];
     console.log(token);
-    const response = await axios.get(`${BASE_URL}/v1/user/getInfo`, {
+    const response = await axios.get(`${BASE_URL}/v1/users/getInfo`, {
         headers: {
             Authorization: token,
         }
