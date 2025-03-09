@@ -1,5 +1,10 @@
 <script setup lang="ts">
 import {useAuthStore} from "@/stores/useAuthStore";
+import router from "@/router";
+
+const handleUpload = () => {
+  router.push("UPLOAD");
+}
 
 const authStore = useAuthStore();
 
@@ -29,6 +34,9 @@ const handleLogout = () => {
         <ul class="navbar-nav ms-auto">
           <!-- 로그인 상태에 따라 버튼 표시 -->
           <template v-if="authStore.token">
+            <li class="nav-item">
+              <button class="nav-link btn btn-link" @click="handleUpload">Upload</button>
+            </li>
             <li class="nav-item">
               <button class="nav-link btn btn-link" @click="handleLogout">Logout</button>
             </li>

@@ -1,9 +1,15 @@
-import {createRouter, createWebHistory} from 'vue-router'
+import {
+  createRouter,
+  createWebHistory
+} from 'vue-router'
+
 import SignupView from "@/components/SignupView.vue";
 import HomeView from "@/components/HomeView.vue";
 import LoginView from "@/components/LoginView.vue";
 import WatchView from "@/components/WatchView.vue";
-import {useAuthStore} from "@/stores/useAuthStore.ts";
+import UploadView from "@/components/UploadView.vue";
+import {requireAnonymous, requireAuth} from "@/utils/routerUtil.ts";
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -16,28 +22,27 @@ const router = createRouter({
     {
       path: "/video/watch",
       component: WatchView,
-      name:"WATCH"
+      name: "WATCH"
+    },
+    {
+      path: "/upload",
+      component: UploadView,
+      name: "UPLOAD",
+      beforeEnter: requireAuth
     },
     {
       path: "/signup",
       component: SignupView,
-      name: "SIGNUP"
+      name: "SIGNUP",
+      beforeEnter: requireAnonymous
     },
     {
       path: "/login",
       name: "LOGIN",
       component: LoginView,
-      beforeEnter: (to, from, next) => {
-        const authStore = useAuthStore();
-        if (authStore.token) {
-          // 로그인한 상태면 홈 페이지로 리다이렉트
-          next({path: "/"});
-        } else {
-          next(); // 로그인하지 않았으면 /login 접근 허용
-        }
-      },
+      beforeEnter: requireAnonymous
     },
   ],
-})
+});
 
 export default router
