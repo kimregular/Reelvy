@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(UserController.class)
 class UserControllerTest {
 
-    private static final String BASE_URL = "/api/v1/user";
+    private static final String BASE_URL = "/api/v1/users";
     private static final String VALID_EMAIL = "test@test.com";
     private static final String INVALID_EMAIL = "invalid_email";
     private static final String VALID_PASSWORD = "123456789";
