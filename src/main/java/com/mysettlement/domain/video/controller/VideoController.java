@@ -4,6 +4,7 @@ import com.mysettlement.domain.video.dto.request.VideoUploadRequestDto;
 import com.mysettlement.domain.video.dto.response.VideoResponseDto;
 import com.mysettlement.domain.video.service.VideoService;
 import com.mysettlement.domain.video.dto.response.VideoStreamingResponseDto;
+import com.mysettlement.global.annotations.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +39,7 @@ public class VideoController {
 		return ResponseEntity.ok(videoService.getVideo(videoId));
 	}
 
+	@User
 	@PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<VideoResponseDto> uploadVideo(@ModelAttribute @Valid VideoUploadRequestDto videoUploadRequestDto,
                                                         @AuthenticationPrincipal UserDetails userDetails) {

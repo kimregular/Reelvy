@@ -31,7 +31,7 @@ const hasDuplicateEmail = async (email: string) => {
   isValidEmailStructure.value = true;
   showEmailWarning.value = true;
   try {
-    const response = await axios.post(BASE_URL + "/v1/user/checkEmail", {email});
+    const response = await axios.post(BASE_URL + "/v1/users/checkEmail", {email});
     isDuplicateEmail.value = response.data.isDuplicateEmail;
   } catch (error) {
     isDuplicateEmail.value = true;
@@ -84,7 +84,7 @@ const handleSignUp = async () => {
   };
 
   try {
-    const response = await axios.post(BASE_URL + "/v1/user/signup", payload);
+    const response = await axios.post(BASE_URL + "/v1/users/signup", payload);
     await router.push("/login");
   } catch (error) {
     alert("error!");

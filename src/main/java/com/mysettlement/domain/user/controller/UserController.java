@@ -5,6 +5,7 @@ import com.mysettlement.domain.user.dto.request.UserSignUpRequestDto;
 import com.mysettlement.domain.user.dto.response.EmailCheckResponseDto;
 import com.mysettlement.domain.user.dto.response.UserSignUpResponseDto;
 import com.mysettlement.domain.user.service.UserService;
+import com.mysettlement.global.annotations.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/user")
+@RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 public class UserController {
 
@@ -35,8 +36,10 @@ public class UserController {
 		                     .body(userService.checkEmail(emailCheckRequestDto));
 	}
 
+	@User
 	@GetMapping("/getInfo")
 	public String getUserInfo(@AuthenticationPrincipal UserDetails userDetails) {
+		// 로그인 테스트용 api
 		return userDetails.getUsername();
 	}
 }
