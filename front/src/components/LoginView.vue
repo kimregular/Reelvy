@@ -25,7 +25,7 @@ const handleLogin = async () => {
   const payload = {email: email.value, password: password.value};
 
   try {
-    const response = await axios.post(`${BASE_URL}/v1/user/login`, payload);
+    const response = await axios.post(`${BASE_URL}/v1/users/login`, payload);
     const token = response.headers[AUTH_HEADER_KEY];
 
     if (token) {
