@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -22,6 +23,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
@@ -38,18 +40,22 @@ public class WebSecurityConfig {
 		http.formLogin(AbstractHttpConfigurer::disable);
 		http.httpBasic(AbstractHttpConfigurer::disable);
 
-		http.authorizeHttpRequests(auth -> auth
-				.requestMatchers("/favicon.ico", "/error").permitAll()
-				.requestMatchers("/h2-console/**").permitAll()
-				.requestMatchers(new AntPathRequestMatcher("/api/v1/user/login"),
-						new AntPathRequestMatcher("/api/v1/user/signup"),
-						new AntPathRequestMatcher("/api/v1/user/checkEmail")
-				).permitAll()
-				.requestMatchers(new AntPathRequestMatcher("/api/v1/videos"),
-						new AntPathRequestMatcher("/api/v1/videos/*/info"),
-						new AntPathRequestMatcher("/api/v1/videos/*/stream")
-				).permitAll()
-				.anyRequest().authenticated());
+		http.authorizeHttpRequests(auth ->
+				auth
+				.requestMatchers(
+						new AntPathRequestMatcher("/favicon.ico"),
+						new AntPathRequestMatcher("/error"),
+						new AntPathRequestMatcher("/h2-console/**")
+				)
+						.permitAll()
+				.requestMatchers(
+						new AntPathRequestMatcher("/api/v1/users/**"),
+						new AntPathRequestMatcher("/api/v1/videos/**")
+				)
+						.permitAll()
+				.anyRequest()
+						.denyAll()
+		);
 
 		http.addFilterBefore(jwtAuthenticationFilter(), JwtLoginFilter.class);
 		http.addFilterAt(jwtLoginFilter(authenticationManager(authenticationConfiguration)), UsernamePasswordAuthenticationFilter.class);
@@ -72,7 +78,7 @@ public class WebSecurityConfig {
 	public JwtLoginFilter jwtLoginFilter(AuthenticationManager authenticationManager) {
 		JwtLoginFilter jwtLoginFilter = new JwtLoginFilter(authenticationManager, jwtUtil, objectMapper);
 		jwtLoginFilter.setAuthenticationManager(authenticationManager);
-		jwtLoginFilter.setFilterProcessesUrl("/api/v1/user/login"); // 로그인 URL 설정
+		jwtLoginFilter.setFilterProcessesUrl("/api/v1/users/login"); // 로그인 URL 설정
 		return jwtLoginFilter;
 	}
 

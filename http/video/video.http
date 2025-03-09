@@ -1,5 +1,5 @@
 ### Post Login Success
-POST http://localhost:8080/api/v1/user/login
+POST http://localhost:8080/api/v1/users/login
 Content-Type: application/json
 
 {
@@ -38,7 +38,7 @@ Content-Type: video/mp4
 GET http://localhost:8080/api/v1/videos
 
 ### GET Video
-GET http://localhost:8080/api/v1/videos/1
+GET http://localhost:8080/api/v1/videos/1/info
 
 ### GET Video stream
 GET http://localhost:8080/api/v1/videos/1/stream
