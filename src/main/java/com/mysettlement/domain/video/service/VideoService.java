@@ -3,28 +3,21 @@ package com.mysettlement.domain.video.service;
 import com.mysettlement.domain.user.entity.User;
 import com.mysettlement.domain.user.exception.NoUserFoundException;
 import com.mysettlement.domain.user.repository.UserRepository;
-import com.mysettlement.domain.video.dto.request.VideoUploadRequestDto;
-import com.mysettlement.domain.video.dto.response.VideoResponseDto;
-import com.mysettlement.domain.video.dto.response.VideoStreamingResponseDto;
+import com.mysettlement.domain.video.dto.request.VideoUploadRequest;
+import com.mysettlement.domain.video.dto.response.VideoResponse;
+import com.mysettlement.domain.video.dto.response.VideoStreamingResponse;
 import com.mysettlement.domain.video.entity.Video;
 import com.mysettlement.domain.video.exception.NoVideoFoundException;
 import com.mysettlement.domain.video.repository.VideoRepository;
+import com.mysettlement.domain.video.utils.VideoStreamingUtil;
+import com.mysettlement.domain.video.utils.VideoUploadUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.FileCopyUtils;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -33,74 +26,29 @@ public class VideoService {
 
     private final VideoRepository videoRepository;
     private final UserRepository userRepository;
+    private final VideoUploadUtil videoUploadUtil;
+    private final VideoStreamingUtil videoStreamingUtil;
 
     @Transactional
-    public VideoResponseDto uploadVideo(VideoUploadRequestDto videoUploadRequestDto, UserDetails userDetails) {
+    public VideoResponse uploadVideo(VideoUploadRequest videoUploadRequest, UserDetails userDetails) {
         User user = userRepository.findByEmail(userDetails.getUsername()).orElseThrow(NoUserFoundException::new);
-        Video newVideo = buildVideoWith(videoUploadRequestDto, user);
+        Video newVideo = videoUploadUtil.buildVideoWith(videoUploadRequest, user);
         videoRepository.save(newVideo);
-        return VideoResponseDto.of(newVideo);
+        return VideoResponse.of(newVideo);
     }
 
-    private Video buildVideoWith(VideoUploadRequestDto videoUploadRequestDto, User user) {
-        String videoPath = saveVideoFileInLocal(videoUploadRequestDto.videoFile(), user.getId());
-        return Video.builder()
-                .videoTitle(videoUploadRequestDto.title())
-                .videoDesc(videoUploadRequestDto.desc())
-                .user(user)
-                .videoPath(videoPath)
-                .build();
-    }
-
-    private String saveVideoFileInLocal(MultipartFile videoFile, Long userId) {
-        // 1. 저장 경로 생성
-        String basePath = "myVideos/" + userId + "/videos/";
-        String fileName = UUID.randomUUID() + "_" + videoFile.getOriginalFilename();
-        Path filePath = Paths.get(basePath, fileName);
-
-        try {
-            // 2. 디렉토리 생성
-            Files.createDirectories(filePath.getParent());
-
-            // 3. 파일 저장
-            Files.write(filePath, videoFile.getBytes());
-        } catch (IOException e) {
-            throw new RuntimeException("비디오 파일 저장 실패", e);
-        }
-
-        // 4. 저장된 파일 경로 반환
-        return filePath.toString();
-    }
-
-    public VideoStreamingResponseDto stream(Long videoId) {
-        Video foundVideo = videoRepository.findById(videoId)
-                .orElseThrow(NoVideoFoundException::new);
-
-        File videoFile = new File(foundVideo.getVideoPath());
-        if (!videoFile.isFile()) {
-            throw new NoVideoFoundException();
-        }
-
-        long fileSize = videoFile.length();
-
-        StreamingResponseBody streamingResponseBody = outputStream -> {
-            try (FileInputStream inputStream = new FileInputStream(videoFile)) {
-                FileCopyUtils.copy(inputStream, outputStream);
-            } catch (IOException e) {
-                throw new RuntimeException("Video streaming failed", e);
-            }
-        };
-
-        return new VideoStreamingResponseDto(streamingResponseBody, fileSize, videoFile.getPath());
-    }
-
-    public List<VideoResponseDto> getVideos() {
-        return videoRepository.getVideos().stream().map(VideoResponseDto::of).toList();
-    }
-
-    public VideoResponseDto getVideo(Long videoId) {
+    public VideoStreamingResponse stream(Long videoId, HttpServletRequest request) {
         Video video = videoRepository.findById(videoId).orElseThrow(NoVideoFoundException::new);
-        return VideoResponseDto.of(video);
+        return videoStreamingUtil.resolve(video, request);
+    }
+
+    public List<VideoResponse> getVideos() {
+        return videoRepository.getVideos().stream().map(VideoResponse::of).toList();
+    }
+
+    public VideoResponse getVideo(Long videoId) {
+        Video video = videoRepository.findById(videoId).orElseThrow(NoVideoFoundException::new);
+        return VideoResponse.of(video);
     }
 //    @Transactional
 //    public VideoResponseDto chageStatus(Long videoId, VideoStatusChangeRequestDto videoStatusChangeRequestDto) {
