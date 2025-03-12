@@ -25,6 +25,6 @@ export const requireAuth = (to: RouteLocationNormalizedLoadedGeneric,
   if (authStore.token) {
     next();
   } else {
-    next({name: "HOME"})
+    next({name: "LOGIN"})
   }
 }
