@@ -5,7 +5,7 @@ import com.mysettlement.domain.video.entity.Video;
 import lombok.Getter;
 
 @Getter
-public class VideoResponseDto {
+public class VideoResponse {
 
 	private final Long id;
 	private final String title;
@@ -13,7 +13,7 @@ public class VideoResponseDto {
 	private final String desc;
 	private final long videoView;
 
-    private VideoResponseDto(Long id, String title, UserResponseDto user, String desc, long videoView) {
+    private VideoResponse(Long id, String title, UserResponseDto user, String desc, long videoView) {
         this.id = id;
         this.title = title;
         this.user = user;
@@ -21,8 +21,8 @@ public class VideoResponseDto {
         this.videoView = videoView;
     }
 
-	public static VideoResponseDto of(Video video) {
-		return new VideoResponseDto(video.getId(),
+	public static VideoResponse of(Video video) {
+		return new VideoResponse(video.getId(),
 				video.getVideoTitle(),
 				UserResponseDto.of(video.getUser()),
 				video.getVideoDesc(),

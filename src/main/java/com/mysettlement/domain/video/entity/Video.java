@@ -2,7 +2,7 @@ package com.mysettlement.domain.video.entity;
 
 import com.mysettlement.domain.user.entity.User;
 import com.mysettlement.domain.video.dto.request.VideoStatusChangeRequestDto;
-import com.mysettlement.domain.video.dto.request.VideoUpdateRequestDto;
+import com.mysettlement.domain.video.dto.request.VideoUpdateRequest;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -46,21 +46,25 @@ public class Video {
     @Enumerated(STRING)
     private VideoStatus videoStatus = VideoStatus.AVAILABLE;
 
+    @Column(name="video_size")
+    private long videoSize;
+
     @Builder
-    private Video(User user, String videoTitle, String videoDesc, String videoPath) {
+    private Video(User user, String videoTitle, String videoDesc, String videoPath, long videoSize) {
         this.user = user;
         this.videoTitle = videoTitle;
         this.videoDesc = videoDesc;
         this.videoPath = videoPath;
+        this.videoSize = videoSize;
     }
 
     public void update(VideoStatusChangeRequestDto videoStatusChangeRequestDto) {
         this.videoStatus = videoStatusChangeRequestDto.videoStatus();
     }
 
-    public void update(VideoUpdateRequestDto videoUpdateRequestDto) {
-        this.videoTitle = videoUpdateRequestDto.title();
-        this.videoDesc = videoUpdateRequestDto.desc();
+    public void update(VideoUpdateRequest videoUpdateRequest) {
+        this.videoTitle = videoUpdateRequest.title();
+        this.videoDesc = videoUpdateRequest.desc();
     }
 
     public void viewUpdate() {
