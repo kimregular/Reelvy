@@ -1,5 +1,6 @@
 package com.mysettlement.domain.user.entity;
 
+import com.mysettlement.domain.user.dto.request.UserUpdateRequest;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,12 +25,20 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
-
     private String password;
 
     @Column(name = "user_role")
     @Enumerated(STRING)
     private UserRole userRole;
+
+    @Column(name = "profile_image_path")
+    private String profileImagePath;
+
+    @Column(name = "background_image_path")
+    private String backgroundImagePath;
+
+    @Column(name = "desc")
+    private String desc;
 
 
     @Builder
@@ -38,5 +47,18 @@ public class User {
         this.email = email;
         this.password = password;
         this.userRole = userRole;
+    }
+
+    public void updateUserInfoWith(UserUpdateRequest userUpdateRequest) {
+        this.name = userUpdateRequest.username();
+        this.desc = userUpdateRequest.desc();
+    }
+
+    public void updateProfileImagePath(String profileImagePath) {
+        this.profileImagePath = profileImagePath;
+    }
+
+    public void updateBackgroundImagePath(String backgroundImagePath) {
+        this.backgroundImagePath = backgroundImagePath;
     }
 }
