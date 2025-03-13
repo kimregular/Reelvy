@@ -3,25 +3,8 @@ POST http://localhost:8080/api/v1/users/signup
 Content-Type: application/json
 
 {
-    "email": "test@test.com",
-    "password": "123456789"
-}
-
-### POST Email Check
-POST http://localhost:8080/api/v1/users/checkEmail
-Content-Type: application/json
-
-{
-    "email": "test@test.com"
-}
-
-### Post Signup
-POST http://localhost:8080/api/v1/users/signup
-Content-Type: application/json
-
-{
-    "email" : "qwe@qwe.com",
-    "password" : "qweqweqwe"
+  "email": "test@test.com",
+  "password": "123456789"
 }
 
 ### Post Login Success
@@ -29,8 +12,8 @@ POST http://localhost:8080/api/v1/users/login
 Content-Type: application/json
 
 {
-    "email" : "qwe@qwe.com",
-    "password" : "qweqweqwe"
+  "email": "test@test.com",
+  "password": "123456789"
 }
 
 > {%
@@ -39,7 +22,89 @@ Content-Type: application/json
     console.log("Saved Authorization Header:", response.headers); // 디버깅용
 %}
 
+### POST Email Check
+POST http://localhost:8080/api/v1/users/checkEmail
+Content-Type: application/json
 
-### Get userinfo
-GET http://localhost:8080/api/v1/users/getInfo
+{
+  "email": "test@test.com"
+}
+
+### Post Signup
+POST http://localhost:8080/api/v1/users/signup
+Content-Type: application/json
+
+{
+  "email": "qwe@qwe.com",
+  "password": "qweqweqwe"
+}
+
+### Post Login Success
+POST http://localhost:8080/api/v1/users/login
+Content-Type: application/json
+
+{
+  "email": "qwe@qwe.com",
+  "password": "qweqweqwe"
+}
+
+> {%
+    // Authorization 헤더 값을 가져와 전역 변수에 저장
+    client.global.set("AUTH_HEADER", response.headers.valueOf("Authorization"));
+    console.log("Saved Authorization Header:", response.headers); // 디버깅용
+%}
+
+### GET getUserInfo
+GET http://localhost:8080/api/v1/users/info
+Content-Type: application/json
 Authorization: {{AUTH_HEADER}}
+
+### update User info
+PATCH http://localhost:8080/api/v1/users/update
+Content-Type: multipart/form-data; boundary=boundary
+Authorization: {{AUTH_HEADER}}
+
+--boundary
+Content-Disposition: form-data; name="user"
+Content-Type: application/json
+
+{
+    "username": "newUsername",
+    "desc": "Updated description"
+}
+
+--boundary
+Content-Disposition: form-data; name="profileImage"; filename="profile.jpg"
+Content-Type: image/jpeg
+
+< ../../src/main/resources/static/images/profile.jpg
+
+--boundary
+Content-Disposition: form-data; name="backgroundImage"; filename="background.jpg"
+Content-Type: image/jpeg
+
+< ../../src/main/resources/static/images/background.jpg
+
+--boundary--
+
+### update User info without profileImage
+PATCH http://localhost:8080/api/v1/users/update
+Content-Type: multipart/form-data; boundary=boundary
+Authorization: {{AUTH_HEADER}}
+
+--boundary
+Content-Disposition: form-data; name="user"
+Content-Type: application/json
+
+{
+    "username": "newUsername",
+    "desc": ""
+}
+
+--boundary
+Content-Disposition: form-data; name="backgroundImage"; filename="background.jpg"
+Content-Type: image/jpeg
+
+< ../../src/main/resources/static/images/background.jpg
+
+--boundary--

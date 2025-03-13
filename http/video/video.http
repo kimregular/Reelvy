@@ -3,8 +3,8 @@ POST http://localhost:8080/api/v1/users/login
 Content-Type: application/json
 
 {
-    "email" : "qwe@qwe.com",
-    "password" : "qweqweqwe"
+  "email": "qwe@qwe.com",
+  "password": "qweqweqwe"
 }
 
 > {%
@@ -22,10 +22,12 @@ Authorization: {{AUTH_HEADER}}
 Content-Disposition: form-data; name="title"
 
 Sample Video
+
 --boundary
 Content-Disposition: form-data; name="desc"
 
 This is a test video
+
 --boundary
 Content-Disposition: form-data; name="videoFile"; filename="video.mp4"
 Content-Type: video/mp4
