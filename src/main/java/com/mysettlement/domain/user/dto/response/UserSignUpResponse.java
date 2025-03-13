@@ -4,11 +4,11 @@ import com.mysettlement.domain.user.entity.User;
 import lombok.Getter;
 
 @Getter
-public class UserSignUpResponseDto {
+public class UserSignUpResponse {
 
     private final String email;
 
-    public UserSignUpResponseDto(User user) {
+    public UserSignUpResponse(User user) {
         this.email = user.getEmail();
     }
 }
