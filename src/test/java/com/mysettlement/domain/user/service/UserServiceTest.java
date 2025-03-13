@@ -1,8 +1,8 @@
 package com.mysettlement.domain.user.service;
 
 import com.mysettlement.domain.user.dto.request.EmailCheckRequestDto;
-import com.mysettlement.domain.user.dto.request.UserSignUpRequestDto;
-import com.mysettlement.domain.user.dto.response.UserSignUpResponseDto;
+import com.mysettlement.domain.user.dto.request.UserSignUpRequest;
+import com.mysettlement.domain.user.dto.response.UserSignUpResponse;
 import com.mysettlement.domain.user.exception.DuplicateUserException;
 import com.mysettlement.domain.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,7 +32,7 @@ class UserServiceTest {
 		String username = "test";
 		String email = "test0@test.com";
 		String password = "12345678";
-		userService.signUp(new UserSignUpRequestDto(email,
+		userService.signUp(new UserSignUpRequest(email,
 		                                            username,
 		                                            password));
 	}
@@ -47,11 +47,11 @@ class UserServiceTest {
 			String username = "test";
 			String email = "test@test.com";
 			String password = "12345678";
-			UserSignUpRequestDto userSignupRequestDto = new UserSignUpRequestDto(email,
+			UserSignUpRequest userSignupRequest = new UserSignUpRequest(email,
 			                                                                     username,
 			                                                                     password);
 			// when
-			UserSignUpResponseDto signup = userService.signUp(userSignupRequestDto);
+			UserSignUpResponse signup = userService.signUp(userSignupRequest);
 			// then
 			assertThat(signup.getEmail()).isEqualTo(email);
 		}
@@ -60,12 +60,12 @@ class UserServiceTest {
 		@DisplayName("중복된 이메일 회원가입 테스트 - 예외발생")
 		void test2() {
 			// given
-			UserSignUpRequestDto userSignupRequestDto = new UserSignUpRequestDto("test0@test.com",
+			UserSignUpRequest userSignupRequest = new UserSignUpRequest("test0@test.com",
 			                                                                     "tester",
 			                                                                     "12345679");
 			// when
 			// then
-			assertThatThrownBy(() -> userService.signUp(userSignupRequestDto)).isInstanceOf(DuplicateUserException.class)
+			assertThatThrownBy(() -> userService.signUp(userSignupRequest)).isInstanceOf(DuplicateUserException.class)
 			                                                                  .hasMessage(DUPLICATE_USER_EXCEPTION.getMessage());
 		}
 	}

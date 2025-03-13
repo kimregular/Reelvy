@@ -2,7 +2,7 @@ package com.mysettlement.domain.user.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mysettlement.domain.user.dto.request.EmailCheckRequestDto;
-import com.mysettlement.domain.user.dto.request.UserSignUpRequestDto;
+import com.mysettlement.domain.user.dto.request.UserSignUpRequest;
 import com.mysettlement.domain.user.dto.response.EmailCheckResponseDto;
 import com.mysettlement.domain.user.exception.DuplicateUserException;
 import com.mysettlement.domain.user.repository.UserRepository;
@@ -68,7 +68,7 @@ class UserControllerTest {
         @DisplayName("유저 회원가입 - 성공")
         void shouldSignUpSuccessfully() throws Exception {
             // given
-            UserSignUpRequestDto requestDto = new UserSignUpRequestDto(VALID_EMAIL, "tester", VALID_PASSWORD);
+            UserSignUpRequest requestDto = new UserSignUpRequest(VALID_EMAIL, "tester", VALID_PASSWORD);
 
             // when
             MockHttpServletRequestBuilder request = createPostRequest("/signup", requestDto);
@@ -82,7 +82,7 @@ class UserControllerTest {
         @DisplayName("중복 이메일로 회원가입 요청 시 - 예외 발생")
         void shouldThrowExceptionForDuplicateEmail() throws Exception {
             // given
-            UserSignUpRequestDto requestDto = new UserSignUpRequestDto(VALID_EMAIL, "tester", VALID_PASSWORD);
+            UserSignUpRequest requestDto = new UserSignUpRequest(VALID_EMAIL, "tester", VALID_PASSWORD);
             doThrow(new DuplicateUserException()).when(userService).signUp(requestDto);
 
             // when
@@ -97,7 +97,7 @@ class UserControllerTest {
         @DisplayName("잘못된 이메일 형식으로 회원가입 요청 시 - 예외 발생")
         void shouldFailForInvalidEmailFormat() throws Exception {
             // given
-            UserSignUpRequestDto requestDto = new UserSignUpRequestDto(INVALID_EMAIL, "tester", VALID_PASSWORD);
+            UserSignUpRequest requestDto = new UserSignUpRequest(INVALID_EMAIL, "tester", VALID_PASSWORD);
 
             // when
             MockHttpServletRequestBuilder request = createPostRequest("/signup", requestDto);
@@ -112,7 +112,7 @@ class UserControllerTest {
         @DisplayName("8자 이하 비밀번호로 회원가입 요청 시 - 예외 발생")
         void shouldFailForShortPassword() throws Exception {
             // given
-            UserSignUpRequestDto requestDto = new UserSignUpRequestDto(VALID_EMAIL, "tester", SHORT_PASSWORD);
+            UserSignUpRequest requestDto = new UserSignUpRequest(VALID_EMAIL, "tester", SHORT_PASSWORD);
 
             // when
             MockHttpServletRequestBuilder request = createPostRequest("/signup", requestDto);
@@ -127,7 +127,7 @@ class UserControllerTest {
         @DisplayName("이메일 및 비밀번호를 입력하지 않고 요청 시 - 예외 발생")
         void shouldFailForEmptyEmailAndPassword() throws Exception {
             // given
-            UserSignUpRequestDto requestDto = new UserSignUpRequestDto("", "tester", "");
+            UserSignUpRequest requestDto = new UserSignUpRequest("", "tester", "");
 
             // when
             MockHttpServletRequestBuilder request = createPostRequest("/signup", requestDto);
