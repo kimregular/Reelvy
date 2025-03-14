@@ -1,9 +1,11 @@
 package com.mysettlement.domain.user.controller;
 
 import com.mysettlement.domain.user.dto.request.EmailCheckRequestDto;
-import com.mysettlement.domain.user.dto.request.UserSignUpRequestDto;
+import com.mysettlement.domain.user.dto.request.UserSignUpRequest;
+import com.mysettlement.domain.user.dto.request.UserUpdateRequest;
 import com.mysettlement.domain.user.dto.response.EmailCheckResponseDto;
-import com.mysettlement.domain.user.dto.response.UserSignUpResponseDto;
+import com.mysettlement.domain.user.dto.response.UserSignUpResponse;
+import com.mysettlement.domain.user.dto.response.UserUpdateResponse;
 import com.mysettlement.domain.user.service.UserService;
 import com.mysettlement.global.annotations.User;
 import jakarta.validation.Valid;
@@ -14,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @Slf4j
@@ -25,9 +28,9 @@ public class UserController {
 	private final UserService userService;
 
 	@PostMapping("/signup")
-	public ResponseEntity<UserSignUpResponseDto> singUp(@RequestBody @Valid UserSignUpRequestDto userSignupRequestDto) {
+	public ResponseEntity<UserSignUpResponse> singUp(@RequestBody @Valid UserSignUpRequest userSignupRequest) {
 		return ResponseEntity.status(HttpStatus.CREATED)
-		                     .body(userService.signUp(userSignupRequestDto));
+		                     .body(userService.signUp(userSignupRequest));
 	}
 
 	@PostMapping("/checkEmail") // 이메일 중복 체크
@@ -37,9 +40,17 @@ public class UserController {
 	}
 
 	@User
-	@GetMapping("/getInfo")
-	public String getUserInfo(@AuthenticationPrincipal UserDetails userDetails) {
-		// 로그인 테스트용 api
-		return userDetails.getUsername();
+	@PatchMapping("/update")
+	public ResponseEntity<UserUpdateResponse> updateUser(@RequestPart(value = "user") @Valid UserUpdateRequest userUpdateRequest,
+	                                                     @RequestPart(value = "profileImage", required = false) MultipartFile profileImage,
+	                                                     @RequestPart(value = "backgroundImage", required = false) MultipartFile backgroundImage,
+	                                                     @AuthenticationPrincipal UserDetails userDetails) {
+		return ResponseEntity.ok(userService.update(userUpdateRequest, profileImage, backgroundImage, userDetails));
 	}
+
+	@GetMapping("/info")
+	public ResponseEntity<UserUpdateResponse> getUserInfo(@AuthenticationPrincipal UserDetails userDetails) {
+		return ResponseEntity.ok(userService.getUserInfoOf(userDetails));
+	}
+
 }
