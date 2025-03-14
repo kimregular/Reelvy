@@ -11,6 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,7 +88,8 @@ class UserControllerTest {
         }
 
         @ParameterizedTest
-        @ValueSource(strings = {"", " "})
+        @NullAndEmptySource
+        @ValueSource(strings = {""})
         @DisplayName("잘못된 이메일 형식으로 회원가입 요청 시 - 예외 발생")
         void shouldFailForEmptyEmail(String invalidEmail) throws Exception {
             // given
