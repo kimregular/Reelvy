@@ -17,7 +17,7 @@ public enum VideoStatus {
 
     private static final EnumSet<VideoStatus> ALL_STATUS = EnumSet.allOf(VideoStatus.class);
 
-    public static boolean isAvailableStatus(VideoStatus videoStatus) {
-        return ALL_STATUS.contains(videoStatus);
+    public static boolean isNotAvailable(VideoStatus videoStatus) {
+        return !ALL_STATUS.contains(videoStatus);
     }
 }

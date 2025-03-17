@@ -1,10 +1,13 @@
 package com.mysettlement.domain.user.entity;
 
 import com.mysettlement.domain.user.dto.request.UserUpdateRequest;
+import com.mysettlement.domain.video.entity.Video;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.Objects;
 
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.GenerationType.IDENTITY;
@@ -60,5 +63,9 @@ public class User {
 
     public void updateBackgroundImagePath(String backgroundImagePath) {
         this.backgroundImagePath = backgroundImagePath;
+    }
+
+    public boolean hasNoRightToChange(Video video) {
+        return !Objects.equals(this.getId(), video.getUser().getId());
     }
 }

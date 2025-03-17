@@ -3,6 +3,7 @@ package com.mysettlement.domain.video.utils;
 import com.mysettlement.domain.user.entity.User;
 import com.mysettlement.domain.video.dto.request.VideoUploadRequest;
 import com.mysettlement.domain.video.entity.Video;
+import com.mysettlement.domain.video.entity.VideoStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,6 +13,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
 
+import static com.mysettlement.domain.video.entity.VideoStatus.*;
+
 @Component
 public class VideoUploadUtil {
 
@@ -20,6 +23,7 @@ public class VideoUploadUtil {
 		return Video.builder()
 				.videoTitle(videoUploadRequest.title())
 				.videoDesc(videoUploadRequest.desc())
+				.videoStatus(AVAILABLE)
 				.videoSize(videoUploadRequest.videoFile().getSize())
 				.user(user)
 				.videoPath(videoPath)

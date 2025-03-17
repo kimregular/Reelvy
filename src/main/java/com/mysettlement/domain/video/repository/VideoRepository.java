@@ -8,8 +8,8 @@ import java.util.List;
 
 public interface VideoRepository extends JpaRepository<Video, Long> {
 
-    List<Video> findAllByUserId(Long id);
+    List<Video> findAllByUserId(Long userId);
 
-	@Query(value = "select v from Video v order by v.videoTitle limit 50")
+	@Query(value = "select v from Video v where v.videoStatus = 'AVAILABLE' order by v.videoTitle limit 50")
 	List<Video> getVideos();
 }

@@ -1,5 +1,7 @@
 package com.mysettlement.domain.video.controller;
 
+import com.mysettlement.domain.video.dto.request.VideoStatusChangeRequest;
+import com.mysettlement.domain.video.dto.request.VideoUpdateRequest;
 import com.mysettlement.domain.video.dto.request.VideoUploadRequest;
 import com.mysettlement.domain.video.dto.response.VideoResponse;
 import com.mysettlement.domain.video.dto.response.VideoStreamingResponse;
@@ -8,6 +10,7 @@ import com.mysettlement.global.annotations.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -49,30 +52,22 @@ public class VideoController {
         return ResponseEntity.status(videoStreamingResponse.getStatus()).headers(videoStreamingResponse.getHeaders()).body(videoStreamingResponse.getStreamingResponseBody());
 	}
 
-//    @GetMapping(value = "/{videoId}/stream")
-//    public ResponseEntity<StreamingResponseBody> watchOneVideo(@PathVariable Long videoId) {
-//        VideoStreamingResponseDto videoStreamingResponseDto = videoService.watch(videoId);
-//        return ResponseEntity
-//                .ok()
-//                .contentType(MediaType.parseMediaType("video/mp4"))
-//                .contentLength(videoStreamingResponseDto.getFileSize())
-//                .body(videoStreamingResponseDto.getStreamingResponseBody());
-//    }
+	@User
+    @PatchMapping("/{videoId}/info")
+    public ResponseEntity<VideoResponse> updateVideo(@PathVariable Long videoId,
+                                                     @Valid @RequestBody VideoUpdateRequest videoUpdateRequestDto,
+	                                                 @AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok(videoService.updateVideoInfo(videoId, videoUpdateRequestDto, userDetails));
+    }
 
-//    @PatchMapping("/{videoId}/info")
-//    public MySettlementGlobalResponse<VideoResponseDto> updateVideo(@PathVariable Long videoId,
-//                                                                    @Valid @RequestBody VideoUpdateRequestDto videoUpdateRequestDto) {
-//        return MySettlementGlobalResponse.of(HttpStatus.OK, videoService.update(videoId, videoUpdateRequestDto));
-//    }
-//
-//    @PatchMapping("/{videoId}/status")
-//    public MySettlementGlobalResponse<VideoResponseDto> changeVideoStatus(@PathVariable Long videoId,
-//                                                                          @Valid @RequestBody VideoStatusChangeRequestDto videoStatusChangeRequestDto) {
-//        return MySettlementGlobalResponse.of(HttpStatus.OK, videoService.chageStatus(videoId, videoStatusChangeRequestDto));
-//    }
-//
-//    @GetMapping("/{username}/videos")
-//    public MySettlementGlobalResponse<List<VideoResponseDto>> searchVideosOf(@PathVariable String username) {
-//        return MySettlementGlobalResponse.of(HttpStatus.OK, videoService.searchVideosOf(username));
-//    }
+    @PatchMapping("/{videoId}/status")
+    public ResponseEntity<VideoResponse> changeVideoStatus(@PathVariable Long videoId,
+                                                           @Valid @RequestBody VideoStatusChangeRequest videoStatusChangeRequest) {
+	    return ResponseEntity.ok(videoService.changeVideoStatus(videoId, videoStatusChangeRequest));
+    }
+
+	@GetMapping
+	public ResponseEntity<List<VideoResponse>> getVideosOf(@RequestParam(name = "username") String userEmail) {
+		return ResponseEntity.ok(videoService.getVideosOf(userEmail));
+	}
 }
