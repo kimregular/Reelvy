@@ -29,19 +29,19 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
     private final JwtUtil jwtUtil;
     private final ObjectMapper objectMapper;
 
-    private static final String EMAIL_KEY = "email";
+    private static final String EMAIL_KEY = "name";
     private static final String PASSWORD_KEY = "password";
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
         JsonNode jsonNode = parseRequest(request);
 
-        String email = getRequiredField(jsonNode, EMAIL_KEY);
+        String name = getRequiredField(jsonNode, EMAIL_KEY);
         String password = getRequiredField(jsonNode, PASSWORD_KEY);
 
-        log.info("Attempting authentication for user: {}", email);
+        log.info("Attempting authentication for user: {}", name);
 
-        return authenticate(email, password);
+        return authenticate(name, password);
     }
 
     private JsonNode parseRequest(HttpServletRequest request) {

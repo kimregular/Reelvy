@@ -23,10 +23,11 @@ public class User {
     @Column(name = "user_id")
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
-    private String name;
 
     @Column(nullable = false, unique = true)
-    private String email;
+    private String username;
+
+    private String nickname;
 
     private String password;
 
@@ -45,15 +46,15 @@ public class User {
 
 
     @Builder
-    private User(String name, String email, String password, UserRole userRole) {
-        this.name = name;
-        this.email = email;
+    private User(String nickname, String username, String password, UserRole userRole) {
+        this.username = username;
+        this.nickname = nickname;
         this.password = password;
         this.userRole = userRole;
     }
 
     public void updateUserInfoWith(UserUpdateRequest userUpdateRequest) {
-        this.name = userUpdateRequest.username();
+        this.nickname = userUpdateRequest.username();
         this.desc = userUpdateRequest.desc();
     }
 
