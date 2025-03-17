@@ -22,7 +22,7 @@ const handleLogin = async () => {
     return;
   }
 
-  const payload = {email: email.value, password: password.value};
+  const payload = {username: email.value, password: password.value};
 
   try {
     const response = await axios.post(`${BASE_URL}/v1/users/login`, payload);

@@ -9,6 +9,6 @@ public class UserSignUpResponse {
     private final String email;
 
     public UserSignUpResponse(User user) {
-        this.email = user.getEmail();
+        this.email = user.getUsername();
     }
 }

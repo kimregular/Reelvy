@@ -24,8 +24,8 @@ public class UserUpdateResponse {
 
 	public static UserUpdateResponse of(User user) {
 		return UserUpdateResponse.builder()
-				.username(user.getName())
-				.email(user.getEmail())
+				.username(user.getNickname())
+				.email(user.getUsername())
 				.profileImage(user.getProfileImagePath())
 				.backgroundImage(user.getBackgroundImagePath())
 				.desc(user.getDesc())

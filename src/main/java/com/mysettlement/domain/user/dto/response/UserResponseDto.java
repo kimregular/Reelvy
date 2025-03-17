@@ -15,6 +15,6 @@ public class UserResponseDto {
     }
 
     public static UserResponseDto of(User user) {
-        return new UserResponseDto(user.getName(), user.getEmail());
+        return new UserResponseDto(user.getNickname(), user.getUsername());
     }
 }
