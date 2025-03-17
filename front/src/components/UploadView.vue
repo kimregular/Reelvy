@@ -83,7 +83,7 @@ const fetchUpload = async () => {
 </script>
 
 <template>
-  <section class="container mt-5">
+  <div class="container mt-5">
     <h3>Upload a Video Here</h3>
     <form @submit.prevent="fetchUpload">
       <div class="mb-3">
@@ -91,6 +91,7 @@ const fetchUpload = async () => {
         <div class="d-flex align-items-center">
           <input
             id="video-file"
+            class="form-control me2"
             @change="handleVideoFileChange"
             type="file"
             accept="video/*"
@@ -100,10 +101,23 @@ const fetchUpload = async () => {
         </div>
       </div>
 
+      <!-- 비디오 미리보기 -->
+      <div v-if="videoUrl" class="mb-3">
+        <label for="video-preview" class="form-label me-3">Video Preview</label>
+        <div class="ratio ratio-16x9">
+          <video id="video-preview" controls>
+            <source :src="videoUrl" type="video/mp4"/>
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      </div>
+
+
       <div class="mb-3">
         <label for="video-title" class="form-label me-3">Video Title</label>
         <input
           id="video-title"
+          class="form-control me2"
           @change="handleVideoTitleChange"
           type="text"
           placeholder="Video Title here"
@@ -114,24 +128,20 @@ const fetchUpload = async () => {
         <label for="video-desc" class="form-label me-3">Description</label>
         <textarea
           id="video-desc"
+          class="form-control me2"
+          rows="15"
           @change="handleVideoDescChange"
           placeholder="Video Description here"></textarea>
       </div>
 
-      <!-- 비디오 미리보기 -->
-      <div v-if="videoUrl" class="mb-3">
-        <label for="video-preview" class="form-label me-3">Video Preview</label>
-        <video id="video-preview" width="320" height="240" controls>
-          <source :src="videoUrl" type="video/mp4"/>
-          Your browser does not support the video tag.
-        </video>
-      </div>
 
-      <button class="btn btn-primary" type="submit" :disabled="invalidUploadRequest">Upload!</button>
+      <button class="btn btn-primary mb-5" type="submit" :disabled="invalidUploadRequest">Upload!</button>
     </form>
-  </section>
+  </div>
 </template>
 
 <style scoped>
-
+textarea {
+  resize: none;
+}
 </style>
