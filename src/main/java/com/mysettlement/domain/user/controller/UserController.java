@@ -49,15 +49,15 @@ public class UserController {
 		return ResponseEntity.ok(userService.update(userUpdateRequest, profileImage, backgroundImage, userDetails));
 	}
 
-	@GetMapping("/info/{userId}")
-	public ResponseEntity<UserUpdateResponse> getUserInfo(@PathVariable Long userId) {
-		return ResponseEntity.ok(userService.getUserInfoOf(userId));
+	@GetMapping("/info/{username}")
+	public ResponseEntity<UserUpdateResponse> getUserInfo(@PathVariable String username) {
+		return ResponseEntity.ok(userService.getUserInfoOf(username));
 	}
 
 	@Admin
-	@GetMapping("/info/{userId}/admin")
-	public ResponseEntity<UserUpdateResponse> getAdminInfo(@PathVariable Long userId) {
-		return ResponseEntity.ok(userService.getUserInfoOf(userId));
+	@GetMapping("/info/{username}/admin")
+	public ResponseEntity<UserUpdateResponse> getAdminInfo(@PathVariable String username) {
+		return ResponseEntity.ok(userService.getUserInfoOf(username));
 	}
 
 }
