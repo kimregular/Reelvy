@@ -1,0 +1,14 @@
+== USER APIs
+
+=== signup
+include::{snippets}/userController/signup/http-request.adoc[]
+include::{snippets}/userController/signup/request-body.adoc[]
+include::{snippets}/userController/signup/request-body.adoc[]
+
+
+=== checkEmail
+include::{snippets}/userController/signup/http-response.adoc[]
+include::{snippets}/userController/checkEmail/request-body.adoc[]
+include::{snippets}/userController/checkEmail/request-fields.adoc[]
+include::{snippets}/userController/checkEmail/response-body.adoc[]
+include::{snippets}/userController/checkEmail/response-fields.adoc[]

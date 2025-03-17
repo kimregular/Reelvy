@@ -51,17 +51,6 @@ public class UserService {
 		return userRepository.existsByEmail(email);
 	}
 
-	@PostConstruct
-	private void initUser() {
-		User user = User.builder()
-				.name("qwe")
-				.email("qwe@qwe.com")
-				.password(passwordEncoder.encode("qweqweqwe"))
-				.userRole(USER)
-				.build();
-		userRepository.save(user);
-	}
-
 	@Transactional
 	public UserUpdateResponse update(UserUpdateRequest userUpdateRequest, MultipartFile profileImage, MultipartFile backgroundImage, UserDetails userDetails) {
 		User user = userRepository.findByEmail(userDetails.getUsername()).orElseThrow(NoUserFoundException::new);
@@ -79,8 +68,8 @@ public class UserService {
 		return UserUpdateResponse.of(user);
 	}
 
-	public UserUpdateResponse getUserInfoOf(UserDetails userDetails) {
-		User user = userRepository.findByEmail(userDetails.getUsername()).orElseThrow(NoUserFoundException::new);
+	public UserUpdateResponse getUserInfoOf(Long userId) {
+		User user = userRepository.findById(userId).orElseThrow(NoUserFoundException::new);
 		return UserUpdateResponse.of(user);
 	}
 }
