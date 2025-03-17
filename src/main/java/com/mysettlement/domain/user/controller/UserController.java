@@ -7,6 +7,7 @@ import com.mysettlement.domain.user.dto.response.EmailCheckResponseDto;
 import com.mysettlement.domain.user.dto.response.UserSignUpResponse;
 import com.mysettlement.domain.user.dto.response.UserUpdateResponse;
 import com.mysettlement.domain.user.service.UserService;
+import com.mysettlement.global.annotations.Admin;
 import com.mysettlement.global.annotations.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -48,9 +49,15 @@ public class UserController {
 		return ResponseEntity.ok(userService.update(userUpdateRequest, profileImage, backgroundImage, userDetails));
 	}
 
-	@GetMapping("/info")
-	public ResponseEntity<UserUpdateResponse> getUserInfo(@AuthenticationPrincipal UserDetails userDetails) {
-		return ResponseEntity.ok(userService.getUserInfoOf(userDetails));
+	@GetMapping("/info/{userId}")
+	public ResponseEntity<UserUpdateResponse> getUserInfo(@PathVariable Long userId) {
+		return ResponseEntity.ok(userService.getUserInfoOf(userId));
+	}
+
+	@Admin
+	@GetMapping("/info/{userId}/admin")
+	public ResponseEntity<UserUpdateResponse> getAdminInfo(@PathVariable Long userId) {
+		return ResponseEntity.ok(userService.getUserInfoOf(userId));
 	}
 
 }

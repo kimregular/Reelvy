@@ -45,7 +45,8 @@ public class WebSecurityConfig {
 				.requestMatchers(
 						new AntPathRequestMatcher("/favicon.ico"),
 						new AntPathRequestMatcher("/error"),
-						new AntPathRequestMatcher("/h2-console/**")
+						new AntPathRequestMatcher("/h2-console/**"),
+						new AntPathRequestMatcher("/docs/**")
 				)
 						.permitAll()
 				.requestMatchers(
