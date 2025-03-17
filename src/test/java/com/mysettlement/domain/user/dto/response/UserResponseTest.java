@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class UserResponseDtoTest {
+class UserResponseTest {
 
 	@Test
 	@DisplayName("유저 객체로 유저 응답 DTO을 생성할 수 있다.")
@@ -24,10 +24,10 @@ class UserResponseDtoTest {
 				.userRole(role)
 				.build();
 		// when
-		UserResponseDto userResponseDto = UserResponseDto.of(user);
+		UserResponse userResponse = UserResponse.of(user);
 
 		// then
-		assertThat(userResponseDto.getName()).isEqualTo(username);
-		assertThat(userResponseDto.getEmail()).isEqualTo(email);
+		assertThat(userResponse.getNickname()).isEqualTo(username);
+		assertThat(userResponse.getUsername()).isEqualTo(email);
 	}
 }
