@@ -29,7 +29,7 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
     private final JwtUtil jwtUtil;
     private final ObjectMapper objectMapper;
 
-    private static final String EMAIL_KEY = "name";
+    private static final String EMAIL_KEY = "username";
     private static final String PASSWORD_KEY = "password";
 
     @Override
@@ -54,6 +54,7 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
     }
 
     private String getRequiredField(JsonNode jsonNode, String fieldName) {
+        log.info(String.valueOf(jsonNode));
         return jsonNode.path(fieldName).asText(null);
     }
 

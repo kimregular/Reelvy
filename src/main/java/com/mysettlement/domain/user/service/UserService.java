@@ -11,7 +11,6 @@ import com.mysettlement.domain.user.exception.DuplicateUserException;
 import com.mysettlement.domain.user.exception.NoUserFoundException;
 import com.mysettlement.domain.user.repository.UserRepository;
 import com.mysettlement.domain.user.utils.UserUtil;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,7 +22,6 @@ import java.util.Objects;
 
 import static com.mysettlement.domain.user.entity.UserImageType.BACKGROUND;
 import static com.mysettlement.domain.user.entity.UserImageType.PROFILE;
-import static com.mysettlement.domain.user.entity.UserRole.USER;
 
 @Service
 @Transactional(readOnly = true)
@@ -35,7 +33,7 @@ public class UserService {
 	private final UserUtil userUtil;
 
 	public UserSignUpResponse signUp(UserSignUpRequest userSignupRequest) {
-		if (isExistUser(userSignupRequest.email())) {
+		if (isExistUser(userSignupRequest.username())) {
 			throw new DuplicateUserException();
 		}
 		User newUser = userUtil.buildUserWith(userSignupRequest, passwordEncoder);
@@ -48,12 +46,12 @@ public class UserService {
 	}
 
 	private boolean isExistUser(String email) {
-		return userRepository.existsByEmail(email);
+		return userRepository.existsByUsername(email);
 	}
 
 	@Transactional
 	public UserUpdateResponse update(UserUpdateRequest userUpdateRequest, MultipartFile profileImage, MultipartFile backgroundImage, UserDetails userDetails) {
-		User user = userRepository.findByEmail(userDetails.getUsername()).orElseThrow(NoUserFoundException::new);
+		User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(NoUserFoundException::new);
 
 		user.updateUserInfoWith(userUpdateRequest);
 

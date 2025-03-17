@@ -21,8 +21,8 @@ public class UserUtil {
 
 	public User buildUserWith(UserSignUpRequest userSignUpRequest, PasswordEncoder passwordEncoder) {
 		return User.builder()
-				.name(userSignUpRequest.username())
-				.email(userSignUpRequest.email())
+				.username(userSignUpRequest.username())
+				.nickname(userSignUpRequest.nickname())
 				.password(passwordEncoder.encode(userSignUpRequest.password()))
 				.userRole(USER)
 				.build();

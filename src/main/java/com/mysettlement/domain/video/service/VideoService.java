@@ -36,7 +36,7 @@ public class VideoService {
 
     @Transactional
     public VideoResponse uploadVideo(VideoUploadRequest videoUploadRequest, UserDetails userDetails) {
-        User user = userRepository.findByEmail(userDetails.getUsername()).orElseThrow(NoUserFoundException::new);
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(NoUserFoundException::new);
         Video newVideo = videoUploadUtil.buildVideoWith(videoUploadRequest, user);
         videoRepository.save(newVideo);
         return VideoResponse.of(newVideo);
@@ -59,7 +59,7 @@ public class VideoService {
     @Transactional
     public VideoResponse changeVideoStatus(Long videoId, VideoStatusChangeRequest videoStatusChangeRequest, UserDetails userDetails) {
         // 유저 조회
-        User user = userRepository.findByEmail(userDetails.getUsername()).orElseThrow(NoUserFoundException::new);
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(NoUserFoundException::new);
 
         // 비디오 조회
         Video video = videoRepository.findById(videoId).orElseThrow(NoVideoFoundException::new);
@@ -75,7 +75,7 @@ public class VideoService {
     }
 
     public List<VideoResponse> getVideosOf(String email) {
-        User user = userRepository.findByEmail(email).orElseThrow(NoUserFoundException::new);
+        User user = userRepository.findByUsername(email).orElseThrow(NoUserFoundException::new);
         List<Video> userVideos = videoRepository.findAllByUserId(user.getId());
         return userVideos.stream().map(VideoResponse::of).toList();
     }
@@ -83,7 +83,7 @@ public class VideoService {
     @Transactional
     public VideoResponse updateVideoInfo(Long videoId, VideoUpdateRequest videoUpdateRequestDto, UserDetails userDetails) {
         // 유저 조회
-        User user = userRepository.findByEmail(userDetails.getUsername()).orElseThrow(NoUserFoundException::new);
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(NoUserFoundException::new);
 
         // 비디오 확인
         Video video = videoRepository.findById(videoId).orElseThrow(NoVideoFoundException::new);

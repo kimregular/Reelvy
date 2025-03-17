@@ -105,8 +105,8 @@ class JwtUtilTest {
 			// given
 			String username = "tester@test.com";
 			User user = User.builder()
-					.name("tester") // 닉네임
-					.email(username) // username
+					.username(username) // username
+					.nickname("tester") // 닉네임
 					.password("1234")
 					.userRole(UserRole.USER).build();
 			userRepository.save(user);

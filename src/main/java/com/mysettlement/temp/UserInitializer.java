@@ -23,16 +23,16 @@ public class UserInitializer {
 	private void initUser() {
 		log.info("init user activated!");
 		User user = User.builder()
-				.name("user")
-				.email("user@user.com")
+				.username("user@user.com")
+				.nickname("user")
 				.password(passwordEncoder.encode("123123123"))
 				.userRole(USER)
 				.build();
 		userRepository.save(user);
 
 		User admin = User.builder()
-				.name("admin")
-				.email("admin@admin.com")
+				.username("admin@admin.com")
+				.nickname("admin")
 				.password(passwordEncoder.encode("123123123"))
 				.userRole(ADMIN)
 				.build();

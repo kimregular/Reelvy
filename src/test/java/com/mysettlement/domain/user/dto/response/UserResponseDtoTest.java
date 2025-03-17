@@ -18,8 +18,8 @@ class UserResponseDtoTest {
 		String password = "1234";
 		UserRole role = UserRole.USER;
 		User user = User.builder()
-				.name(username)
-				.email(email)
+				.username(email)
+				.nickname(username)
 				.password(password)
 				.userRole(role)
 				.build();

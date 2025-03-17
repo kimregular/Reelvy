@@ -56,10 +56,10 @@ class JwtLoginFilterTest {
 	@DisplayName("유효한 유저는 로그인 성공")
 	void successfulAuthenticationTest() throws Exception {
 		// Given
-		String email = "test@example.com";
+		String username = "test@example.com";
 		String password = "password123";
 
-		UserDetails userDetails = User.withUsername(email)
+		UserDetails userDetails = User.withUsername(username)
 				.password(password)
 				.roles("USER")
 				.build();
@@ -69,12 +69,12 @@ class JwtLoginFilterTest {
 		when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
 				.thenReturn(authResult);
 
-		when(jwtUtil.createJwt(eq(email), eq("ROLE_USER"), any(Date.class)))
+		when(jwtUtil.createJwt(eq(username), eq("ROLE_USER"), any(Date.class)))
 				.thenReturn("test-jwt-token");
 
 		// When & Then
 		mockMvc.perform(MockMvcRequestBuilders.post(LOGIN_URL)
-						.content("{\"email\":\"test@example.com\",\"password\":\"password123\"}")
+						.content("{\"username\":\"test@example.com\",\"password\":\"password123\"}")
 						.contentType(APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andExpect(header().string("Authorization", "Bearer test-jwt-token"));
