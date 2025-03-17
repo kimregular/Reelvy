@@ -47,7 +47,7 @@ public class VideoService {
         return videoStreamingUtil.resolve(video, request);
     }
 
-    public List<VideoResponse> getVideos() {
+    public List<VideoResponse> getHomeVideos() {
         return videoRepository.getVideos().stream().map(VideoResponse::of).toList();
     }
 
@@ -57,13 +57,21 @@ public class VideoService {
     }
 
     @Transactional
-    public VideoResponse changeVideoStatus(Long videoId, VideoStatusChangeRequest videoStatusChangeRequest) {
-        if(isNotAvailable(videoStatusChangeRequest.videoStatus())) {
-	        throw new InvalidVideoUpdateRequestException();
-        }
-        Video foundVideo = videoRepository.findById(videoId).orElseThrow(NoVideoFoundException::new);
-        foundVideo.updateStatus(videoStatusChangeRequest);
-        return VideoResponse.of(foundVideo);
+    public VideoResponse changeVideoStatus(Long videoId, VideoStatusChangeRequest videoStatusChangeRequest, UserDetails userDetails) {
+        // 유저 조회
+        User user = userRepository.findByEmail(userDetails.getUsername()).orElseThrow(NoUserFoundException::new);
+
+        // 비디오 조회
+        Video video = videoRepository.findById(videoId).orElseThrow(NoVideoFoundException::new);
+
+        // 주인 확인
+        if(user.hasNoRightToChange(video)) throw new InvalidVideoUpdateRequestException();
+
+        // 상태 변경 가능 확인
+        if (isNotAvailable(videoStatusChangeRequest.videoStatus())) throw new InvalidVideoUpdateRequestException();
+
+        video.updateStatus(videoStatusChangeRequest);
+        return VideoResponse.of(video);
     }
 
     public List<VideoResponse> getVideosOf(String email) {

@@ -10,7 +10,6 @@ import com.mysettlement.global.annotations.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,14 +22,14 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/videos")
+@RequestMapping("/v1/videos")
 public class VideoController {
 
 	private final VideoService videoService;
 
 	@GetMapping
-	public ResponseEntity<List<VideoResponse>> getVideos() {
-		return ResponseEntity.ok(videoService.getVideos());
+	public ResponseEntity<List<VideoResponse>> getHomeVideos() {
+		return ResponseEntity.ok(videoService.getHomeVideos());
 	}
 
 	@GetMapping("/{videoId}/info")
@@ -60,14 +59,16 @@ public class VideoController {
         return ResponseEntity.ok(videoService.updateVideoInfo(videoId, videoUpdateRequestDto, userDetails));
     }
 
+	@User
     @PatchMapping("/{videoId}/status")
     public ResponseEntity<VideoResponse> changeVideoStatus(@PathVariable Long videoId,
-                                                           @Valid @RequestBody VideoStatusChangeRequest videoStatusChangeRequest) {
-	    return ResponseEntity.ok(videoService.changeVideoStatus(videoId, videoStatusChangeRequest));
+                                                           @Valid @RequestBody VideoStatusChangeRequest videoStatusChangeRequest,
+	                                                       @AuthenticationPrincipal UserDetails userDetails) {
+	    return ResponseEntity.ok(videoService.changeVideoStatus(videoId, videoStatusChangeRequest, userDetails));
     }
 
-	@GetMapping
-	public ResponseEntity<List<VideoResponse>> getVideosOf(@RequestParam(name = "username") String userEmail) {
+	@GetMapping("/{username}")
+	public ResponseEntity<List<VideoResponse>> getVideosOf(@PathVariable(name = "username") String userEmail) {
 		return ResponseEntity.ok(videoService.getVideosOf(userEmail));
 	}
 }

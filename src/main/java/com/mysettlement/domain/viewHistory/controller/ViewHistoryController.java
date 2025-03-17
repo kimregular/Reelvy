@@ -8,7 +8,7 @@
 //import org.springframework.web.bind.annotation.*;
 //
 //@RequiredArgsConstructor
-//@RequestMapping("/api/v1/view")
+//@RequestMapping("/v1/view")
 //@RestController
 //public class ViewHistoryController {
 //

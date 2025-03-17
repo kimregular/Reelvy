@@ -50,8 +50,8 @@ public class WebSecurityConfig {
 				)
 						.permitAll()
 				.requestMatchers(
-						new AntPathRequestMatcher("/api/v1/users/**"),
-						new AntPathRequestMatcher("/api/v1/videos/**")
+						new AntPathRequestMatcher("/v1/users/**"),
+						new AntPathRequestMatcher("/v1/videos/**")
 				)
 						.permitAll()
 				.anyRequest()
@@ -79,7 +79,7 @@ public class WebSecurityConfig {
 	public JwtLoginFilter jwtLoginFilter(AuthenticationManager authenticationManager) {
 		JwtLoginFilter jwtLoginFilter = new JwtLoginFilter(authenticationManager, jwtUtil, objectMapper);
 		jwtLoginFilter.setAuthenticationManager(authenticationManager);
-		jwtLoginFilter.setFilterProcessesUrl("/api/v1/users/login"); // 로그인 URL 설정
+		jwtLoginFilter.setFilterProcessesUrl("/v1/users/login"); // 로그인 URL 설정
 		return jwtLoginFilter;
 	}
 
