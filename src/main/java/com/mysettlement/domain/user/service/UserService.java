@@ -66,8 +66,8 @@ public class UserService {
 		return UserUpdateResponse.of(user);
 	}
 
-	public UserUpdateResponse getUserInfoOf(Long userId) {
-		User user = userRepository.findById(userId).orElseThrow(NoUserFoundException::new);
+	public UserUpdateResponse getUserInfoOf(String username) {
+		User user = userRepository.findByUsername(username).orElseThrow(NoUserFoundException::new);
 		return UserUpdateResponse.of(user);
 	}
 }
