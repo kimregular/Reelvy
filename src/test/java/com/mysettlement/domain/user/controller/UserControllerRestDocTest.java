@@ -46,7 +46,7 @@
 //@AutoConfigureRestDocs(uriScheme = "https", uriHost = "api.myvideos.com")
 //class UserControllerRestDocTest {
 //
-//	private static final String BASE_URL = "/api/v1/users";
+//	private static final String BASE_URL = "/v1/users";
 //	private static final String VALID_EMAIL = "test@test.com";
 //	private static final String VALID_PASSWORD = "123456789";
 //
@@ -179,7 +179,7 @@
 //
 //		// when
 //		MockHttpServletRequestBuilder request = RestDocumentationRequestBuilders
-//				.get("/api/v1/users/info/{userId}", givenUserId)
+//				.get("/v1/users/info/{userId}", givenUserId)
 //				.contentType(MediaType.APPLICATION_JSON);
 //
 //		// then

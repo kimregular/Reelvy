@@ -3,10 +3,13 @@ package com.mysettlement.domain.video.service;
 import com.mysettlement.domain.user.entity.User;
 import com.mysettlement.domain.user.exception.NoUserFoundException;
 import com.mysettlement.domain.user.repository.UserRepository;
+import com.mysettlement.domain.video.dto.request.VideoStatusChangeRequest;
+import com.mysettlement.domain.video.dto.request.VideoUpdateRequest;
 import com.mysettlement.domain.video.dto.request.VideoUploadRequest;
 import com.mysettlement.domain.video.dto.response.VideoResponse;
 import com.mysettlement.domain.video.dto.response.VideoStreamingResponse;
 import com.mysettlement.domain.video.entity.Video;
+import com.mysettlement.domain.video.exception.InvalidVideoUpdateRequestException;
 import com.mysettlement.domain.video.exception.NoVideoFoundException;
 import com.mysettlement.domain.video.repository.VideoRepository;
 import com.mysettlement.domain.video.utils.VideoStreamingUtil;
@@ -18,6 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
+import static com.mysettlement.domain.video.entity.VideoStatus.isNotAvailable;
 
 @Service
 @RequiredArgsConstructor
@@ -42,7 +47,7 @@ public class VideoService {
         return videoStreamingUtil.resolve(video, request);
     }
 
-    public List<VideoResponse> getVideos() {
+    public List<VideoResponse> getHomeVideos() {
         return videoRepository.getVideos().stream().map(VideoResponse::of).toList();
     }
 
@@ -50,32 +55,43 @@ public class VideoService {
         Video video = videoRepository.findById(videoId).orElseThrow(NoVideoFoundException::new);
         return VideoResponse.of(video);
     }
-//    @Transactional
-//    public VideoResponseDto chageStatus(Long videoId, VideoStatusChangeRequestDto videoStatusChangeRequestDto) {
-//        if(!isAvailableStatus(videoStatusChangeRequestDto.videoStatus()))
-//            throw new InvalidVideoUpdateRequestException();
-//        Video foundVideo = videoRepository.findById(videoId).orElseThrow(NoVideoFoundException::new);
-//        foundVideo.update(videoStatusChangeRequestDto);
-//        return VideoResponseDto.of(foundVideo);
-//    }
-//
-//    @Transactional
-//    public VideoResponseDto update(Long videoId, VideoUpdateRequestDto videoUpdateRequestDto) {
-//        // 유저 조회
-//        User foundUser = userRepository.findByEmail(videoUpdateRequestDto.email()).orElseThrow(NoUserFoundException::new);
-//
-//        // 비디오 확인
-//        Video foundVideo = videoRepository.findById(videoId).orElseThrow(NoVideoFoundException::new);
-//
-//        // 주인 확인
-//        if(foundUser.getId() != foundVideo.getUser().getId()) throw new InvalidVideoUpdateRequestException();
-//
-//        foundVideo.update(videoUpdateRequestDto);
-//        return VideoResponseDto.of(foundVideo);
-//    }
-//
-//    public List<VideoResponseDto> searchVideosOf(String username) {
-//        User foundUser = userRepository.findByName(username).orElseThrow(NoUserFoundException::new);
-//        return videoRepository.findAllByUserId(foundUser.getId()).stream().filter(video -> video.getVideoStatus() == AVAILABLE).map(VideoResponseDto::of).toList();
-//    }
+
+    @Transactional
+    public VideoResponse changeVideoStatus(Long videoId, VideoStatusChangeRequest videoStatusChangeRequest, UserDetails userDetails) {
+        // 유저 조회
+        User user = userRepository.findByEmail(userDetails.getUsername()).orElseThrow(NoUserFoundException::new);
+
+        // 비디오 조회
+        Video video = videoRepository.findById(videoId).orElseThrow(NoVideoFoundException::new);
+
+        // 주인 확인
+        if(user.hasNoRightToChange(video)) throw new InvalidVideoUpdateRequestException();
+
+        // 상태 변경 가능 확인
+        if (isNotAvailable(videoStatusChangeRequest.videoStatus())) throw new InvalidVideoUpdateRequestException();
+
+        video.updateStatus(videoStatusChangeRequest);
+        return VideoResponse.of(video);
+    }
+
+    public List<VideoResponse> getVideosOf(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(NoUserFoundException::new);
+        List<Video> userVideos = videoRepository.findAllByUserId(user.getId());
+        return userVideos.stream().map(VideoResponse::of).toList();
+    }
+
+    @Transactional
+    public VideoResponse updateVideoInfo(Long videoId, VideoUpdateRequest videoUpdateRequestDto, UserDetails userDetails) {
+        // 유저 조회
+        User user = userRepository.findByEmail(userDetails.getUsername()).orElseThrow(NoUserFoundException::new);
+
+        // 비디오 확인
+        Video video = videoRepository.findById(videoId).orElseThrow(NoVideoFoundException::new);
+
+        // 주인 확인
+        if(user.hasNoRightToChange(video)) throw new InvalidVideoUpdateRequestException();
+
+        video.changeInfoWith(videoUpdateRequestDto);
+        return VideoResponse.of(video);
+    }
 }

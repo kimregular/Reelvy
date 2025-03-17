@@ -44,7 +44,7 @@ class JwtLoginFilterTest {
 	@Autowired
 	private ObjectMapper objectMapper;
 
-	private final String LOGIN_URL = "/api/v1/users/login";
+	private final String LOGIN_URL = "/v1/users/login";
 
 	@BeforeEach
 	void setUp() {

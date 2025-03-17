@@ -1,6 +1,6 @@
 
 ### Post Login Success
-POST http://localhost:8080/api/v1/users/login
+POST http://localhost:8080/v1/users/login
 Content-Type: application/json
 
 {
@@ -15,14 +15,14 @@ Content-Type: application/json
 %}
 
 ### GET userInfo for user
-GET http://localhost:8080/api/v1/users/info/1
+GET http://localhost:8080/v1/users/info/1
 
 ### GET userInfo for admin
-GET http://localhost:8080/api/v1/users/info/2/admin
+GET http://localhost:8080/v1/users/info/2/admin
 Authorization: {{AUTH_HEADER}}
 
 ### POST Email Check
-POST http://localhost:8080/api/v1/users/checkEmail
+POST http://localhost:8080/v1/users/checkEmail
 Content-Type: application/json
 
 {
@@ -30,7 +30,7 @@ Content-Type: application/json
 }
 
 ### Post Signup
-POST http://localhost:8080/api/v1/users/signup
+POST http://localhost:8080/v1/users/signup
 Content-Type: application/json
 
 {
@@ -39,7 +39,7 @@ Content-Type: application/json
 }
 
 ### Post Login Success
-POST http://localhost:8080/api/v1/users/login
+POST http://localhost:8080/v1/users/login
 Content-Type: application/json
 
 {
@@ -54,11 +54,11 @@ Content-Type: application/json
 %}
 
 ### GET getUserInfo
-GET http://localhost:8080/api/v1/users/info/1
+GET http://localhost:8080/v1/users/info/1
 Content-Type: application/json
 
 ### update User info
-PATCH http://localhost:8080/api/v1/users/update
+PATCH http://localhost:8080/v1/users/update
 Content-Type: multipart/form-data; boundary=boundary
 Authorization: {{AUTH_HEADER}}
 
@@ -86,7 +86,7 @@ Content-Type: image/jpeg
 --boundary--
 
 ### update User info without profileImage
-PATCH http://localhost:8080/api/v1/users/update
+PATCH http://localhost:8080/v1/users/update
 Content-Type: multipart/form-data; boundary=boundary
 Authorization: {{AUTH_HEADER}}
 

@@ -12,7 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/ad/")
+@RequestMapping("/v1/ad/")
 @RequiredArgsConstructor
 public class AdController {
 

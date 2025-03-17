@@ -1,7 +1,7 @@
 package com.mysettlement.domain.video.entity;
 
 import com.mysettlement.domain.user.entity.User;
-import com.mysettlement.domain.video.dto.request.VideoStatusChangeRequestDto;
+import com.mysettlement.domain.video.dto.request.VideoStatusChangeRequest;
 import com.mysettlement.domain.video.dto.request.VideoUpdateRequest;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -44,30 +44,36 @@ public class Video {
 
     @Column(name = "video_status")
     @Enumerated(STRING)
-    private VideoStatus videoStatus = VideoStatus.AVAILABLE;
+    private VideoStatus videoStatus;
 
     @Column(name="video_size")
     private long videoSize;
 
     @Builder
-    private Video(User user, String videoTitle, String videoDesc, String videoPath, long videoSize) {
+    private Video(User user, String videoTitle, String videoDesc, String videoPath, VideoStatus videoStatus, long videoSize) {
         this.user = user;
         this.videoTitle = videoTitle;
         this.videoDesc = videoDesc;
         this.videoPath = videoPath;
+        this.videoStatus = videoStatus;
         this.videoSize = videoSize;
     }
 
-    public void update(VideoStatusChangeRequestDto videoStatusChangeRequestDto) {
-        this.videoStatus = videoStatusChangeRequestDto.videoStatus();
+    public void updateStatus(VideoStatusChangeRequest videoStatusChangeRequest) {
+        this.videoStatus = videoStatusChangeRequest.videoStatus();
     }
 
-    public void update(VideoUpdateRequest videoUpdateRequest) {
+    public void updateStatus(VideoUpdateRequest videoUpdateRequest) {
         this.videoTitle = videoUpdateRequest.title();
         this.videoDesc = videoUpdateRequest.desc();
     }
 
     public void viewUpdate() {
         this.videoView++;
+    }
+
+    public void changeInfoWith(VideoUpdateRequest videoUpdateRequest) {
+        this.videoTitle = videoUpdateRequest.title();
+        this.videoDesc = videoUpdateRequest.desc();
     }
 }
