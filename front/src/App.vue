@@ -2,15 +2,25 @@
 import {useAuthStore} from "@/stores/useAuthStore";
 import router from "@/router";
 
-const handleUpload = () => {
-  router.push("UPLOAD");
-}
-
 const authStore = useAuthStore();
+
+const handleUpload = () => {
+  router.push({name:"UPLOAD"});
+}
 
 const handleLogout = () => {
   authStore.clearToken();
+  router.replace({name: "HOME"});
 };
+
+const handleProfile = () => {
+  router.push({
+    name: "PROFILE",
+    params: {
+      username: localStorage.getItem("username")
+    }
+  });
+}
 </script>
 
 <template>
@@ -39,6 +49,9 @@ const handleLogout = () => {
             </li>
             <li class="nav-item">
               <button class="nav-link btn btn-link" @click="handleLogout">Logout</button>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link btn btn-link" @click="handleProfile">profile</button>
             </li>
           </template>
           <template v-else>
