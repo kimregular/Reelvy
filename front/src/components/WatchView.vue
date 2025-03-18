@@ -1,38 +1,38 @@
 <script setup lang="ts">
-import {onMounted, ref} from 'vue';
-import axios from 'axios';
-import {BASE_URL} from '@/constants/server.ts';
-import {useRoute} from 'vue-router';
-import type Video from '@/types/video.ts';
+import { onMounted, ref } from 'vue'
+import axios from 'axios'
+import { BASE_URL } from '@/constants/server.ts'
+import { useRoute } from 'vue-router'
+import type Video from '@/entities/video.ts'
 
-const video = ref<Video>();
-const loading = ref(true);
-const streamUrl = ref<string>('');
-const route = useRoute();
-const videoId = route.query.videoId as string;
+const video = ref<Video>()
+const loading = ref(true)
+const streamUrl = ref<string>('')
+const route = useRoute()
+const videoId = route.query.videoId as string
 
 const fetchVideoInfo = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/v1/videos/${videoId}/info`);
-    video.value = response.data;
-    loading.value = false;
+    const response = await axios.get(`${BASE_URL}/v1/videos/${videoId}/info`)
+    video.value = response.data
+    loading.value = false
   } catch (error) {
-    console.error("Failed to load video info:", error);
+    console.error('Failed to load video info:', error)
   }
-};
+}
 
 const fetchVideoStreaming = async () => {
   try {
-    streamUrl.value = `${BASE_URL}/v1/videos/${videoId}/stream`;
+    streamUrl.value = `${BASE_URL}/v1/videos/${videoId}/stream`
   } catch (error) {
-    console.error("Failed to load video stream:", error);
+    console.error('Failed to load video stream:', error)
   }
-};
+}
 
 onMounted(() => {
-  fetchVideoInfo();
-  fetchVideoStreaming();
-});
+  fetchVideoInfo()
+  fetchVideoStreaming()
+})
 </script>
 
 <template>
@@ -52,7 +52,7 @@ onMounted(() => {
           <!-- Responsive Video Embed -->
           <div class="ratio ratio-16x9 mb-3">
             <video v-if="streamUrl" controls autoplay>
-              <source :src="streamUrl" type="video/mp4">
+              <source :src="streamUrl" type="video/mp4" />
               Your browser does not support the video tag.
             </video>
             <p v-else class="text-muted">Loading video stream...</p>

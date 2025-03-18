@@ -1,25 +1,25 @@
 <script setup lang="ts">
-import {useAuthStore} from "@/stores/useAuthStore";
-import router from "@/router";
+import { useAuthStore } from '@/stores/useAuthStore'
+import router from '@/router'
 
-const authStore = useAuthStore();
+const authStore = useAuthStore()
 
 const handleUpload = () => {
-  router.push({name:"UPLOAD"});
+  router.push({ name: 'UPLOAD' })
 }
 
 const handleLogout = () => {
-  authStore.clearToken();
-  router.replace({name: "HOME"});
-};
+  authStore.clearToken()
+  router.replace({ name: 'HOME' })
+}
 
 const handleProfile = () => {
   router.push({
-    name: "PROFILE",
+    name: 'PROFILE',
     params: {
-      username: localStorage.getItem("username")
-    }
-  });
+      username: localStorage.getItem('username'),
+    },
+  })
 }
 </script>
 
@@ -27,7 +27,7 @@ const handleProfile = () => {
   <nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="container-fluid">
       <router-link class="navbar-brand" to="/">
-        <img src="./assets/icons/favicon-32x32.png"/>
+        <img src="./assets/icons/favicon-32x32.png" />
       </router-link>
       <button
         class="navbar-toggler"
