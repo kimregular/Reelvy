@@ -32,10 +32,11 @@ const handleLogin = async () => {
       loginWarning.value = false
       await router.push({ name: 'HOME' }) // 홈으로 이동
     } else {
-      throw new Error('Authorization token not found.')
+      console.error('Login failed')
+      loginWarning.value = true
     }
   } catch (error) {
-    console.error('Login failed:', error)
+    console.error('error!', error)
     loginWarning.value = true
   }
 }

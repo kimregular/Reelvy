@@ -27,7 +27,7 @@ const handleProfile = () => {
   <nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="container-fluid">
       <router-link class="navbar-brand" to="/">
-        <img src="./assets/icons/favicon-32x32.png" />
+        <img src="./assets/icons/favicon-32x32.png" alt="MainIcon" />
       </router-link>
       <button
         class="navbar-toggler"
