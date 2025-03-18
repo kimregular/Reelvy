@@ -4,6 +4,7 @@ import com.mysettlement.domain.user.dto.request.EmailCheckRequestDto;
 import com.mysettlement.domain.user.dto.request.UserSignUpRequest;
 import com.mysettlement.domain.user.dto.request.UserUpdateRequest;
 import com.mysettlement.domain.user.dto.response.EmailCheckResponseDto;
+import com.mysettlement.domain.user.dto.response.UserResponse;
 import com.mysettlement.domain.user.dto.response.UserSignUpResponse;
 import com.mysettlement.domain.user.dto.response.UserUpdateResponse;
 import com.mysettlement.domain.user.service.UserService;
@@ -49,14 +50,14 @@ public class UserController {
 		return ResponseEntity.ok(userService.update(userUpdateRequest, profileImage, backgroundImage, userDetails));
 	}
 
-	@GetMapping("/info/{username}")
-	public ResponseEntity<UserUpdateResponse> getUserInfo(@PathVariable String username) {
+	@GetMapping("/{username}/info")
+	public ResponseEntity<UserResponse> getUserInfo(@PathVariable String username) {
 		return ResponseEntity.ok(userService.getUserInfoOf(username));
 	}
 
 	@Admin
-	@GetMapping("/info/{username}/admin")
-	public ResponseEntity<UserUpdateResponse> getAdminInfo(@PathVariable String username) {
+	@GetMapping("/{username}/info/admin")
+	public ResponseEntity<UserResponse> getAdminInfo(@PathVariable String username) {
 		return ResponseEntity.ok(userService.getUserInfoOf(username));
 	}
 
