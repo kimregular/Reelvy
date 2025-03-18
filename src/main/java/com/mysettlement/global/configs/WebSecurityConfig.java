@@ -7,6 +7,8 @@ import com.mysettlement.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -30,6 +32,11 @@ public class WebSecurityConfig {
 	private final JwtUtil jwtUtil;
 	private final ObjectMapper objectMapper;
 	private final AuthenticationConfiguration authenticationConfiguration;
+
+	@Bean
+	public RoleHierarchy roleHierarchy() {
+		return RoleHierarchyImpl.fromHierarchy("ROLE_ADMIN > ROLE_USER");
+	}
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
