@@ -3,7 +3,7 @@ POST http://localhost:8080/v1/users/login
 Content-Type: application/json
 
 {
-  "email": "user@user.com",
+  "username": "user@user.com",
   "password": "123123123"
 }
 
@@ -18,7 +18,7 @@ POST http://localhost:8080/v1/users/login
 Content-Type: application/json
 
 {
-  "email": "admin@admin.com",
+  "username": "admin@admin.com",
   "password": "123123123"
 }
 
@@ -75,3 +75,6 @@ Content-Type: application/json
 
 ### GET Videos of User
 GET http://localhost:8080/v1/videos/user@user.com
+
+### GET Videos of admin
+GET http://localhost:8080/v1/videos/admin@admin.com
