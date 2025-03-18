@@ -1,10 +1,9 @@
-
 ### Post Login Success
 POST http://localhost:8080/v1/users/login
 Content-Type: application/json
 
 {
-  "email": "user@user.com",
+  "username": "user@user.com",
   "password": "123123123"
 }
 
@@ -15,7 +14,7 @@ Content-Type: application/json
 %}
 
 ### GET userInfo for user
-GET http://localhost:8080/v1/users/info/1
+GET http://localhost:8080/v1/users/user@user.com/info
 
 ### GET userInfo for admin
 GET http://localhost:8080/v1/users/info/2/admin
@@ -54,7 +53,7 @@ Content-Type: application/json
 %}
 
 ### GET getUserInfo
-GET http://localhost:8080/v1/users/info/1
+GET http://localhost:8080/v1/users/user@user.com/info
 Content-Type: application/json
 
 ### update User info
@@ -67,7 +66,7 @@ Content-Disposition: form-data; name="user"
 Content-Type: application/json
 
 {
-    "username": "newUsername",
+    "nickname": "newUsername",
     "desc": "Updated description"
 }
 
@@ -75,13 +74,13 @@ Content-Type: application/json
 Content-Disposition: form-data; name="profileImage"; filename="profile.jpg"
 Content-Type: image/jpeg
 
-< ../../src/main/resources/static/images/profile.jpg
+< ../../src/main/resources/static/temp/tempProfile.jpg
 
 --boundary
 Content-Disposition: form-data; name="backgroundImage"; filename="background.jpg"
 Content-Type: image/jpeg
 
-< ../../src/main/resources/static/images/background.jpg
+< ../../src/main/resources/static/temp/tempBackground.jpg
 
 --boundary--
 

@@ -2,9 +2,15 @@
 import { onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import axios, { type AxiosError } from 'axios'
-import { BASE_URL, NOT_FOUND_RESPONSE } from '@/constants/server.ts'
+import {
+  BASE_URL,
+  DEFAULT_BACKGROUND_IMAGE,
+  DEFAULT_PROFILE_IMAGE,
+  NOT_FOUND_RESPONSE,
+} from '@/constants/server.ts'
 import User from '@/entities/user.ts'
 import Video, { type VideoResponseData } from '@/entities/video.ts'
+import VideoCardList from '@/components/VideoCardList.vue'
 
 const route = useRoute()
 const username = ref(route.params.username as string)
@@ -15,11 +21,8 @@ const getUserInfoOf = async (username: string) => {
   try {
     const response = await axios.get(`${BASE_URL}/v1/users/${username}/info`)
     user.value = User.of(response.data)
-    return
   } catch (error: unknown) {
-    // Narrow the type to AxiosError
     if (error instanceof Error && 'response' in error) {
-      // Type guard
       const axiosError = error as AxiosError
       if (axiosError.response?.status === NOT_FOUND_RESPONSE) {
         console.log(`해당하는 유저를 찾을 수 없습니다 : ${username}`)
@@ -39,8 +42,8 @@ const requestVideos = async () => {
 
   try {
     const response = await axios.get(`${BASE_URL}/v1/videos/${user.value.username}`)
-    const videosData = response.data
-    videos.value = videosData.map((v: VideoResponseData) => Video.of(v, User.of(v.user)))
+    const videosData = response.data as VideoResponseData[]
+    videos.value = videosData.map((v: VideoResponseData) => Video.of(v))
     noVideo.value = videos.value.length === 0
   } catch (error) {
     console.log('비디오 로딩 실패!', error)
@@ -48,38 +51,79 @@ const requestVideos = async () => {
 }
 
 watch(user, (newUser) => {
-  if (newUser) requestVideos()
+  if (newUser?.username) requestVideos()
 })
 
 onMounted(() => getUserInfoOf(username.value))
 </script>
 
 <template>
-  <div class="container mt-5">
-    <div style="padding: 15px">
-      <div v-if="noVideo">No video has been found</div>
-      <div
-        v-else
-        class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-4"
-      >
-        <div class="col video-link" v-for="video in videos" :key="video.id" @click="video.watch">
-          <div class="card">
-            <img
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTvX7ghSY75PvK5S-RvhkFxNz88MWEALSBDvA&s"
-              class="card-img-top"
-              alt="..."
-            />
-            <div class="card-body">
-              <h5 class="card-title">{{ video.title }}</h5>
-              <p class="card-text">{{ video.user.nickname }}</p>
-              <p class="card-text">{{ video.desc }}</p>
-              <p class="card-text">{{ video.videoView }}</p>
-            </div>
-          </div>
-        </div>
+  <div v-if="user" class="profile-container">
+    <!-- 배경 이미지 -->
+    <div
+      class="background-image"
+      :style="{
+        backgroundImage: `url(${user.backgroundImageUrl ? `${BASE_URL}/${user.backgroundImageUrl}` : DEFAULT_BACKGROUND_IMAGE})`,
+      }"
+    ></div>
+
+    <!-- 프로필 정보 -->
+    <div class="profile-info">
+      <img
+        :src="user.profileImageUrl ? `${BASE_URL}/${user.profileImageUrl}` : DEFAULT_PROFILE_IMAGE"
+        class="profile-image"
+        alt="profile"
+      />
+      <div class="nickname-container">
+        <h2 class="nickname">{{ user.nickname }}</h2>
       </div>
     </div>
   </div>
+
+  <!-- 비디오 리스트 -->
+  <VideoCardList :videos="videos" :no-video="noVideo"></VideoCardList>
 </template>
 
-<style scoped></style>
+<style scoped>
+.profile-container {
+  text-align: center;
+  padding-bottom: 20px;
+}
+
+.background-image {
+  width: 100%;
+  height: 200px;
+  background-size: cover;
+  background-position: center;
+}
+
+.profile-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -50px;
+}
+
+.profile-image {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 4px solid #fff;
+}
+.nickname-container {
+  background-color: rgba(254, 254, 254, 1);
+  padding: 5px 15px;
+  border-radius: 10px;
+  margin-top: 5px;
+  margin-left: 15px;
+}
+.nickname {
+  font-size: 24px;
+  margin: 0;
+}
+
+.subscriber-count {
+  color: #777;
+  font-size: 14px;
+}
+</style>

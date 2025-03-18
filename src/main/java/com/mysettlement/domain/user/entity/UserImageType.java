@@ -2,28 +2,28 @@ package com.mysettlement.domain.user.entity;
 
 public enum UserImageType {
 
-	PROFILE("profile"){
+	PROFILE("profile.jpg"){
 		@Override
 		public String getImagePathOf(User user) {
 			return user.getProfileImagePath();
 		}
 	},
-	BACKGROUND("background"){
+	BACKGROUND("background.jpg"){
 		@Override
 		public String getImagePathOf(User user) {
 			return user.getBackgroundImagePath();
 		}
 	};
 
-	private final String folderName;
+	private final String fileName;
 
 	public abstract String getImagePathOf(User user);
 
-	UserImageType(String folderName) {
-		this.folderName = folderName;
+	UserImageType(String fileName) {
+		this.fileName = fileName;
 	}
 
-	public String getFolderName() {
-		return folderName;
+	public String getFileName() {
+		return fileName;
 	}
 }

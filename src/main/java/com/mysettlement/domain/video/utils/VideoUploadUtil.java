@@ -4,6 +4,7 @@ import com.mysettlement.domain.user.entity.User;
 import com.mysettlement.domain.video.dto.request.VideoUploadRequest;
 import com.mysettlement.domain.video.entity.Video;
 import com.mysettlement.domain.video.entity.VideoStatus;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,8 +19,11 @@ import static com.mysettlement.domain.video.entity.VideoStatus.*;
 @Component
 public class VideoUploadUtil {
 
+	@Value("${file.upload-dir}")
+	private String uploadDir;
+
 	public Video buildVideoWith(VideoUploadRequest videoUploadRequest, User user) {
-		String videoPath = saveVideoFileInLocal(videoUploadRequest.videoFile(), user.getId());
+		String videoPath = saveVideoFileInLocal(videoUploadRequest.videoFile(), user.getUsername());
 		return Video.builder()
 				.videoTitle(videoUploadRequest.title())
 				.videoDesc(videoUploadRequest.desc())
@@ -30,9 +34,9 @@ public class VideoUploadUtil {
 				.build();
 	}
 
-	private String saveVideoFileInLocal(MultipartFile videoFile, Long userId) {
+	private String saveVideoFileInLocal(MultipartFile videoFile, String username) {
 		// 1. 저장 경로 생성
-		String basePath = "myVideos/" + userId + "/videos/";
+		String basePath = uploadDir + username + "/videos";
 		String fileName = UUID.randomUUID() + "_" + videoFile.getOriginalFilename();
 		Path filePath = Paths.get(basePath, fileName);
 

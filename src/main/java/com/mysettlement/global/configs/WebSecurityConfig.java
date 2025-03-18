@@ -49,19 +49,21 @@ public class WebSecurityConfig {
 
 		http.authorizeHttpRequests(auth ->
 				auth
-				.requestMatchers(
-						new AntPathRequestMatcher("/favicon.ico"),
-						new AntPathRequestMatcher("/error"),
-						new AntPathRequestMatcher("/h2-console/**"),
-						new AntPathRequestMatcher("/docs/**")
-				)
+						.requestMatchers(
+								new AntPathRequestMatcher("/favicon.ico"),
+								new AntPathRequestMatcher("/error"),
+								new AntPathRequestMatcher("/h2-console/**"),
+								new AntPathRequestMatcher("/docs/**"),
+								new AntPathRequestMatcher("/app/uploads/**"),
+								new AntPathRequestMatcher("/images/**")
+						)
 						.permitAll()
-				.requestMatchers(
-						new AntPathRequestMatcher("/v1/users/**"),
-						new AntPathRequestMatcher("/v1/videos/**")
-				)
+						.requestMatchers(
+								new AntPathRequestMatcher("/v1/users/**"),
+								new AntPathRequestMatcher("/v1/videos/**")
+						)
 						.permitAll()
-				.anyRequest()
+						.anyRequest()
 						.denyAll()
 		);
 

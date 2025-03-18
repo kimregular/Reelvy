@@ -23,11 +23,10 @@ export default class Video {
     this._user = user
     this._desc = desc
     this._videoView = videoView
-    this.watch = this.watch.bind(this)
   }
 
-  public static of(data: VideoResponseData, user: User): Video {
-    return new Video(data.id, data.title, user, data.desc, data.videoView)
+  public static of(data: VideoResponseData): Video {
+    return new Video(data.id, data.title, User.of(data.user), data.desc, data.videoView)
   }
 
   get id(): number {
@@ -48,10 +47,5 @@ export default class Video {
 
   get videoView(): number {
     return this._videoView
-  }
-
-  public async watch() {
-    console.log('video watch func has been called!')
-    await router.push({ name: 'WATCH', query: { videoId: this.id } })
   }
 }

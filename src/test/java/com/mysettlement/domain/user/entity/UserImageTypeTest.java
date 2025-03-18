@@ -36,8 +36,8 @@ class UserImageTypeTest {
 	@Test
 	@DisplayName("유저의 이미지 파일들 경로를 확인할 수 있다.")
 	void testGetFolderName() {
-		assertEquals("profile", UserImageType.PROFILE.getFolderName());
-		assertEquals("background", UserImageType.BACKGROUND.getFolderName());
+		assertEquals("profile", UserImageType.PROFILE.getFileName());
+		assertEquals("background", UserImageType.BACKGROUND.getFileName());
 	}
 
 }
