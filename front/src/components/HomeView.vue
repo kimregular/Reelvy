@@ -3,7 +3,7 @@ import { onMounted, ref } from 'vue'
 import axios from 'axios'
 import { BASE_URL } from '@/constants/server.ts'
 import Video, { type VideoResponseData } from '@/entities/video.ts'
-import VideoCardList from '@/components/VideoCardList.vue'
+import VideoCardList from '@/components/video/VideoCardList.vue'
 
 const loading = ref(true)
 const videos = ref<Video[]>([])
