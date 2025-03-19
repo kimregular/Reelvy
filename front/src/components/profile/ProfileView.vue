@@ -9,7 +9,7 @@ import {
 } from '@/constants/server.ts'
 import User from '@/entities/user.ts'
 import Video, { type VideoResponseData } from '@/entities/video.ts'
-import VideoCardList from '@/components/VideoCardList.vue'
+import VideoCardList from '@/components/video/VideoCardList.vue'
 import { useRoute } from 'vue-router'
 import { getUsername } from '@/utils/userUtils.ts'
 import router from '@/router'
