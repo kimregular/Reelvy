@@ -5,9 +5,10 @@ import HomeView from '@/components/HomeView.vue'
 import LoginView from '@/components/LoginView.vue'
 import WatchView from '@/components/WatchView.vue'
 import UploadView from '@/components/UploadView.vue'
-import { requireAnonymous, requireAuth } from '@/utils/routerUtil.ts'
+import { isPageOwner, requireAnonymous, requireAuth } from '@/utils/routerUtil.ts'
 import ProfileView from '@/components/ProfileView.vue'
 import NotFoundView from '@/components/errorPages/NotFoundView.vue'
+import profileEditView from '@/components/profileEditView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -53,6 +54,12 @@ const router = createRouter({
     {
       path: '/:pathMatch(.*)*',
       redirect: { name: 'NOT_FOUND' },
+    },
+    {
+      path: '/profile/:username/edit',
+      component: profileEditView,
+      name: 'PROFILE_EDIT',
+      beforeEnter: isPageOwner,
     },
   ],
 })
