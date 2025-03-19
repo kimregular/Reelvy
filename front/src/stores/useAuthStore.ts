@@ -12,7 +12,6 @@ export const useAuthStore = defineStore('auth', {
     },
     clearToken() {
       this.token = null
-      localStorage.removeItem('username')
       deleteCookie('authToken') // 쿠키 삭제
     },
   },
