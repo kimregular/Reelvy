@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/useAuthStore'
 import router from '@/router'
-import { handleProfile } from '@/utils/userUtils.ts'
-import { ref } from 'vue'
+import { getUsername, handleProfile } from '@/utils/userUtils.ts'
 
 const authStore = useAuthStore()
-const username = ref(localStorage.getItem('username'))
 
 const handleUpload = () => {
   router.push({ name: 'UPLOAD' })
@@ -14,6 +12,15 @@ const handleUpload = () => {
 const handleLogout = () => {
   authStore.clearToken()
   router.replace({ name: 'HOME' })
+}
+
+const handleProfileWithUsername = () => {
+  const username = getUsername()
+  if (!username) {
+    handleLogout()
+    return
+  }
+  handleProfile(username)
 }
 </script>
 
@@ -45,7 +52,7 @@ const handleLogout = () => {
               <button class="nav-link btn btn-link" @click="handleLogout">Logout</button>
             </li>
             <li class="nav-item">
-              <button class="nav-link btn btn-link" @click="handleProfile(username)">
+              <button class="nav-link btn btn-link" @click="handleProfileWithUsername">
                 profile
               </button>
             </li>
