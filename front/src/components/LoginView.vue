@@ -28,7 +28,6 @@ const handleLogin = async () => {
 
     if (token) {
       authStore.setToken(token) // 쿠키에 토큰 저장
-      localStorage.setItem('username', payload.username)
       loginWarning.value = false
       await router.push({ name: 'HOME' }) // 홈으로 이동
     } else {
