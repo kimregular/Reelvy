@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
 import axios, { type AxiosError } from 'axios'
 import {
   BASE_URL,
@@ -11,21 +10,28 @@ import {
 import User from '@/entities/user.ts'
 import Video, { type VideoResponseData } from '@/entities/video.ts'
 import VideoCardList from '@/components/VideoCardList.vue'
+import { useRoute } from 'vue-router'
+import { getUsername } from '@/utils/userUtils.ts'
+import router from '@/router'
 
-const route = useRoute()
-const username = ref(route.params.username as string)
 const user = ref<User | null>(null)
 const noVideo = ref(true)
 
-const getUserInfoOf = async (username: string) => {
+const route = useRoute()
+const profileUser = ref(route.params.username)
+const currentUser = ref(getUsername())
+
+const isProfileOwner = ref(profileUser.value === currentUser.value)
+
+const getUserInfoOf = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/v1/users/${username}/info`)
+    const response = await axios.get(`${BASE_URL}/v1/users/${profileUser.value}/info`)
     user.value = User.of(response.data)
   } catch (error: unknown) {
     if (error instanceof Error && 'response' in error) {
       const axiosError = error as AxiosError
       if (axiosError.response?.status === NOT_FOUND_RESPONSE) {
-        console.log(`해당하는 유저를 찾을 수 없습니다 : ${username}`)
+        console.log(`해당하는 유저를 찾을 수 없습니다 : ${profileUser.value}`)
       } else {
         console.log('error occurred!')
       }
@@ -50,11 +56,15 @@ const requestVideos = async () => {
   }
 }
 
+const handleProfileEditView = () => {
+  router.push({ name: 'PROFILE_EDIT', params: { username: profileUser.value } })
+}
+
 watch(user, (newUser) => {
   if (newUser?.username) requestVideos()
 })
 
-onMounted(() => getUserInfoOf(username.value))
+onMounted(() => getUserInfoOf())
 </script>
 
 <template>
@@ -78,6 +88,12 @@ onMounted(() => getUserInfoOf(username.value))
         <h2 class="nickname">{{ user.nickname }}</h2>
       </div>
     </div>
+  </div>
+
+  <div class="container">
+    <button v-if="isProfileOwner" class="btn btn-primary" @click="handleProfileEditView">
+      edit profile
+    </button>
   </div>
 
   <!-- 비디오 리스트 -->
