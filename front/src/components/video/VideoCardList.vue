@@ -59,4 +59,13 @@ a:link {
 a:visited {
   color: black;
 }
+
+.card {
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  cursor: pointer;
+}
 </style>
