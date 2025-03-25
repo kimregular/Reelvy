@@ -54,7 +54,6 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
     }
 
     private String getRequiredField(JsonNode jsonNode, String fieldName) {
-        log.info(String.valueOf(jsonNode));
         return jsonNode.path(fieldName).asText(null);
     }
 
