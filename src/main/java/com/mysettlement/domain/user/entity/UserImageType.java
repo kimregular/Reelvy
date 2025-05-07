@@ -1,29 +1,21 @@
 package com.mysettlement.domain.user.entity;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.function.Function;
+
+@RequiredArgsConstructor
 public enum UserImageType {
 
-	PROFILE("profile.jpg"){
-		@Override
-		public String getImagePathOf(User user) {
-			return user.getProfileImagePath();
-		}
-	},
-	BACKGROUND("background.jpg"){
-		@Override
-		public String getImagePathOf(User user) {
-			return user.getBackgroundImagePath();
-		}
-	};
+	PROFILE("profile.jpg", User::getProfileImagePath),
+	BACKGROUND("background.jpg", User::getBackgroundImagePath);
 
+	@Getter
 	private final String fileName;
+	private final Function<User, String> userImagePathResolver;
 
-	public abstract String getImagePathOf(User user);
-
-	UserImageType(String fileName) {
-		this.fileName = fileName;
-	}
-
-	public String getFileName() {
-		return fileName;
+	public String getImagePathOf(User user) {
+		return userImagePathResolver.apply(user);
 	}
 }
