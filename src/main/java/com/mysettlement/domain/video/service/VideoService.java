@@ -74,10 +74,9 @@ public class VideoService {
         return VideoResponse.of(video);
     }
 
-    public List<VideoResponse> getVideosOf(String email) {
-        User user = userRepository.findByUsername(email).orElseThrow(NoUserFoundException::new);
-        List<Video> userVideos = videoRepository.findAllByUserId(user.getId());
-        return userVideos.stream().map(VideoResponse::of).toList();
+    public List<VideoResponse> getVideosOf(String username) {
+        User user = userRepository.findByUsername(username).orElseThrow(NoUserFoundException::new);
+	    return videoRepository.findAllByUserId(user.getId()).stream().map(VideoResponse::of).toList();
     }
 
     @Transactional

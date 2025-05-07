@@ -5,7 +5,7 @@ import org.springframework.lang.Nullable;
 
 public record UserUpdateRequest(
 		@Size(min=3, message = "이름은 3자 이상이어야합니다.")
-		String username,
+		String nickname,
 
 		@Nullable
 		String desc

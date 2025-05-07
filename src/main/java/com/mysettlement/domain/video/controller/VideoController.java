@@ -68,7 +68,7 @@ public class VideoController {
     }
 
 	@GetMapping("/{username}")
-	public ResponseEntity<List<VideoResponse>> getVideosOf(@PathVariable(name = "username") String userEmail) {
-		return ResponseEntity.ok(videoService.getVideosOf(userEmail));
+	public ResponseEntity<List<VideoResponse>> getVideosOf(@PathVariable String username) {
+		return ResponseEntity.ok(videoService.getVideosOf(username));
 	}
 }

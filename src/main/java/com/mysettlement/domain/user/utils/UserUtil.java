@@ -3,6 +3,7 @@ package com.mysettlement.domain.user.utils;
 import com.mysettlement.domain.user.dto.request.UserSignUpRequest;
 import com.mysettlement.domain.user.entity.User;
 import com.mysettlement.domain.user.entity.UserImageType;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,12 +13,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
-import java.util.UUID;
 
 import static com.mysettlement.domain.user.entity.UserRole.USER;
 
 @Component
 public class UserUtil {
+
+	@Value("${file.upload-dir}")
+	private String uploadDir;
 
 	public User buildUserWith(UserSignUpRequest userSignUpRequest, PasswordEncoder passwordEncoder) {
 		return User.builder()
@@ -28,18 +31,18 @@ public class UserUtil {
 				.build();
 	}
 
-	public String saveImage(MultipartFile profileImage, User user, UserImageType userImageType) {
+	public String saveImage(MultipartFile image, User user, UserImageType userImageType) {
 		if (!Objects.isNull(userImageType.getImagePathOf(user))) {
 			deleteImage(userImageType.getImagePathOf(user));
 		}
 
-		String basePath = "myVideos/" + user.getId() + "/images/" + userImageType.getFolderName();
-		String fileName = UUID.randomUUID() + "_" + profileImage.getOriginalFilename();
+		String basePath = uploadDir + user.getUsername() + "/photos";
+		String fileName = userImageType.getFileName();
 		Path filePath = Paths.get(basePath, fileName);
 
 		try {
 			Files.createDirectories(filePath.getParent());
-			Files.write(filePath, profileImage.getBytes());
+			Files.write(filePath, image.getBytes());
 		} catch (IOException e) {
 			throw new RuntimeException("프로필 사진 변경에 실패했습니다.", e);
 		}

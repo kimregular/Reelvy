@@ -7,7 +7,7 @@ build/
 !**/src/test/**/build/
 
 # MySettlement
-myVideos/*
+app/*
 
 ### applications ###
 /src/main/resources/static/video/*

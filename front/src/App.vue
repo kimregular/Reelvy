@@ -1,23 +1,34 @@
 <script setup lang="ts">
-import {useAuthStore} from "@/stores/useAuthStore";
-import router from "@/router";
+import { useAuthStore } from '@/stores/useAuthStore'
+import router from '@/router'
+import { getUsername, handleProfile } from '@/utils/userUtils.ts'
+
+const authStore = useAuthStore()
 
 const handleUpload = () => {
-  router.push("UPLOAD");
+  router.push({ name: 'UPLOAD' })
 }
 
-const authStore = useAuthStore();
-
 const handleLogout = () => {
-  authStore.clearToken();
-};
+  authStore.clearToken()
+  router.replace({ name: 'HOME' })
+}
+
+const handleProfileWithUsername = () => {
+  const username = getUsername()
+  if (!username) {
+    handleLogout()
+    return
+  }
+  handleProfile(username)
+}
 </script>
 
 <template>
   <nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="container-fluid">
       <router-link class="navbar-brand" to="/">
-        <img src="./assets/icons/favicon-32x32.png"/>
+        <img src="./assets/icons/favicon-32x32.png" alt="MainIcon" />
       </router-link>
       <button
         class="navbar-toggler"
@@ -39,6 +50,11 @@ const handleLogout = () => {
             </li>
             <li class="nav-item">
               <button class="nav-link btn btn-link" @click="handleLogout">Logout</button>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link btn btn-link" @click="handleProfileWithUsername">
+                profile
+              </button>
             </li>
           </template>
           <template v-else>

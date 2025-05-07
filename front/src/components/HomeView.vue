@@ -1,49 +1,28 @@
 <script setup lang="ts">
-import {onMounted, ref} from "vue";
-import axios from "axios";
-import {BASE_URL} from "@/constants/server.ts";
-import type Video from "@/types/video.ts";
-import router from "@/router";
+import { onMounted, ref } from 'vue'
+import axios from 'axios'
+import { BASE_URL } from '@/constants/server.ts'
+import Video, { type VideoResponseData } from '@/entities/video.ts'
+import VideoCardList from '@/components/video/VideoCardList.vue'
 
-const videos = ref<Video[]>([]);
-const loading = ref(true);
+const loading = ref(true)
+const videos = ref<Video[]>([])
 
 const requestVideos = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/v1/videos`);
-    const videosData: Video[] = response.data;
-    loading.value = false;
-    videos.value = videosData;
+    const response = await axios.get(`${BASE_URL}/v1/videos`)
+    const { data: videoData } = response
+    videos.value = videoData.map((v: VideoResponseData) => Video.of(v))
+    loading.value = videos.value.length === 0
   } catch (error) {
-    console.log("비디오 로딩 실패!")
+    console.log('비디오 로딩 실패!', error)
   }
 }
-onMounted(requestVideos);
-
-const watch = (videoId: number) => {
-  router.push({name: "WATCH", query: {videoId: videoId.toString()}});
-}
-
+onMounted(requestVideos)
 </script>
 
 <template>
-  <div style="padding: 15px">
-    <div v-if="loading">loading...</div>
-    <div v-else class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-4">
-      <div class="col video-link" v-for="video in videos" :key="video.id" @click="watch(video.id)">
-        <div class="card">
-          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTvX7ghSY75PvK5S-RvhkFxNz88MWEALSBDvA&s"
-               class="card-img-top" alt="...">
-          <div class="card-body">
-            <h5 class="card-title">{{ video.title }}</h5>
-            <p class="card-text">{{ video.user.name }}</p>
-            <p class="card-text">{{ video.desc }}</p>
-            <p class="card-text">{{ video.videoView }}</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <VideoCardList :videos="videos" :loading="loading"></VideoCardList>
 </template>
 
 <style scoped>

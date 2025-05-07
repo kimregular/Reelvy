@@ -7,6 +7,8 @@ import com.mysettlement.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -32,6 +34,11 @@ public class WebSecurityConfig {
 	private final AuthenticationConfiguration authenticationConfiguration;
 
 	@Bean
+	public RoleHierarchy roleHierarchy() {
+		return RoleHierarchyImpl.fromHierarchy("ROLE_ADMIN > ROLE_USER");
+	}
+
+	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
 		http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
@@ -42,19 +49,21 @@ public class WebSecurityConfig {
 
 		http.authorizeHttpRequests(auth ->
 				auth
-				.requestMatchers(
-						new AntPathRequestMatcher("/favicon.ico"),
-						new AntPathRequestMatcher("/error"),
-						new AntPathRequestMatcher("/h2-console/**"),
-						new AntPathRequestMatcher("/docs/**")
-				)
+						.requestMatchers(
+								new AntPathRequestMatcher("/favicon.ico"),
+								new AntPathRequestMatcher("/error"),
+								new AntPathRequestMatcher("/h2-console/**"),
+								new AntPathRequestMatcher("/docs/**"),
+								new AntPathRequestMatcher("/app/uploads/**"),
+								new AntPathRequestMatcher("/images/**")
+						)
 						.permitAll()
-				.requestMatchers(
-						new AntPathRequestMatcher("/v1/users/**"),
-						new AntPathRequestMatcher("/v1/videos/**")
-				)
+						.requestMatchers(
+								new AntPathRequestMatcher("/v1/users/**"),
+								new AntPathRequestMatcher("/v1/videos/**")
+						)
 						.permitAll()
-				.anyRequest()
+						.anyRequest()
 						.denyAll()
 		);
 

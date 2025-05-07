@@ -4,6 +4,7 @@ import com.mysettlement.domain.user.dto.request.EmailCheckRequestDto;
 import com.mysettlement.domain.user.dto.request.UserSignUpRequest;
 import com.mysettlement.domain.user.dto.request.UserUpdateRequest;
 import com.mysettlement.domain.user.dto.response.EmailCheckResponseDto;
+import com.mysettlement.domain.user.dto.response.UserResponse;
 import com.mysettlement.domain.user.dto.response.UserSignUpResponse;
 import com.mysettlement.domain.user.dto.response.UserUpdateResponse;
 import com.mysettlement.domain.user.entity.User;
@@ -66,8 +67,8 @@ public class UserService {
 		return UserUpdateResponse.of(user);
 	}
 
-	public UserUpdateResponse getUserInfoOf(Long userId) {
-		User user = userRepository.findById(userId).orElseThrow(NoUserFoundException::new);
-		return UserUpdateResponse.of(user);
+	public UserResponse getUserInfoOf(String username) {
+		User user = userRepository.findByUsername(username).orElseThrow(NoUserFoundException::new);
+		return UserResponse.of(user);
 	}
 }

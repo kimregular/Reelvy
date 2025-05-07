@@ -8,15 +8,15 @@ import lombok.Getter;
 public class UserUpdateResponse {
 
 	private final String username;
-	private final String email;
+	private final String nickname;
 	private final String profileImage;
 	private final String backgroundImage;
 	private final String desc;
 
 	@Builder
-	private UserUpdateResponse(String username, String email, String profileImage, String backgroundImage, String desc) {
+	private UserUpdateResponse(String username, String nickname, String profileImage, String backgroundImage, String desc) {
 		this.username = username;
-		this.email = email;
+		this.nickname = nickname;
 		this.profileImage = profileImage;
 		this.backgroundImage = backgroundImage;
 		this.desc = desc;
@@ -24,8 +24,8 @@ public class UserUpdateResponse {
 
 	public static UserUpdateResponse of(User user) {
 		return UserUpdateResponse.builder()
-				.username(user.getNickname())
-				.email(user.getUsername())
+				.username(user.getUsername())
+				.nickname(user.getNickname())
 				.profileImage(user.getProfileImagePath())
 				.backgroundImage(user.getBackgroundImagePath())
 				.desc(user.getDesc())

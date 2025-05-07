@@ -54,7 +54,7 @@ public class User {
     }
 
     public void updateUserInfoWith(UserUpdateRequest userUpdateRequest) {
-        this.nickname = userUpdateRequest.username();
+        this.nickname = userUpdateRequest.nickname();
         this.desc = userUpdateRequest.desc();
     }
 

@@ -1,6 +1,6 @@
 package com.mysettlement.domain.video.dto.response;
 
-import com.mysettlement.domain.user.dto.response.UserResponseDto;
+import com.mysettlement.domain.user.dto.response.UserResponse;
 import com.mysettlement.domain.video.entity.Video;
 import com.mysettlement.domain.video.entity.VideoStatus;
 import lombok.Builder;
@@ -11,14 +11,14 @@ public class VideoResponse {
 
 	private final Long id;
 	private final String title;
-	private final UserResponseDto user;
+	private final UserResponse user;
 	private final String desc;
 	private final long videoView;
 	private final VideoStatus videoStatus;
 
 
 	@Builder
-	private VideoResponse(Long id, String title, UserResponseDto user, String desc, long videoView, VideoStatus videoStatus) {
+	private VideoResponse(Long id, String title, UserResponse user, String desc, long videoView, VideoStatus videoStatus) {
         this.id = id;
         this.title = title;
         this.user = user;
@@ -31,7 +31,7 @@ public class VideoResponse {
 		return VideoResponse.builder()
 				.id(video.getId())
 				.title(video.getVideoTitle())
-				.user(UserResponseDto.of(video.getUser()))
+				.user(UserResponse.of(video.getUser()))
 				.desc(video.getVideoDesc())
 				.videoView(video.getVideoView())
 				.videoStatus(video.getVideoStatus())

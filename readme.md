@@ -10,6 +10,7 @@
     * [jwt 요청 방법 설정](#jwt-요청-방법-설정)
     * [로그인한 유저가 /login 페이지 접근하던 문제](#로그인한-유저가-login-페이지-접근하던-문제)
     * [비디오 업로드 요청이 백엔드에서 거절되던 문제](#비디오-업로드-요청이-백엔드에서-거절되던-문제)
+    * [Admin은 비디오 업로드가 안 되던 현상](#admin은-비디오-업로드가-안-되던-현상)
 <!-- TOC -->
 
 ## 사용자 동영상 공유 플랫폼
@@ -175,10 +176,12 @@ vue의 라우터에서 클라이언트가 로그인했는지 확인하는 로직
 처리하는 컨트롤러에서 `MULTIPART_FORM_DATA_VALUE` 만 입력받기 때문에
 발생한 현상이었다.
 
-파일을 json 객체로 전달하면 서버가 이를 파일로 처리하지 않고, 텍스트 데이터로 처리한다.
+파일을 json 객체로 전달하면 서버가 이를 파일로 처리하지 않고, 텍스트 데이터로
+처리한다.
 
 파일을 업로드 할 때에는 formData를 사용해야한다.
-`FormData` 객체는 `multipart/form-data` 형식으로 데이터를 전송할 수 있도록 도와준다.
+`FormData` 객체는 `multipart/form-data` 형식으로 데이터를 전송할
+수 있도록 도와준다.
 
 ```ts
 // 수정 전
@@ -189,17 +192,17 @@ const payload = {
 }
 
 try {
-  let authStore = useAuthStore();
-  await axios.post(`${BASE_URL}/v1/videos/upload`, payload, {
-    headers: {
-      Authorization: authStore.token
-    },
-    withCredentials: true
-  });
-  await router.replace({name: "HOME"})
+    let authStore = useAuthStore();
+    await axios.post(`${BASE_URL}/v1/videos/upload`, payload, {
+        headers: {
+            Authorization: authStore.token
+        },
+        withCredentials: true
+    });
+    await router.replace({name: "HOME"})
 } catch (error) {
-  alert("error!");
-  return;
+    alert("error!");
+    return;
 }
 
 ```
@@ -223,5 +226,36 @@ try {
 } catch (error) {
     alert("error!");
     return;
+}
+```
+
+### Admin은 비디오 업로드가 안 되던 현상
+
+권한이 `user`인 멤버는 비디오 업로드가 가능하지만
+`admin`인 멤버는 forbidden 으로 거절되는 현상 해결
+
+```java
+
+@User
+@PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+public ResponseEntity<VideoResponse> uploadVideo(@ModelAttribute @Valid VideoUploadRequest videoUploadRequest,
+                                                 @AuthenticationPrincipal UserDetails userDetails) {
+	return ResponseEntity.status(HttpStatus.CREATED).body(videoService.uploadVideo(videoUploadRequest, userDetails));
+}
+```
+
+업로드 컨트롤러에서 `@User` 에너테이션으로 멤버의 권한이 `User`인지 확인하는
+로직이 있었기 때문에 발생한 에러
+
+User만 확인하기 때문에 User는 업로드가 가능하지만 Admin은 업로드가 불가능했음
+
+권한에 계층을 주어서 Admin이면 User의 모든 기능을 사용할 수 있도록 해결함
+
+```java
+// WebSecurityConfig.java
+
+@Bean
+public RoleHierarchy roleHierarchy() {
+	return RoleHierarchyImpl.fromHierarchy("ROLE_ADMIN > ROLE_USER");
 }
 ```
