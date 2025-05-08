@@ -6,6 +6,7 @@ import com.mysettlement.domain.user.repository.UserRepository;
 import com.mysettlement.domain.video.dto.request.VideoStatusChangeRequest;
 import com.mysettlement.domain.video.dto.request.VideoUpdateRequest;
 import com.mysettlement.domain.video.dto.request.VideoUploadRequest;
+import com.mysettlement.domain.video.dto.request.VideosStatusChangeRequest;
 import com.mysettlement.domain.video.dto.response.VideoResponse;
 import com.mysettlement.domain.video.dto.response.VideoStreamingResponse;
 import com.mysettlement.domain.video.entity.Video;
@@ -92,5 +93,18 @@ public class VideoService {
 
         video.changeInfoWith(videoUpdateRequestDto);
         return VideoResponse.of(video);
+    }
+
+    @Transactional
+    public void changeVideosStatus(VideosStatusChangeRequest videosStatusChangeRequest,
+                                   UserDetails userDetails) {
+
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(NoUserFoundException::new);
+
+        List<Video> videos = videoRepository.findAllByUserId(user.getId()).stream().filter(video -> videosStatusChangeRequest.videoIds().contains(video.getId())).toList();
+
+        for (Video video : videos) {
+            video.updateStatus(videosStatusChangeRequest.videoStatus());
+        }
     }
 }

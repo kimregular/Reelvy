@@ -63,9 +63,8 @@ public class Video {
         this.videoStatus = videoStatusChangeRequest.videoStatus();
     }
 
-    public void updateStatus(VideoUpdateRequest videoUpdateRequest) {
-        this.videoTitle = videoUpdateRequest.title();
-        this.videoDesc = videoUpdateRequest.desc();
+    public void updateStatus(VideoStatus videoStatus) {
+        this.videoStatus = videoStatus;
     }
 
     public void viewUpdate() {
@@ -75,5 +74,6 @@ public class Video {
     public void changeInfoWith(VideoUpdateRequest videoUpdateRequest) {
         this.videoTitle = videoUpdateRequest.title();
         this.videoDesc = videoUpdateRequest.desc();
+        this.videoStatus = videoUpdateRequest.videoStatus();
     }
 }

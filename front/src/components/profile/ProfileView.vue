@@ -8,11 +8,12 @@ import {
   NOT_FOUND_RESPONSE,
 } from '@/constants/server.ts'
 import User from '@/entities/user.ts'
-import Video, { type VideoResponseData } from '@/entities/video.ts'
+import Video from '@/entities/video.ts'
 import VideoCardList from '@/components/video/VideoCardList.vue'
 import { useRoute } from 'vue-router'
 import { getUsername } from '@/utils/userUtils.ts'
 import router from '@/router'
+import { getVideosOf } from '@/utils/videoUtils.ts'
 
 const user = ref<User | null>(null)
 const noVideo = ref(true)
@@ -46,14 +47,8 @@ const videos = ref<Video[]>([])
 const requestVideos = async () => {
   if (!user.value) return
 
-  try {
-    const response = await axios.get(`${BASE_URL}/v1/videos/${user.value.username}`)
-    const videosData = response.data as VideoResponseData[]
-    videos.value = videosData.map((v: VideoResponseData) => Video.of(v))
-    noVideo.value = videos.value.length === 0
-  } catch (error) {
-    console.log('비디오 로딩 실패!', error)
-  }
+  videos.value = await getVideosOf(user.value.username)
+  noVideo.value = videos.value.length === 0
 }
 
 const handleProfileEditView = () => {
@@ -61,7 +56,11 @@ const handleProfileEditView = () => {
 }
 
 const handleVideoEditView = () => {
-  alert('working on it! 😢')
+  if (!user.value) {
+    console.log('User 정보가 없습니다.')
+    return
+  }
+  router.push({ name: 'VIDEO_EDIT', params: { username: user.value.username } })
 }
 
 watch(user, (newUser) => {
