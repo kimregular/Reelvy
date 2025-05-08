@@ -9,4 +9,7 @@ ${AnsiColor.BRIGHT_CYAN}888       888  "Y88888  "Y8888P"   "Y8888   "Y888  "Y888
 ${AnsiColor.MAGENTA}                   888
 ${AnsiColor.BRIGHT_MAGENTA}              Y8b d88P
 ${AnsiColor.BRIGHT_BLUE}               "Y88P"
-${AnsiColor.DEFAULT}
+${AnsiColor.DEFAULT}-------------------------------------------------------------------------------------------------------------
+MySettlement    ::  Share Your Memories with Us!
+SpringBoot      ::  ${spring-boot.formatted-version}
+-------------------------------------------------------------------------------------------------------------
