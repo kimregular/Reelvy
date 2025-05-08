@@ -91,6 +91,10 @@ onMounted(() => getUserInfoOf())
         <h2 class="nickname">{{ user.nickname }}</h2>
       </div>
     </div>
+
+    <div v-if="user.desc" class="container description-container">
+      <p class="description text-muted fs-6 mb-0">{{ user.desc }}</p>
+    </div>
   </div>
 
   <div class="container">
@@ -172,5 +176,8 @@ onMounted(() => getUserInfoOf())
     width: 100%;
     max-width: 200px;
   }
+}
+.description-container {
+  margin-top: 1rem;
 }
 </style>
