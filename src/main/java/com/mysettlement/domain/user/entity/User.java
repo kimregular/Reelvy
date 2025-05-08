@@ -1,5 +1,7 @@
 package com.mysettlement.domain.user.entity;
 
+import com.mysettlement.global.entity.BaseEntity;
+
 import com.mysettlement.domain.user.dto.request.UserUpdateRequest;
 import com.mysettlement.domain.video.entity.Video;
 import jakarta.persistence.*;
@@ -17,7 +19,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter
 @Table(name = "USERS")
 @NoArgsConstructor(access = PROTECTED)
-public class User {
+public class User extends BaseEntity {
 
     @Id
     @Column(name = "user_id")
