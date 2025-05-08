@@ -1,14 +1,13 @@
 package com.mysettlement;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mysettlement.global.configs.WebSecurityConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
-@Import(WebSecurityConfig.class)
+@EnableJpaAuditing
 @SpringBootApplication
 @ConfigurationPropertiesScan
 public class MySettlementApplication {

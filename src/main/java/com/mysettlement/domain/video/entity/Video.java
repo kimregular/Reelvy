@@ -3,6 +3,7 @@ package com.mysettlement.domain.video.entity;
 import com.mysettlement.domain.user.entity.User;
 import com.mysettlement.domain.video.dto.request.VideoStatusChangeRequest;
 import com.mysettlement.domain.video.dto.request.VideoUpdateRequest;
+import com.mysettlement.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,7 +17,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter
 @Table(name = "VIDEO")
 @NoArgsConstructor(access = PROTECTED)
-public class Video {
+public class Video extends BaseEntity {
 
     @Id
     @Column(name = "video_id")
