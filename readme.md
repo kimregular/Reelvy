@@ -1,23 +1,21 @@
 # MyVideo
 
 <!-- TOC -->
-
 * [MyVideo](#myvideo)
-    * [사용자 동영상 공유 플랫폼](#사용자-동영상-공유-플랫폼)
-    * [Trouble Shootings](#trouble-shootings)
-        * [Intellij Http Client 응답 변수 설정하기](#intellij-http-client-응답-변수-설정하기)
-        * [AXIOS 응답 헤더에 Authorization 없는 문제](#axios-응답-헤더에-authorization-없는-문제)
-        * [로그인 후 새로고침하면 로그아웃되던 문제](#로그인-후-새로고침하면-로그아웃되던-문제)
-        * [jwt 요청 방법 설정](#jwt-요청-방법-설정)
-        * [로그인한 유저가 /login 페이지 접근하던 문제](#로그인한-유저가-login-페이지-접근하던-문제)
-        * [비디오 업로드 요청이 백엔드에서 거절되던 문제](#비디오-업로드-요청이-백엔드에서-거절되던-문제)
-        * [Admin은 비디오 업로드가 안 되던 현상](#admin은-비디오-업로드가-안-되던-현상)
-    * [의사결정 기록](#의사결정-기록)
-        * [Util 클래스들에 @Component 사용](#util-클래스들에-component-사용)
-        * [서비스단에는 private 클래스가 없어야한다!](#서비스단에는-private-클래스가-없어야한다)
-    * [코드 개선 기록](#코드-개선-기록)
-        * [1. 유저 프로필 사진 저장 로직 개선](#1-유저-프로필-사진-저장-로직-개선)
-
+  * [사용자 동영상 공유 플랫폼](#사용자-동영상-공유-플랫폼)
+  * [Trouble Shootings](#trouble-shootings)
+    * [Intellij Http Client 응답 변수 설정하기](#intellij-http-client-응답-변수-설정하기)
+    * [AXIOS 응답 헤더에 Authorization 없는 문제](#axios-응답-헤더에-authorization-없는-문제)
+    * [로그인 후 새로고침하면 로그아웃되던 문제](#로그인-후-새로고침하면-로그아웃되던-문제)
+    * [jwt 요청 방법 설정](#jwt-요청-방법-설정)
+    * [로그인한 유저가 /login 페이지 접근하던 문제](#로그인한-유저가-login-페이지-접근하던-문제)
+    * [비디오 업로드 요청이 백엔드에서 거절되던 문제](#비디오-업로드-요청이-백엔드에서-거절되던-문제)
+    * [Admin은 비디오 업로드가 안 되던 현상](#admin은-비디오-업로드가-안-되던-현상)
+  * [의사결정 기록](#의사결정-기록)
+    * [Util 클래스들에 @Component 사용](#util-클래스들에-component-사용)
+    * [서비스단에는 private 클래스가 없어야한다!](#서비스단에는-private-클래스가-없어야한다)
+  * [코드 개선 기록](#코드-개선-기록)
+    * [유저 프로필 사진 저장 로직 개선](#유저-프로필-사진-저장-로직-개선)
 <!-- TOC -->
 
 ## 사용자 동영상 공유 플랫폼
@@ -288,7 +286,7 @@ public RoleHierarchy roleHierarchy() {
 
 ## 코드 개선 기록
 
-### 1. 유저 프로필 사진 저장 로직 개선
+### 유저 프로필 사진 저장 로직 개선
 
 개선 전
 
@@ -342,11 +340,11 @@ public String saveBackgroundImage(MultipartFile backgroundImage, User user) {
 
 ```java
 // UserUtil
-public String saveImage(MultipartFile profileImage, User user, UserImageType userImageType) {
-	if (!Objects.isNull(userImageType.getImagePathOf(user))) {
-		deleteImage(userImageType.getImagePathOf(user));
+public String saveImage(MultipartFile profileImage, User user, UserImageType userImageCategory) {
+	if (!Objects.isNull(userImageCategory.getImagePathOf(user))) {
+		deleteImage(userImageCategory.getImagePathOf(user));
 	}
-	String basePath = "myVideos/" + user.getId() + "/images/" + userImageType.getFolderName();
+	String basePath = "myVideos/" + user.getId() + "/images/" + userImageCategory.getFolderName();
 	String fileName = UUID.randomUUID() + "_" + profileImage.getOriginalFilename();
 	Path filePath = Paths.get(basePath, fileName);
 	try {

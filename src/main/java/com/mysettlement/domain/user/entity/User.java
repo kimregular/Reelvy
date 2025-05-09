@@ -71,4 +71,18 @@ public class User extends BaseEntity {
     public boolean hasNoRightToChange(Video video) {
         return !Objects.equals(this.getId(), video.getUser().getId());
     }
+
+    public boolean hasImageOf(UserImageCategory userImageCategory) {
+        return switch (userImageCategory) {
+            case PROFILE -> this.profileImagePath != null;
+            case BACKGROUND -> this.backgroundImagePath != null;
+        };
+    }
+
+    public String getImagePathOf(UserImageCategory userImageCategory) {
+        return switch (userImageCategory) {
+            case PROFILE -> this.profileImagePath;
+            case BACKGROUND -> this.backgroundImagePath;
+        };
+    }
 }

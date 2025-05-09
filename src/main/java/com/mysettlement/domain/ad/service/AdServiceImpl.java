@@ -8,7 +8,7 @@ import com.mysettlement.domain.ad.dto.request.AdStatusUpdateReqeustDto;
 import com.mysettlement.domain.ad.dto.request.AdUpdateReqeustDto;
 import com.mysettlement.domain.ad.dto.request.AdUploadRequestDto;
 import com.mysettlement.domain.ad.dto.response.AdResponseDto;
-import com.mysettlement.global.util.AdSelecter;
+import com.mysettlement.global.util.AdSelectUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +23,7 @@ import static com.mysettlement.domain.ad.entity.AdStatus.isAvailableStatus;
 public class AdServiceImpl implements AdService {
 
     private final AdRepository adRepository;
-    private final AdSelecter adSelecter;
+    private final AdSelectUtil adSelectUtil;
 
     @Override
     public AdResponseDto getAdById(Long adId) {
@@ -59,7 +59,7 @@ public class AdServiceImpl implements AdService {
 
     @Override
     public List<Long> getAdsForVideos(Long videoLength) {
-        List<Ad> adsForRange = adRepository.findAdsForRange(adSelecter.getNumOfAds(videoLength));
+        List<Ad> adsForRange = adRepository.findAdsForRange(adSelectUtil.getNumOfAds(videoLength));
         for (Ad ad : adsForRange) {
             // 프론트가 없다는 가정하에 들어간 로직
             // 프론트 로직이 구현된다면 제거해야함!

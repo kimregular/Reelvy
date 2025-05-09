@@ -1,4 +1,4 @@
-package com.mysettlement.domain.video.utils;
+package com.mysettlement.domain.video.resolvers;
 
 import com.mysettlement.domain.video.dto.response.VideoStreamingResponse;
 import com.mysettlement.domain.video.entity.Video;
@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 @Component
-public class VideoStreamingUtil {
+public class VideoStreamingResolver {
 
 	public VideoStreamingResponse resolve(Video video, HttpServletRequest request) {
 		// Range 헤더 파싱
