@@ -11,7 +11,8 @@ import com.mysettlement.domain.user.entity.User;
 import com.mysettlement.domain.user.exception.DuplicateUserException;
 import com.mysettlement.domain.user.exception.NoUserFoundException;
 import com.mysettlement.domain.user.repository.UserRepository;
-import com.mysettlement.domain.user.utils.UserUtil;
+import com.mysettlement.domain.user.resolvers.UserBuildResolver;
+import com.mysettlement.domain.user.resolvers.UserImageResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,8 +22,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Objects;
 
-import static com.mysettlement.domain.user.entity.UserImageType.BACKGROUND;
-import static com.mysettlement.domain.user.entity.UserImageType.PROFILE;
+import static com.mysettlement.domain.user.entity.UserImageCategory.BACKGROUND;
+import static com.mysettlement.domain.user.entity.UserImageCategory.PROFILE;
 
 @Service
 @Transactional(readOnly = true)
@@ -31,13 +32,14 @@ public class UserService {
 
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
-	private final UserUtil userUtil;
+	private final UserImageResolver userImageResolver;
+	private final UserBuildResolver userBuildResolver;
 
 	public UserSignUpResponse signUp(UserSignUpRequest userSignupRequest) {
 		if (isExistUser(userSignupRequest.username())) {
 			throw new DuplicateUserException();
 		}
-		User newUser = userUtil.buildUserWith(userSignupRequest, passwordEncoder);
+		User newUser = userBuildResolver.buildUserWith(userSignupRequest, passwordEncoder);
 		userRepository.save(newUser);
 		return new UserSignUpResponse(newUser);
 	}
@@ -57,11 +59,11 @@ public class UserService {
 		user.updateUserInfoWith(userUpdateRequest);
 
 		if (!Objects.isNull(profileImage) && !profileImage.isEmpty()) {
-			user.updateProfileImagePath(userUtil.saveImage(profileImage, user, PROFILE));
+			user.updateProfileImagePath(userImageResolver.replaceImage(profileImage, user, PROFILE));
 		}
 
 		if (!Objects.isNull(backgroundImage) && !backgroundImage.isEmpty()) {
-			user.updateBackgroundImagePath(userUtil.saveImage(backgroundImage, user, BACKGROUND));
+			user.updateBackgroundImagePath(userImageResolver.replaceImage(backgroundImage, user, BACKGROUND));
 		}
 
 		return UserUpdateResponse.of(user);
