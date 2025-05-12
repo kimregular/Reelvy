@@ -32,7 +32,7 @@ class FileDeleteUtilTest {
 		fileDeleteUtil.delete(temp.getAbsolutePath());
 
 		// then
-		assertThat(temp.exists()).isFalse();
+		assertThat(temp).doesNotExist();
 	}
 
 	@Test

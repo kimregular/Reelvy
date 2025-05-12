@@ -12,9 +12,9 @@ import com.mysettlement.domain.video.dto.response.VideoStreamingResponse;
 import com.mysettlement.domain.video.entity.Video;
 import com.mysettlement.domain.video.exception.InvalidVideoUpdateRequestException;
 import com.mysettlement.domain.video.exception.NoVideoFoundException;
+import com.mysettlement.domain.video.handler.VideoBuildHandler;
 import com.mysettlement.domain.video.repository.VideoRepository;
-import com.mysettlement.domain.video.resolver.VideoBuildResolver;
-import com.mysettlement.domain.video.resolver.VideoStreamingResolver;
+import com.mysettlement.domain.video.handler.VideoStreamingHandler;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -33,20 +33,20 @@ public class VideoService {
 
     private final VideoRepository videoRepository;
     private final UserRepository userRepository;
-    private final VideoBuildResolver videoBuildResolver;
-    private final VideoStreamingResolver videoStreamingResolver;
+    private final VideoBuildHandler videoBuildHandler;
+    private final VideoStreamingHandler videoStreamingHandler;
 
     @Transactional
     public VideoResponse uploadVideo(VideoUploadRequest videoUploadRequest, UserDetails userDetails) {
         User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(NoUserFoundException::new);
-        Video newVideo = videoBuildResolver.buildVideoWith(videoUploadRequest, user);
+        Video newVideo = videoBuildHandler.buildVideoWith(videoUploadRequest, user);
         videoRepository.save(newVideo);
         return VideoResponse.of(newVideo);
     }
 
     public VideoStreamingResponse stream(Long videoId, HttpServletRequest request) {
         Video video = videoRepository.findById(videoId).orElseThrow(NoVideoFoundException::new);
-        return videoStreamingResolver.resolve(video, request);
+        return videoStreamingHandler.resolve(video, request);
     }
 
     public List<VideoResponse> getHomeVideos() {
