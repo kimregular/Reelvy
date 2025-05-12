@@ -3,13 +3,13 @@ package com.mysettlement.domain.user.controller;
 import com.mysettlement.domain.user.dto.request.EmailCheckRequestDto;
 import com.mysettlement.domain.user.dto.request.UserSignUpRequest;
 import com.mysettlement.domain.user.dto.request.UserUpdateRequest;
-import com.mysettlement.domain.user.dto.response.EmailCheckResponseDto;
+import com.mysettlement.domain.user.dto.response.EmailCheckResponse;
 import com.mysettlement.domain.user.dto.response.UserResponse;
 import com.mysettlement.domain.user.dto.response.UserSignUpResponse;
 import com.mysettlement.domain.user.dto.response.UserUpdateResponse;
 import com.mysettlement.domain.user.service.UserService;
-import com.mysettlement.global.annotations.Admin;
-import com.mysettlement.global.annotations.User;
+import com.mysettlement.global.annotation.Admin;
+import com.mysettlement.global.annotation.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +36,7 @@ public class UserController {
 	}
 
 	@PostMapping("/checkEmail") // 이메일 중복 체크
-	public ResponseEntity<EmailCheckResponseDto> checkEmail(@RequestBody @Valid EmailCheckRequestDto emailCheckRequestDto) {
+	public ResponseEntity<EmailCheckResponse> checkEmail(@RequestBody @Valid EmailCheckRequestDto emailCheckRequestDto) {
 		return ResponseEntity.status(HttpStatus.OK)
 		                     .body(userService.checkEmail(emailCheckRequestDto));
 	}

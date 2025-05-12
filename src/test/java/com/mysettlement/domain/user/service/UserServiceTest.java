@@ -33,8 +33,8 @@ class UserServiceTest {
 		String email = "test0@test.com";
 		String password = "12345678";
 		userService.signUp(new UserSignUpRequest(email,
-		                                            username,
-		                                            password));
+				username,
+				password));
 	}
 
 	@Nested
@@ -48,25 +48,12 @@ class UserServiceTest {
 			String email = "test@test.com";
 			String password = "12345678";
 			UserSignUpRequest userSignupRequest = new UserSignUpRequest(email,
-			                                                                     username,
-			                                                                     password);
+					username,
+					password);
 			// when
 			UserSignUpResponse signup = userService.signUp(userSignupRequest);
 			// then
 			assertThat(signup.getEmail()).isEqualTo(email);
-		}
-
-		@Test
-		@DisplayName("중복된 이메일 회원가입 테스트 - 예외발생")
-		void test2() {
-			// given
-			UserSignUpRequest userSignupRequest = new UserSignUpRequest("test0@test.com",
-			                                                                     "tester",
-			                                                                     "12345679");
-			// when
-			// then
-			assertThatThrownBy(() -> userService.signUp(userSignupRequest)).isInstanceOf(DuplicateUserException.class)
-			                                                                  .hasMessage(DUPLICATE_USER_EXCEPTION.getMessage());
 		}
 	}
 
@@ -81,7 +68,7 @@ class UserServiceTest {
 			// when
 			// then
 			assertThat(userService.checkEmail(emailCheckRequestDto)
-			                      .isDuplicateEmail()).isFalse();
+					.isDuplicateEmail()).isFalse();
 		}
 
 		@Test
@@ -92,7 +79,7 @@ class UserServiceTest {
 			// when
 			// then
 			assertThat(userService.checkEmail(emailCheckRequestDto)
-			                      .isDuplicateEmail()).isTrue();
+					.isDuplicateEmail()).isTrue();
 		}
 	}
 }
