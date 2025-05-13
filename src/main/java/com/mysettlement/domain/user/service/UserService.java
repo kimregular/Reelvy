@@ -1,6 +1,6 @@
 package com.mysettlement.domain.user.service;
 
-import com.mysettlement.domain.user.dto.request.EmailCheckRequestDto;
+import com.mysettlement.domain.user.dto.request.EmailCheckRequest;
 import com.mysettlement.domain.user.dto.request.UserSignUpRequest;
 import com.mysettlement.domain.user.dto.request.UserUpdateRequest;
 import com.mysettlement.domain.user.dto.response.EmailCheckResponse;
@@ -30,10 +30,10 @@ public class UserService {
 	public UserSignUpResponse signUp(UserSignUpRequest userSignupRequest) {
 		User newUser = userBuildHandler.buildUserWith(userSignupRequest);
 		userRepository.save(newUser);
-		return new UserSignUpResponse(newUser);
+		return new UserSignUpResponse(newUser.getUsername());
 	}
 
-	public EmailCheckResponse checkEmail(EmailCheckRequestDto target) {
+	public EmailCheckResponse checkEmail(EmailCheckRequest target) {
 		return new EmailCheckResponse(userRepository.existsByUsername(target.email()));
 	}
 

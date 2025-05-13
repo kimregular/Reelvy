@@ -12,7 +12,7 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class EmailCheckRequestDtoTest {
+class EmailCheckRequestTest {
 
 	private Validator validator;
 
@@ -26,9 +26,9 @@ class EmailCheckRequestDtoTest {
 	@DisplayName("유효한 이메일은 통과한다.")
 	void test1() {
 		// given
-		EmailCheckRequestDto dto = new EmailCheckRequestDto("valid@email.com");
+		EmailCheckRequest dto = new EmailCheckRequest("valid@email.com");
 		// when
-		Set<ConstraintViolation<EmailCheckRequestDto>> validate = validator.validate(dto);
+		Set<ConstraintViolation<EmailCheckRequest>> validate = validator.validate(dto);
 		// then
 		assertThat(validate).isEmpty();
 	}
@@ -37,9 +37,9 @@ class EmailCheckRequestDtoTest {
 	@DisplayName("유효하지 않은 이메일은 통과하지 못한다.")
 	void test2() {
 		// given
-		EmailCheckRequestDto dto = new EmailCheckRequestDto("invalid-email.com");
+		EmailCheckRequest dto = new EmailCheckRequest("invalid-email.com");
 		// when
-		Set<ConstraintViolation<EmailCheckRequestDto>> validate = validator.validate(dto);
+		Set<ConstraintViolation<EmailCheckRequest>> validate = validator.validate(dto);
 		// then
 		assertThat(validate).hasSize(1);
 		assertThat(validate.iterator().next().getMessage()).isEqualTo("이메일형식에 맞지 않습니다.");

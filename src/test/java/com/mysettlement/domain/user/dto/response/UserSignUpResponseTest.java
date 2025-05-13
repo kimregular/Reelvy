@@ -17,7 +17,7 @@ class UserSignUpResponseTest {
 		User user = mock(User.class);
 		when(user.getUsername()).thenReturn("test@example.com");
 		// when
-		UserSignUpResponse response = new UserSignUpResponse(user);
+		UserSignUpResponse response = new UserSignUpResponse(user.getUsername());
 		// then
 		assertThat(response.getEmail()).isEqualTo("test@example.com");
 	}

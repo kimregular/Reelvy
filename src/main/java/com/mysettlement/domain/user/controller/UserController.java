@@ -1,6 +1,6 @@
 package com.mysettlement.domain.user.controller;
 
-import com.mysettlement.domain.user.dto.request.EmailCheckRequestDto;
+import com.mysettlement.domain.user.dto.request.EmailCheckRequest;
 import com.mysettlement.domain.user.dto.request.UserSignUpRequest;
 import com.mysettlement.domain.user.dto.request.UserUpdateRequest;
 import com.mysettlement.domain.user.dto.response.EmailCheckResponse;
@@ -36,9 +36,9 @@ public class UserController {
 	}
 
 	@PostMapping("/checkEmail") // 이메일 중복 체크
-	public ResponseEntity<EmailCheckResponse> checkEmail(@RequestBody @Valid EmailCheckRequestDto emailCheckRequestDto) {
+	public ResponseEntity<EmailCheckResponse> checkEmail(@RequestBody @Valid EmailCheckRequest emailCheckRequest) {
 		return ResponseEntity.status(HttpStatus.OK)
-		                     .body(userService.checkEmail(emailCheckRequestDto));
+		                     .body(userService.checkEmail(emailCheckRequest));
 	}
 
 	@User

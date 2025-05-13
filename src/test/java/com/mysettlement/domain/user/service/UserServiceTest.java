@@ -1,6 +1,6 @@
 package com.mysettlement.domain.user.service;
 
-import com.mysettlement.domain.user.dto.request.EmailCheckRequestDto;
+import com.mysettlement.domain.user.dto.request.EmailCheckRequest;
 import com.mysettlement.domain.user.dto.request.UserSignUpRequest;
 import com.mysettlement.domain.user.dto.request.UserUpdateRequest;
 import com.mysettlement.domain.user.dto.response.UserSignUpResponse;
@@ -61,7 +61,7 @@ class UserServiceTest {
 		@DisplayName("중복되지 않은 이메일 확인 테스트 - 성공")
 		void test3() {
 			// given
-			EmailCheckRequestDto request = new EmailCheckRequestDto("test@test.com");
+			EmailCheckRequest request = new EmailCheckRequest("test@test.com");
 			when(userRepository.existsByUsername(request.email())).thenReturn(false);
 			// when
 			// then
@@ -72,7 +72,7 @@ class UserServiceTest {
 		@DisplayName("중복되된 이메일 확인 테스트 - 실패")
 		void test4() {
 			// given
-			EmailCheckRequestDto request = new EmailCheckRequestDto("test0@test.com");
+			EmailCheckRequest request = new EmailCheckRequest("test0@test.com");
 			when(userRepository.existsByUsername(request.email())).thenReturn(true);
 			// when
 			// then
