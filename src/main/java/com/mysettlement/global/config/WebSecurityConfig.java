@@ -1,10 +1,7 @@
 package com.mysettlement.global.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mysettlement.global.filter.JwtAuthenticationFilter;
 import com.mysettlement.global.filter.JwtLoginFilter;
-import com.mysettlement.global.util.JwtUtil;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
@@ -26,20 +23,10 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-@RequiredArgsConstructor
 public class WebSecurityConfig {
 
-	private final JwtUtil jwtUtil;
-	private final ObjectMapper objectMapper;
-	private final AuthenticationConfiguration authenticationConfiguration;
-
 	@Bean
-	public RoleHierarchy roleHierarchy() {
-		return RoleHierarchyImpl.fromHierarchy("ROLE_ADMIN > ROLE_USER");
-	}
-
-	@Bean
-	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+	public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter, JwtLoginFilter jwtLoginFilter) throws Exception {
 
 		http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 		http.headers(header -> header.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
@@ -67,15 +54,10 @@ public class WebSecurityConfig {
 						.denyAll()
 		);
 
-		http.addFilterBefore(jwtAuthenticationFilter(), JwtLoginFilter.class);
-		http.addFilterAt(jwtLoginFilter(authenticationManager(authenticationConfiguration)), UsernamePasswordAuthenticationFilter.class);
+		http.addFilterBefore(jwtAuthenticationFilter, JwtLoginFilter.class);
+		http.addFilterAt(jwtLoginFilter, UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();
-	}
-
-	@Bean
-	public JwtAuthenticationFilter jwtAuthenticationFilter() {
-		return new JwtAuthenticationFilter(jwtUtil);
 	}
 
 	@Bean
@@ -83,15 +65,10 @@ public class WebSecurityConfig {
 		return authenticationConfiguration.getAuthenticationManager();
 	}
 
-
 	@Bean
-	public JwtLoginFilter jwtLoginFilter(AuthenticationManager authenticationManager) {
-		JwtLoginFilter jwtLoginFilter = new JwtLoginFilter(authenticationManager, jwtUtil, objectMapper);
-		jwtLoginFilter.setAuthenticationManager(authenticationManager);
-		jwtLoginFilter.setFilterProcessesUrl("/v1/users/login"); // 로그인 URL 설정
-		return jwtLoginFilter;
+	public RoleHierarchy roleHierarchy() {
+		return RoleHierarchyImpl.fromHierarchy("ROLE_ADMIN > ROLE_USER");
 	}
-
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {

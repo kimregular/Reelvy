@@ -1,7 +1,7 @@
-package com.mysettlement.global.service;
+package com.mysettlement.domain.user.service;
 
 import com.mysettlement.domain.user.repository.UserRepository;
-import com.mysettlement.global.jwt.UserDetailsImpl;
+import com.mysettlement.domain.user.entity.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

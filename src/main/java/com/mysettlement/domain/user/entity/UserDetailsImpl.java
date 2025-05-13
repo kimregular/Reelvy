@@ -1,6 +1,5 @@
-package com.mysettlement.global.jwt;
+package com.mysettlement.domain.user.entity;
 
-import com.mysettlement.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
