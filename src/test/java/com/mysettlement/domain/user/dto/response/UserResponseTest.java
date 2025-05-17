@@ -13,21 +13,30 @@ class UserResponseTest {
 	@DisplayName("유저 객체로 유저 응답 DTO을 생성할 수 있다.")
 	void test1() {
 		// given
-		String username = "tester";
-		String email = "tester@test.com";
+		String username = "tester@test.com";
+		String nickname = "tester";
 		String password = "1234";
+		String desc = "description for test";
+		String profileImagePath = "profile/img";
+		String backgrounImagePath = "backgroundImagePath/img";
+
 		UserRole role = UserRole.USER;
 		User user = User.builder()
-				.username(email)
-				.nickname(username)
+				.username(username)
+				.nickname(nickname)
 				.password(password)
-				.userRole(role)
+				.desc(desc)
+				.profileImagePath(profileImagePath)
+				.backgroundImagePath(backgrounImagePath)
 				.build();
 		// when
 		UserResponse userResponse = UserResponse.of(user);
 
 		// then
-		assertThat(userResponse.getNickname()).isEqualTo(username);
-		assertThat(userResponse.getUsername()).isEqualTo(email);
+		assertThat(userResponse.getUsername()).isEqualTo(username);
+		assertThat(userResponse.getNickname()).isEqualTo(nickname);
+		assertThat(userResponse.getDesc()).isEqualTo(desc);
+		assertThat(userResponse.getProfileImageUrl()).isEqualTo(profileImagePath);
+		assertThat(userResponse.getBackgroundImageUrl()).isEqualTo(backgrounImagePath);
 	}
 }

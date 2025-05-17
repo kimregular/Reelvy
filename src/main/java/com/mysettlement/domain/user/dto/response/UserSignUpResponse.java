@@ -1,6 +1,7 @@
 package com.mysettlement.domain.user.dto.response;
 
-import com.mysettlement.domain.user.entity.User;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
 @Getter
@@ -8,7 +9,8 @@ public class UserSignUpResponse {
 
     private final String email;
 
-    public UserSignUpResponse(User user) {
-        this.email = user.getUsername();
+    @JsonCreator
+    public UserSignUpResponse(@JsonProperty("email") String username) {
+        this.email = username;
     }
 }

@@ -46,13 +46,15 @@ public class User extends BaseEntity {
     @Column(name = "desc")
     private String desc;
 
-
     @Builder
-    private User(String nickname, String username, String password, UserRole userRole) {
+    private User(String username, String nickname, String password, UserRole userRole, String profileImagePath, String backgroundImagePath, String desc) {
         this.username = username;
         this.nickname = nickname;
         this.password = password;
         this.userRole = userRole;
+        this.profileImagePath = profileImagePath;
+        this.backgroundImagePath = backgroundImagePath;
+        this.desc = desc;
     }
 
     public void updateUserInfoWith(UserUpdateRequest userUpdateRequest) {
