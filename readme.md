@@ -14,8 +14,10 @@
   * [의사결정 기록](#의사결정-기록)
     * [Util 클래스들에 @Component 사용](#util-클래스들에-component-사용)
     * [서비스단에는 private 클래스가 없어야한다!](#서비스단에는-private-클래스가-없어야한다)
-  * [코드 개선 기록](#코드-개선-기록)
-    * [유저 프로필 사진 저장 로직 개선](#유저-프로필-사진-저장-로직-개선)
+  * [리팩토링](#리팩토링)
+    * [1. 유저 프로필 사진 저장 로직 개선](#1-유저-프로필-사진-저장-로직-개선)
+    * [2. 평문처럼 읽히는 코드를 만들고 싶다!](#2-평문처럼-읽히는-코드를-만들고-싶다-)
+    * [3. SALT 추가 로직 테스트하기](#3-salt-추가-로직-테스트하기)
 <!-- TOC -->
 
 ## 사용자 동영상 공유 플랫폼
@@ -284,141 +286,8 @@ public RoleHierarchy roleHierarchy() {
 
 유틸 클래스가 유틸 클래스 자신에 의존하는 경우에 대해서는 추후 개선 예정
 
-## 코드 개선 기록
-
-### 유저 프로필 사진 저장 로직 개선
-
-개선 전
-
-```java
-// UserUtil
-public String saveProfileImage(MultipartFile profileImage, User user) {
-	// 기존 프로필 이미지가 있으면 삭제 
-	if (!Objects.isNull(user.getProfileImagePath())) {
-		deleteImage(user.getProfileImagePath());
-	}
-	String basePath = "myVideos/" + user.getId() + "/images/profile";
-	String fileName = UUID.randomUUID() + "_" + profileImage.getOriginalFilename();
-	Path filePath = Paths.get(basePath, fileName);
-	try {
-		Files.createDirectories(filePath.getParent());
-		Files.write(filePath, profileImage.getBytes());
-	} catch (IOException e) {
-		throw new RuntimeException("프로필 사진 변경에 실패했습니다.", e);
-	}
-	return filePath.toString();
-}
-
-public String saveBackgroundImage(MultipartFile backgroundImage, User user) {
-	// 기존 배경 이미지가 있으면 삭제 
-	if (!Objects.isNull(user.getBackgroundImagePath())) {
-		deleteImage(user.getBackgroundImagePath());
-	}
-	String basePath = "myVideos/" + user.getId() + "/images/background";
-	String fileName = UUID.randomUUID() + "_" + backgroundImage.getOriginalFilename();
-	Path filePath = Paths.get(basePath, fileName);
-	try {
-		Files.createDirectories(filePath.getParent());
-		Files.write(filePath, backgroundImage.getBytes());
-	} catch (IOException e) {
-		throw new RuntimeException("배경 사진 변경에 실패했습니다.", e);
-	}
-	return filePath.toString();
-}
-```
-
-사진을 저장하는 로직은 똑같지만 사진 종류가 다르다는 이유만으로 저장하는 메서드 2개를
-정의해버렸다.
-
-사진 종류에 따라서 위치만 다르게 저장하면 된다. 하지만 해당 문제해결 방안이 생각이 안
-나서 중복되는 메서드가 하나 더 생겼다. 한층 더 복잡해진 클래스는 보너스다.
-
-리팩토링 기획을 하던 중에 사진 종류를 상수로 만들어서 저장 위치를 동적으로 가져오자는
-아이디어가 떠올랐다. 아래는 해당 아이디어 적용 후 결과이다.
-
-개선 후 1
-
-```java
-// UserUtil
-public String saveImage(MultipartFile profileImage, User user, UserImageType userImageCategory) {
-	if (!Objects.isNull(userImageCategory.getImagePathOf(user))) {
-		deleteImage(userImageCategory.getImagePathOf(user));
-	}
-	String basePath = "myVideos/" + user.getId() + "/images/" + userImageCategory.getFolderName();
-	String fileName = UUID.randomUUID() + "_" + profileImage.getOriginalFilename();
-	Path filePath = Paths.get(basePath, fileName);
-	try {
-		Files.createDirectories(filePath.getParent());
-		Files.write(filePath, profileImage.getBytes());
-	} catch (IOException e) {
-		throw new RuntimeException("프로필 사진 변경에 실패했습니다.", e);
-	}
-	return filePath.toString();
-}
-```
-
-메서드가 받는 파라미터가 하나 더 추가되었다. UserImageType 파라미터를 추가하여
-저장할 이미지의 종류를 동적으로 지정할 수 있도록 하였다.
-
-```java
-// UserImageType
-public enum UserImageType {
-
-	PROFILE("profile") {
-		@Override
-		public String getImagePathOf(User user) {
-			return user.getProfileImagePath();
-		}
-	},
-	BACKGROUND("background") {
-		@Override
-		public String getImagePathOf(User user) {
-			return user.getBackgroundImagePath();
-		}
-	};
-
-	private final String folderName;
-
-	public abstract String getImagePathOf(User user);
-
-	UserImageType(String folderName) {
-		this.folderName = folderName;
-	}
-
-	public String getFolderName() {
-		return folderName;
-	}
-}
-```
-
-이미지타입 상수는 위와 같다. `getImagePathOf()` 추상 메서드를 필드에서
-필요한 대로 정의하였다.
-
-개선 후 2
-
-```java
-package com.mysettlement.domain.user.entity;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.util.function.Function;
-
-@RequiredArgsConstructor
-public enum UserImageType {
-
-	PROFILE("profile.jpg", User::getProfileImagePath),
-	BACKGROUND("background.jpg", User::getBackgroundImagePath);
-
-	@Getter
-	private final String fileName;
-	private final Function<User, String> userImagePathResolver;
-
-	public String getImagePathOf(User user) {
-		return userImagePathResolver.apply(user);
-	}
-}
-
-```
-
-롬복과 람다식을 적용하여 코드 구조 개선 완료
+## 리팩토링
+> 내용을 다 담기에는 가독성이 좋지 않아 링크로 대체 합니다.
+### [1. 유저 프로필 사진 저장 로직 개선](https://velog.io/@regular_jk_kim/유저-프로필-사진-저장-로직-개선)
+### [2. 평문처럼 읽히는 코드를 만들고 싶다!](https://velog.io/@regular_jk_kim/평문처럼-읽히는-코드를-만들고-싶다)
+### [3. SALT 추가 로직 테스트하기](https://velog.io/@regular_jk_kim/SALT-추가-로직-테스트하기)
