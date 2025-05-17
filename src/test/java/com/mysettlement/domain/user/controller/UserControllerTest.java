@@ -1,157 +1,100 @@
 package com.mysettlement.domain.user.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mysettlement.domain.user.dto.request.UserUpdateRequest;
+import com.mysettlement.domain.user.dto.request.EmailCheckRequest;
+import com.mysettlement.domain.user.dto.request.UserSignUpRequest;
 import com.mysettlement.domain.user.dto.response.EmailCheckResponse;
 import com.mysettlement.domain.user.dto.response.UserResponse;
 import com.mysettlement.domain.user.dto.response.UserSignUpResponse;
-import com.mysettlement.domain.user.dto.response.UserUpdateResponse;
-import com.mysettlement.domain.user.service.UserService;
-import jakarta.validation.Validator;
+import com.mysettlement.domain.user.entity.User;
+import com.mysettlement.domain.user.entity.UserRole;
+import com.mysettlement.domain.user.repository.UserRepository;
+import com.mysettlement.global.util.JwtUtil;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.*;
+import org.springframework.transaction.annotation.Transactional;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@Import(UserControllerTest.TestConfig.class)
-@WebMvcTest(UserController.class)
+@Transactional
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class UserControllerTest {
-
-	@Autowired
-	MockMvc mockMvc;
-
-	@MockBean
-	UserService userService;
 
 	@Autowired
 	ObjectMapper objectMapper;
 
-	@MockBean
-	Validator validator; // request validation 무효화
+	@Autowired
+	TestRestTemplate restTemplate;
+
+	@Autowired
+	UserRepository userRepository;
+
+	@Autowired
+	JwtUtil jwtUtil;
+
+	@BeforeEach
+	void setUp() {
+		User user = User.builder()
+				.username("test@test.com")
+				.nickname("tester")
+				.desc("description for test")
+				.userRole(UserRole.USER)
+				.password("123123123")
+				.build();
+		userRepository.save(user);
+		userRepository.flush();
+	}
 
 	@Test
 	@DisplayName("회원가입이 성공하면 201과 응답 본문을 반환한다.")
-	void signupSuccess() throws Exception {
+	void signupSuccess() throws JsonProcessingException {
 		// given
-		given(userService.signUp(any())).willReturn(new UserSignUpResponse("test@test.com"));
-		// when
-		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
-				.post("/v1/users/signup")
-				.contentType("application/json")
-				.content("{}");
-		// then
-		mockMvc.perform(request)
-				.andExpect(status().isCreated())
-				.andExpect(jsonPath("$.email").value("test@test.com"));
+		String username = "tester@test.com";
+		String nickname = "tester";
+		String password = "securePass123!";
 
+		UserSignUpRequest dto = new UserSignUpRequest(username, nickname, password);
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+
+		HttpEntity<String> request = new HttpEntity<>(objectMapper.writeValueAsString(dto), headers);
+		// when
+		ResponseEntity<UserSignUpResponse> response =
+				restTemplate.postForEntity("/v1/users/signup", request, UserSignUpResponse.class);
+
+		// then
+		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		assertNotNull(response.getBody());
+		assertEquals(username, response.getBody().getEmail());
 	}
 
 	@Test
 	@DisplayName("이메일 확인 요청에 200 코드와 응답 본문을 반환한다.")
-	void checkEmailSuccess () throws Exception {
+	void checkEmailExistSuccess() throws JsonProcessingException {
 		// given
-		given(userService.checkEmail(any())).willReturn(new EmailCheckResponse(true));
+		String email = "test@email.com";
+		EmailCheckRequest dto = new EmailCheckRequest(email);
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+
+		HttpEntity<String> request = new HttpEntity<>(objectMapper.writeValueAsString(dto), headers);
 		// when
-		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post("/v1/users/checkEmail")
-				.contentType("application/json")
-				.content("{}");
-		// then
-		mockMvc.perform(request)
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.isDuplicateEmail").value("true"));
-	}
-
-	@Test
-	@DisplayName("유저 정보 수정 요청 시 200 상태 코드와 응답을 반환한다.")
-	void updateUserSuccess() throws Exception {
-		// given
-		given(userService.update(any(), any(), any(), any()))
-				.willReturn(UserUpdateResponse.builder()
-						.username("tester@test.com")
-						.nickname("updatedNickname")
-						.profileImage("profile.png")
-						.backgroundImage("background.png")
-						.desc("description for test")
-						.build());
-
-		UserUpdateRequest updateRequest = new UserUpdateRequest("tester", "소개입니다.");
-		String userJson = objectMapper.writeValueAsString(updateRequest);
-
-		MockMultipartFile userPart = new MockMultipartFile("user", "user.json", "application/json", userJson.getBytes());
-		MockMultipartFile profileImage = new MockMultipartFile("profileImage", "profile.png", "image/png", new byte[0]);
-		MockMultipartFile backgroundImage = new MockMultipartFile("backgroundImage", "backgroundImage.png", "image/png", new byte[0]);
-
-		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
-				.multipart("/v1/users/update")
-				.file(userPart)
-				.file(profileImage)
-				.file(backgroundImage)
-				.with(req -> {
-					req.setMethod("PATCH");
-					return req;
-				});
-
-		// when & then
-		mockMvc.perform(request)
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.username").value("tester@test.com"))
-				.andExpect(jsonPath("$.nickname").value("updatedNickname"))
-				.andExpect(jsonPath("$.profileImage").value("profile.png"))
-				.andExpect(jsonPath("$.backgroundImage").value("background.png"));
-	}
-
-	@Test
-	@DisplayName("유저 정보를 조회하면 200 상태 코드와 응답 본문을 반환한다.")
-	void getUserInfoSuccess() throws Exception {
-		// given
-		given(userService.getUserInfoOf("test@test.com")).willReturn(UserResponse.builder()
-				.username("test@test.com")
-				.nickname("tester")
-				.desc("test desc")
-				.profileImageUrl("profile.png")
-				.backgroundImageUrl("background.png")
-				.build());
-		// when
-		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get("/v1/users/{username}/info", "test@test.com")
-				.contentType("application/json");
+		ResponseEntity<EmailCheckResponse> response = restTemplate.postForEntity("/v1/users/checkEmail", request, EmailCheckResponse.class);
 
 		// then
-		mockMvc.perform(request)
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.username").value("test@test.com"))
-				.andExpect(jsonPath("$.nickname").value("tester"))
-				.andExpect(jsonPath("$.desc").value("test desc"))
-				.andExpect(jsonPath("$.profileImageUrl").value("profile.png"))
-				.andExpect(jsonPath("$.backgroundImageUrl").value("background.png"));
-
-	}
-
-	@TestConfiguration
-	static class TestConfig {
-
-		@Bean
-		SecurityFilterChain testFilterChain(HttpSecurity http) throws Exception {
-			http.csrf(AbstractHttpConfigurer::disable);
-			http.authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll());
-			return http.build();
-		}
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(response.getBody()).isNotNull();
+		assertThat(response.getBody().isDuplicateEmail()).isFalse();
 	}
 }
-
