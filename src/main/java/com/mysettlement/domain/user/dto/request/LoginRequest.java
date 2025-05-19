@@ -1,12 +1,5 @@
 package com.mysettlement.domain.user.dto.request;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+public record LoginRequest(String username, String password) {
 
-@Getter
-@RequiredArgsConstructor
-public class LoginRequest {
-
-	private final String username;
-	private final String password;
 }

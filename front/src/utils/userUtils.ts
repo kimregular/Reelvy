@@ -20,7 +20,7 @@ export const getUsername = () => {
   const authStore = useAuthStore()
 
   try {
-    return jwtDecode(authStore.token).username
+    return jwtDecode(<string>authStore.token).username
   } catch (error) {
     console.log('error!', error)
   }

@@ -14,7 +14,9 @@ defineProps<{
 <template>
   <div class="container mt-5 mb-5">
     <div style="padding: 15px">
-      <div v-if="loading">loading...</div>
+      <div v-if="loading" class="d-flex justify-content-center align-items-center flex-column">
+        <img src="@/assets/NO_VIDEO_FOR_NOW.png" alt="No Video for Now" />
+      </div>
       <div v-else-if="noVideo || videos.length === 0">
         {{ emptyMessage || 'No video has been found' }}
       </div>
@@ -67,5 +69,11 @@ a:visited {
 .card:hover {
   transform: translateY(-3px);
   cursor: pointer;
+}
+
+img {
+  max-width: 40%;
+  height: auto;
+  background-color: white;
 }
 </style>
