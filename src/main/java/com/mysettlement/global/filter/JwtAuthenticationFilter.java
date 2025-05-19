@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -25,7 +25,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String token = jwtUtil.resolveToken(request);
 
-        if (jwtUtil.isValidToken(token)) {
+        if (StringUtils.hasText(token) && jwtUtil.isValidToken(token)) {
 			Authentication authentication = jwtUtil.getAuthentication(token);
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 		} else {

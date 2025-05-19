@@ -36,13 +36,13 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-	    try {
-		    LoginRequest loginRequest = objectMapper.readValue(request.getInputStream(), LoginRequest.class);
-            return getAuthenticationManager().authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
-	    } catch (IOException e) {
-            log.error("Invalid request payload", e);
-		    throw new AuthenticationServiceException("Invalid request payload", e);
-	    }
+        log.info("attemptAuthentication");
+        try {
+            LoginRequest loginRequest = objectMapper.readValue(request.getInputStream(), LoginRequest.class);
+            return getAuthenticationManager().authenticate(new UsernamePasswordAuthenticationToken(loginRequest.username(), loginRequest.password()));
+        } catch (IOException e) {
+            throw new AuthenticationServiceException("Invalid request payload", e);
+        }
     }
 
     @Override

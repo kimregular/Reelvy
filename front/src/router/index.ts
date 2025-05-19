@@ -11,6 +11,7 @@ import NotFoundView from '@/components/errorPages/NotFoundView.vue'
 import ProfileEditView from '@/components/profile/ProfileEditView.vue'
 import VideoEditView from '@/components/profile/VideoEditView.vue'
 import VideoEditDetailView from '@/components/profile/VideoEditDetailView.vue'
+import { useAuthStore } from '@/stores/useAuthStore.ts'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -42,6 +43,15 @@ const router = createRouter({
       component: LoginView,
       name: 'LOGIN',
       beforeEnter: requireAnonymous,
+    },
+    {
+      path: '/logout',
+      name: 'LOGOUT',
+      beforeEnter: () => {
+        const authStore = useAuthStore()
+        authStore.clearToken()
+      },
+      component: HomeView,
     },
     {
       path: '/profile/:username',

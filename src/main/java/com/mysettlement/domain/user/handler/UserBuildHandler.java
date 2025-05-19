@@ -2,6 +2,7 @@ package com.mysettlement.domain.user.handler;
 
 import com.mysettlement.domain.user.dto.request.UserSignUpRequest;
 import com.mysettlement.domain.user.entity.User;
+import com.mysettlement.domain.user.entity.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,7 @@ public class UserBuildHandler {
 				.username(userSignUpRequest.username())
 				.nickname(userSignUpRequest.nickname())
 				.password(passwordEncoder.encode(userSignUpRequest.password()))
+				.userRole(UserRole.USER)
 				.build();
 	}
 }

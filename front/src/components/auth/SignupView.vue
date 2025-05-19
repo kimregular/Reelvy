@@ -87,8 +87,8 @@ const handleSignUp = async () => {
   }
 
   const payload = {
-    email: email.value,
-    username: username.value,
+    username: email.value,
+    nickname: username.value,
     password: password.value,
   }
 
@@ -184,7 +184,7 @@ const handleSignUp = async () => {
       <button type="submit" class="btn btn-primary" v-bind:disabled="isInvalidInfo">SignUp</button>
     </form>
     <div class="mt-5">
-      <router-link to="/login">
+      <router-link :to="{ name: 'LOGIN' }">
         <button type="button" class="btn btn-primary btn-sm">Already have an Account?</button>
       </router-link>
     </div>

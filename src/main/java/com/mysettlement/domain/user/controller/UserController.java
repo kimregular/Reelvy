@@ -31,6 +31,7 @@ public class UserController {
 
 	@PostMapping("/signup")
 	public ResponseEntity<UserSignUpResponse> singUp(@RequestBody @Valid UserSignUpRequest userSignupRequest) {
+		log.info("user signup request : {}", userSignupRequest);
 		return ResponseEntity.status(HttpStatus.CREATED)
 		                     .body(userService.signUp(userSignupRequest));
 	}

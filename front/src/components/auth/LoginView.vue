@@ -19,11 +19,19 @@ const handleLogin = async () => {
     console.error('Email and password are required.')
     return
   }
-
-  const payload = { username: email.value, password: password.value }
-
   try {
-    const response = await axios.post(`${BASE_URL}/v1/users/login`, payload)
+    const response = await axios.post(
+      `${BASE_URL}/v1/users/login`,
+      {
+        username: email.value,
+        password: password.value,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    )
     const token = response.headers[AUTH_HEADER_KEY]
 
     if (token) {
@@ -63,7 +71,7 @@ const handleLogin = async () => {
       <button type="submit" class="btn btn-primary">Submit</button>
     </form>
     <div class="mt-5">
-      <router-link to="/signup">
+      <router-link :to="{ name: 'SIGNUP' }">
         <button type="button" class="btn btn-primary btn-sm">Wanna Sign Up?</button>
       </router-link>
     </div>
