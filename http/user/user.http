@@ -30,7 +30,7 @@ GET http://localhost:8080/v1/users/info/2/admin
 Authorization: {{AUTH_HEADER}}
 
 ### POST Email Check
-POST http://localhost:8080/v1/users/checkEmail
+POST http://localhost:8080/v1/users/check-email
 Content-Type: application/json
 
 {

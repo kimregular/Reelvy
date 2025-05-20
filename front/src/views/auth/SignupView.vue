@@ -31,7 +31,7 @@ const hasDuplicateEmail = async (email: string) => {
   isValidEmailStructure.value = true
   showEmailWarning.value = true
   try {
-    const response = await axios.post(BASE_URL + '/v1/users/checkEmail', { email })
+    const response = await axios.post(BASE_URL + '/v1/users/check-email', { email })
     isDuplicateEmail.value = response.data.isDuplicateEmail
   } catch (error) {
     console.log(error)
