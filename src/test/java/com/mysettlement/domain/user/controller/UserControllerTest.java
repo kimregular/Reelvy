@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mysettlement.domain.user.dto.request.EmailCheckRequest;
 import com.mysettlement.domain.user.dto.request.UserSignUpRequest;
 import com.mysettlement.domain.user.dto.response.EmailCheckResponse;
-import com.mysettlement.domain.user.dto.response.UserResponse;
 import com.mysettlement.domain.user.dto.response.UserSignUpResponse;
 import com.mysettlement.domain.user.entity.User;
 import com.mysettlement.domain.user.entity.UserRole;
@@ -19,9 +18,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -90,7 +86,7 @@ class UserControllerTest {
 
 		HttpEntity<String> request = new HttpEntity<>(objectMapper.writeValueAsString(dto), headers);
 		// when
-		ResponseEntity<EmailCheckResponse> response = restTemplate.postForEntity("/v1/users/checkEmail", request, EmailCheckResponse.class);
+		ResponseEntity<EmailCheckResponse> response = restTemplate.postForEntity("/v1/users/check-email", request, EmailCheckResponse.class);
 
 		// then
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);

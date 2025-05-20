@@ -36,7 +36,7 @@ public class UserController {
 		                     .body(userService.signUp(userSignupRequest));
 	}
 
-	@PostMapping("/checkEmail") // 이메일 중복 체크
+	@PostMapping("/check-email") // 이메일 중복 체크
 	public ResponseEntity<EmailCheckResponse> checkEmail(@RequestBody @Valid EmailCheckRequest emailCheckRequest) {
 		return ResponseEntity.status(HttpStatus.OK)
 		                     .body(userService.checkEmail(emailCheckRequest));

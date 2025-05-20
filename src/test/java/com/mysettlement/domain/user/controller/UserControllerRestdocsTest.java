@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockMultipartFile;
@@ -70,7 +69,7 @@ class UserControllerRestdocsTest {
 		// given
 		given(userService.checkEmail(any())).willReturn(new EmailCheckResponse(true));
 		// when
-		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post("/v1/users/checkEmail")
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post("/v1/users/check-email")
 				.contentType("application/json")
 				.content("{}");
 		// then
