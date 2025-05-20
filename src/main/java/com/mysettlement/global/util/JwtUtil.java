@@ -4,6 +4,7 @@ import com.mysettlement.global.jwt.JwtProperties;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +42,7 @@ public class JwtUtil {
 	}
 
 	public String createJwt(String username, String role, Date now) {
-		Date expiry = new Date(now.getTime() + jwtProperties.TOKEN_LIFETIME());
+		Date expiry = new Date(now.getTime() + jwtProperties.TOKEN_LIFETIME() * 60 * 1000L);
 		return Jwts.builder()
 				.claim("username", username)
 				.claim("role", role)
@@ -53,10 +54,17 @@ public class JwtUtil {
 	}
 
 	public String resolveToken(HttpServletRequest request) {
-		String authHeader = request.getHeader(jwtProperties.HEADER());
-		return authHeader != null && authHeader.startsWith(jwtProperties.BEARER()) ?
-				authHeader.substring(jwtProperties.BEARER().length())
-				: null;
+		if(request.getCookies() == null) {
+			log.info("No cookies found in request");
+			return null;
+		}
+
+		for (Cookie cookie : request.getCookies()) {
+			if("access-token".equals(cookie.getName())) {
+				return cookie.getValue();
+			}
+		}
+		return null;
 	}
 
 	public Claims getClaims(String token) {
