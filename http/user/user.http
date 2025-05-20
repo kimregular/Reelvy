@@ -19,7 +19,7 @@ Content-Type: application/json
 > {%
     // Authorization 헤더 값을 가져와 전역 변수에 저장
     client.global.set("AUTH_HEADER", response.headers.valueOf("Authorization"));
-    console.log("Saved Authorization Header:", response.headers); // 디버깅용
+    console.log("Saved Authorization AppHeader:", response.headers); // 디버깅용
 %}
 
 ### GET userInfo for user
@@ -58,7 +58,7 @@ Content-Type: application/json
 > {%
     // Authorization 헤더 값을 가져와 전역 변수에 저장
     client.global.set("AUTH_HEADER", response.headers.valueOf("Authorization"));
-    console.log("Saved Authorization Header:", response.headers); // 디버깅용
+    console.log("Saved Authorization AppHeader:", response.headers); // 디버깅용
 %}
 
 ### GET getUserInfo

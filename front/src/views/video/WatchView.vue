@@ -4,7 +4,6 @@ import axios from 'axios'
 import { BASE_URL } from '@/constants/server.ts'
 import { useRoute } from 'vue-router'
 import type Video from '@/entities/video.ts'
-import { handleProfile } from '@/utils/userUtils.ts'
 
 const video = ref<Video>()
 const loading = ref(true)
@@ -62,9 +61,9 @@ onMounted(() => {
           <!-- Video Info -->
           <h2 class="h4">{{ video.title }}</h2>
           <div class="mb-3">
-            <a @click="handleProfile(video.user.username)">
+            <router-link :to="{ name: 'PROFILE', params: { username: video.user.username } }">
               {{ video.user.username }}
-            </a>
+            </router-link>
           </div>
           <p class="text-muted">{{ video.desc }}</p>
           <p class="text-muted">{{ video.videoView }} views</p>

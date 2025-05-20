@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { getUsername, isLoggedIn } from '@/utils/userUtils.ts'
 import { computed } from 'vue'
+import { useUserStore } from '@/stores/useUserStore.ts'
 
-const loggedIn = computed(() => isLoggedIn())
-const username = computed(() => getUsername())
+const userStore = useUserStore()
+const loggedIn = computed(() => userStore.isLoggedIn)
+const username = computed(() => userStore.username)
 </script>
 
 <template>
@@ -26,17 +27,20 @@ const username = computed(() => getUsername())
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
           <!-- 로그인 상태에 따라 버튼 표시 -->
-          <template v-if="loggedIn">
+          <template v-if="loggedIn && username">
             <li class="nav-item">
-              <router-link class="nav-link" :to="{ name: 'UPLOAD' }">Upload </router-link>
+              <router-link class="nav-link" :to="{ name: 'UPLOAD' }">Upload</router-link>
             </li>
             <li class="nav-item">
-              <router-link class="nav-link" :to="{ name: 'LOGOUT' }">Logout </router-link>
-            </li>
-            <li class="nav-item">
-              <router-link class="nav-link" :to="{ name: 'PROFILE', params: { username } }">
+              <router-link
+                class="nav-link"
+                :to="{ name: 'PROFILE', params: { username: username } }"
+              >
                 profile
               </router-link>
+            </li>
+            <li class="nav-item">
+              <router-link class="nav-link" :to="{ name: 'LOGOUT' }">Logout</router-link>
             </li>
           </template>
           <template v-else>

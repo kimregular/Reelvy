@@ -14,10 +14,13 @@
   * [의사결정 기록](#의사결정-기록)
     * [Util 클래스들에 @Component 사용](#util-클래스들에-component-사용)
     * [서비스단에는 private 클래스가 없어야한다!](#서비스단에는-private-클래스가-없어야한다)
+    * [프론트에서 쿠키에 접근하지 못하도록 HTTPONLY 설정 진행](#프론트에서-쿠키에-접근하지-못하도록-httponly-설정-진행)
   * [리팩토링](#리팩토링)
     * [1. 유저 프로필 사진 저장 로직 개선](#1-유저-프로필-사진-저장-로직-개선)
     * [2. 평문처럼 읽히는 코드를 만들고 싶다!](#2-평문처럼-읽히는-코드를-만들고-싶다-)
     * [3. SALT 추가 로직 테스트하기](#3-salt-추가-로직-테스트하기)
+    * [4. Vue.js Component와 View 분리하기](#4-vuejs-component와-view-분리하기)
+    * [5. HttpOnly 쿠키로 jwt 발급, 사용하기](#5-httponly-쿠키로-jwt-발급-사용하기)
 <!-- TOC -->
 
 ## 사용자 동영상 공유 플랫폼
@@ -42,7 +45,7 @@ Content-Type: application/json
 > {%
     // Authorization 헤더 값을 가져와 전역 변수에 저장
     client.global.set("AUTH_HEADER", response.headers.valueOf("Authorization"));
-    console.log("Saved Authorization Header:", response.headers); // 응답 헤더 모두 출력하기
+    console.log("Saved Authorization AppHeader:", response.headers); // 응답 헤더 모두 출력하기
 %}
 
 
@@ -286,8 +289,22 @@ public RoleHierarchy roleHierarchy() {
 
 유틸 클래스가 유틸 클래스 자신에 의존하는 경우에 대해서는 추후 개선 예정
 
+### 프론트에서 쿠키에 접근하지 못하도록 HTTPONLY 설정 진행
+기존에는 서버에서 헤더에 jwt 정보를 담아 응답했다.
+프론트에서는 이 정보를 가지고 쿠키에 토큰을 저장한다.
+백엔드와 프론트간 jwt 유효 시간이 다른 문제가 발생했다.
+또한 클라이언트가 토큰에 접근할 수 있기 때문에 보안 취약점이 발생했다.
+
+따라서 보안을 위해 프론트에서 쿠키에 접근하지 못하도록 설정하기로 결정했다.
+
+서버에서는 httpOnly 설정된 쿠키를 응답에 담아준다.
+프론트에서는 해당 정보에 접근하지 못하고, 요청시에 포함할건지만 결정할 수 있다.
+프론트에서 로그인 후에 /me 경로로 로그인한 유저의 정보를 요청하도록 설정했다.
+
 ## 리팩토링
 > 내용을 다 담기에는 가독성이 좋지 않아 링크로 대체 합니다.
 ### [1. 유저 프로필 사진 저장 로직 개선](https://velog.io/@regular_jk_kim/유저-프로필-사진-저장-로직-개선)
 ### [2. 평문처럼 읽히는 코드를 만들고 싶다!](https://velog.io/@regular_jk_kim/평문처럼-읽히는-코드를-만들고-싶다)
 ### [3. SALT 추가 로직 테스트하기](https://velog.io/@regular_jk_kim/SALT-추가-로직-테스트하기)
+### [4. Vue.js Component와 View 분리하기](https://velog.io/@regular_jk_kim/Vue.js-Component와-View-분리하기)
+### [5. HttpOnly 쿠키로 jwt 발급, 사용하기](https://velog.io/@regular_jk_kim/HttpOnly-쿠키로-jwt-발급-사용하기)

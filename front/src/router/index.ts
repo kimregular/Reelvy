@@ -11,7 +11,9 @@ import NotFoundView from '@/views/error/NotFoundView.vue'
 import VideoEdit from '@/components/profile/VideoEdit.vue'
 import VideoEditDetail from '@/components/profile/VideoEditDetail.vue'
 import ProfileEditView from '@/views/profile/ProfileEditView.vue'
-import { useAuthStore } from '@/stores/useAuthStore.ts'
+import { useUserStore } from '@/stores/useUserStore.ts'
+import axios from 'axios'
+import { BASE_URL } from '@/constants/server.ts'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -47,11 +49,17 @@ const router = createRouter({
     {
       path: '/logout',
       name: 'LOGOUT',
-      beforeEnter: () => {
-        const authStore = useAuthStore()
-        authStore.clearToken()
+      beforeEnter: async (to, from, next) => {
+        try {
+          const userStore = useUserStore()
+          await axios.post(`${BASE_URL}/v1/users/logout`, {}, { withCredentials: true })
+          userStore.clearUser()
+        } catch (e) {
+          console.error('로그아웃 실패:', e)
+        } finally {
+          next({ name: 'HOME' })
+        }
       },
-      component: HomeView,
     },
     {
       path: '/profile/:username',
@@ -86,6 +94,14 @@ const router = createRouter({
       redirect: { name: 'NOT_FOUND' },
     },
   ],
+})
+
+router.beforeEach(async (to, from, next) => {
+  const userStore = useUserStore()
+  if (!userStore.isLoggedIn) {
+    await userStore.init()
+  }
+  next()
 })
 
 export default router

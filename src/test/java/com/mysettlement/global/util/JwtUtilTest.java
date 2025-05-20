@@ -103,7 +103,7 @@ class JwtUtilTest {
 		@DisplayName("존재하는 유저로 인증받으면 토큰이 발급된다.")
 		void test1() {
 			// given
-			String username = "tester@test.com";
+			String username = "test@test.com";
 			User user = User.builder()
 					.username(username) // username
 					.nickname("tester") // 닉네임

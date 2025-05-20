@@ -9,6 +9,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,6 +21,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Date;
 
 @Slf4j
@@ -50,7 +53,15 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
         UserDetails userDetails = (UserDetails) authResult.getPrincipal();
         String role = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).findFirst().orElseThrow(NoUserFoundException::new);
         String token = jwtUtil.createJwt(userDetails.getUsername(), role, new Date());
-        response.addHeader(jwtUtil.getJwtHeader(), jwtUtil.getJwtBearer() + token);
+
+        ResponseCookie jwtCookie = ResponseCookie.from("access-token", token)
+                .httpOnly(true)
+                .sameSite("Lax")
+                .path("/")
+                .maxAge(Duration.ofHours(3))
+                .build();
+
+        response.setHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());
     }
 
     @Override

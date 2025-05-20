@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import axios from 'axios'
-import { AUTH_HEADER_KEY, BASE_URL } from '@/constants/server.ts'
-import { useAuthStore } from '@/stores/useAuthStore.ts'
+import { BASE_URL } from '@/constants/server.ts'
 import { useRouter } from 'vue-router'
 
 const email = ref('')
@@ -12,15 +11,13 @@ const loginWarning = ref(false)
 const router = useRouter() // Router 인스턴스 생성
 
 const handleLogin = async () => {
-  const authStore = useAuthStore()
-
   if (!email.value || !password.value) {
     loginWarning.value = true
     console.error('Email and password are required.')
     return
   }
   try {
-    const response = await axios.post(
+    await axios.post(
       `${BASE_URL}/v1/users/login`,
       {
         username: email.value,
@@ -30,18 +27,11 @@ const handleLogin = async () => {
         headers: {
           'Content-Type': 'application/json',
         },
+        withCredentials: true,
       },
     )
-    const token = response.headers[AUTH_HEADER_KEY]
 
-    if (token) {
-      authStore.setToken(token) // 쿠키에 토큰 저장
-      loginWarning.value = false
-      await router.push({ name: 'HOME' }) // 홈으로 이동
-    } else {
-      console.error('Login failed')
-      loginWarning.value = true
-    }
+    await router.push({ name: 'HOME' }) // 홈으로 이동
   } catch (error) {
     console.error('error!', error)
     loginWarning.value = true

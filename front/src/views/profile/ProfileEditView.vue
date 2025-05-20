@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import axios from 'axios'
 import { BASE_URL } from '@/constants/server.ts'
-import { getUsername } from '@/utils/userUtils.ts'
-import { useAuthStore } from '@/stores/useAuthStore.ts'
 import router from '@/router'
+import { useUserStore } from '@/stores/useUserStore.ts'
 
 interface UserData {
   nickname: string
@@ -47,7 +46,8 @@ const handleBackgroundImageChange = (event: Event) => {
 
 const fetchUserData = async (): Promise<void> => {
   try {
-    const username = getUsername()
+    const userStore = useUserStore()
+    const username = userStore.username
     const response = await axios.get(`${BASE_URL}/v1/users/${username}/info`)
     const data: UserData = response.data
     userData.value = {
@@ -85,12 +85,11 @@ const handleSubmit = async (): Promise<void> => {
     if (backgroundImageFile.value) {
       formData.append('backgroundImage', backgroundImageFile.value)
     }
-    const authStore = useAuthStore()
     const response = await axios.patch(`${BASE_URL}/v1/users/update`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
-        Authorization: authStore.token,
       },
+      withCredentials: true,
     })
 
     if (response.status === 200) {

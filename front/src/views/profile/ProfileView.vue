@@ -11,17 +11,18 @@ import User from '@/entities/user.ts'
 import Video from '@/entities/video.ts'
 import VideoCardList from '@/components/video/VideoCardList.vue'
 import { useRoute } from 'vue-router'
-import { getUsername } from '@/utils/userUtils.ts'
-import router from '@/router'
 import { getVideosOf } from '@/utils/videoUtils.ts'
+import { useUserStore } from '@/stores/useUserStore.ts'
 
+const userStore = useUserStore()
 const user = ref<User | null>(null)
 const noVideo = ref(true)
 
 const route = useRoute()
 const profileUser = ref(route.params.username)
-const currentUser = ref(getUsername())
+const currentUser = ref(userStore.username)
 
+const isLoggedIn = ref(userStore.isLoggedIn)
 const isProfileOwner = ref(profileUser.value === currentUser.value)
 
 const getUserInfoOf = async () => {
@@ -51,18 +52,6 @@ const requestVideos = async () => {
   noVideo.value = videos.value.length === 0
 }
 
-const handleProfileEditView = () => {
-  router.push({ name: 'PROFILE_EDIT', params: { username: profileUser.value } })
-}
-
-const handleVideoEditView = () => {
-  if (!user.value) {
-    console.log('User 정보가 없습니다.')
-    return
-  }
-  router.push({ name: 'VIDEO_EDIT', params: { username: user.value.username } })
-}
-
 watch(user, (newUser) => {
   if (newUser?.username) requestVideos()
 })
@@ -71,36 +60,48 @@ onMounted(() => getUserInfoOf())
 </script>
 
 <template>
-  <div v-if="user" class="profile-container">
+  <div v-if="isLoggedIn" class="profile-container">
     <!-- 배경 이미지 -->
     <div
       class="background-image"
       :style="{
-        backgroundImage: `url(${user.backgroundImageUrl ? `${BASE_URL}/${user.backgroundImageUrl}` : DEFAULT_BACKGROUND_IMAGE})`,
+        backgroundImage: `url(${userStore.backgroundImageUrl ? `${BASE_URL}/${userStore.backgroundImageUrl}` : DEFAULT_BACKGROUND_IMAGE})`,
       }"
     ></div>
 
     <!-- 프로필 정보 -->
     <div class="profile-info">
       <img
-        :src="user.profileImageUrl ? `${BASE_URL}/${user.profileImageUrl}` : DEFAULT_PROFILE_IMAGE"
+        :src="
+          userStore.profileImageUrl
+            ? `${BASE_URL}/${userStore.profileImageUrl}`
+            : DEFAULT_PROFILE_IMAGE
+        "
         class="profile-image"
         alt="profile"
       />
       <div class="nickname-container">
-        <h2 class="nickname">{{ user.nickname }}</h2>
+        <h2 class="nickname">{{ userStore.nickname }}</h2>
       </div>
     </div>
 
-    <div v-if="user.desc" class="container description-container">
-      <p class="description text-muted fs-6 mb-0">{{ user.desc }}</p>
+    <div v-if="userStore.desc" class="container description-container">
+      <p class="description text-muted fs-6 mb-0">{{ userStore.desc }}</p>
     </div>
   </div>
 
   <div class="container">
     <div v-if="isProfileOwner" class="button-group">
-      <button class="btn btn-primary" @click="handleProfileEditView">edit profile</button>
-      <button class="btn btn-primary" @click="handleVideoEditView">edit videos</button>
+      <router-link
+        class="btn btn-primary"
+        :to="{ name: 'PROFILE_EDIT', params: { username: profileUser.value } }"
+        >edit profile
+      </router-link>
+      <router-link
+        class="btn btn-primary"
+        :to="{ name: 'VIDEO_EDIT', params: { username: userStore.username } }"
+        >edit videos
+      </router-link>
     </div>
   </div>
 
@@ -177,6 +178,7 @@ onMounted(() => getUserInfoOf())
     max-width: 200px;
   }
 }
+
 .description-container {
   margin-top: 1rem;
 }

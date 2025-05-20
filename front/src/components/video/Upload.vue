@@ -3,7 +3,6 @@ import { computed, ref } from 'vue'
 import { BASE_URL } from '@/constants/server.ts'
 import router from '@/router'
 import axios from 'axios'
-import { useAuthStore } from '@/stores/useAuthStore.ts'
 
 const videoUploadRequirements = ref({
   isVideoFileUploaded: false,
@@ -68,11 +67,7 @@ const fetchUpload = async () => {
   formData.append('desc', videoDesc.value)
 
   try {
-    const authStore = useAuthStore()
     await axios.post(`${BASE_URL}/v1/videos/upload`, formData, {
-      headers: {
-        Authorization: authStore.token,
-      },
       withCredentials: true,
     })
     await router.replace({ name: 'HOME' })

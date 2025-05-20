@@ -3,10 +3,9 @@ import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import Video from '@/entities/video.ts'
 import { getVideosOf } from '@/utils/videoUtils.ts'
-import { getUsername } from '@/utils/userUtils.ts'
 import axios from 'axios'
 import { BASE_URL } from '@/constants/server.ts'
-import { useAuthStore } from '@/stores/useAuthStore.ts'
+import { useUserStore } from '@/stores/useUserStore.ts'
 
 const noVideo = ref(true)
 const videos = ref<Video[]>([])
@@ -23,8 +22,8 @@ const router = useRouter()
 
 const updateStatus = async () => {
   if (selectedVideos.value.length === 0) return
-  const authStore = useAuthStore()
   try {
+    const userStore = useUserStore()
     await axios.patch(
       `${BASE_URL}/v1/videos/status`,
       {
@@ -32,15 +31,13 @@ const updateStatus = async () => {
         videoStatus: selectedStatus.value,
       },
       {
-        headers: {
-          Authorization: authStore.token,
-        },
+        withCredentials: true,
       },
     )
     alert('상태가 변경되었습니다.')
-    const username = getUsername()
+    const username = userStore.username
     if (username) {
-      requestVideos(username)
+      await requestVideos(username)
     }
   } catch (error) {
     console.error('상태 변경 실패:', error)
@@ -55,7 +52,8 @@ const requestVideos = async (username: string) => {
 }
 
 onMounted(() => {
-  const username = getUsername()
+  const userStore = useUserStore()
+  const username = userStore.username
   console.log(username)
   if (!username) return
   requestVideos(username)
@@ -66,7 +64,7 @@ onMounted(() => {
   <div class="video-list">
     <h1>My Videos</h1>
     <p v-if="noVideo">업로드한 비디오가 없습니다.</p>
-    <div class="bulk-actions" v-else>
+    <div v-else class="bulk-actions">
       <label>
         상태 변경:
         <select v-model="selectedStatus">

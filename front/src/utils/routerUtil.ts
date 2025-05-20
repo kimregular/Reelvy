@@ -3,14 +3,15 @@ import type {
   RouteLocationNormalizedGeneric,
   RouteLocationNormalizedLoadedGeneric,
 } from 'vue-router'
-import { getUsername, isLoggedIn } from '@/utils/userUtils.ts'
+import { useUserStore } from '@/stores/useUserStore.ts'
 
 export const requireAnonymous = (
   to: RouteLocationNormalizedGeneric,
   from: RouteLocationNormalizedLoadedGeneric,
   next: NavigationGuardNext,
 ) => {
-  if (isLoggedIn()) {
+  const userStore = useUserStore()
+  if (userStore.isLoggedIn) {
     // 로그인했다면 홈으로
     next({ name: 'HOME' })
   } else {
@@ -24,7 +25,8 @@ export const requireAuth = (
   from: RouteLocationNormalizedLoadedGeneric,
   next: NavigationGuardNext,
 ) => {
-  if (isLoggedIn()) {
+  const userStore = useUserStore()
+  if (userStore.isLoggedIn) {
     next()
   } else {
     next({ name: 'LOGIN' })
@@ -36,8 +38,9 @@ export const isPageOwner = (
   from: RouteLocationNormalizedLoadedGeneric,
   next: NavigationGuardNext,
 ) => {
-  if (isLoggedIn()) {
-    const requester = getUsername()
+  const userStore = useUserStore()
+  if (userStore.isLoggedIn) {
+    const requester = userStore.username
     const pageOwner = to.params.username
     if (requester === pageOwner) {
       next()
