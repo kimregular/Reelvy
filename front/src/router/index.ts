@@ -1,16 +1,16 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 import { isPageOwner, requireAnonymous, requireAuth } from '@/utils/routerUtil.ts'
-import HomeView from '@/components/HomeView.vue'
-import WatchView from '@/components/video/WatchView.vue'
-import UploadView from '@/components/video/UploadView.vue'
-import SignupView from '@/components/auth/SignupView.vue'
-import LoginView from '@/components/auth/LoginView.vue'
-import ProfileView from '@/components/profile/ProfileView.vue'
-import NotFoundView from '@/components/errorPages/NotFoundView.vue'
-import ProfileEditView from '@/components/profile/ProfileEditView.vue'
-import VideoEditView from '@/components/profile/VideoEditView.vue'
-import VideoEditDetailView from '@/components/profile/VideoEditDetailView.vue'
+import HomeView from '@/views/video/HomeView.vue'
+import WatchView from '@/views/video/WatchView.vue'
+import Upload from '@/components/video/Upload.vue'
+import SignupView from '@/views/auth/SignupView.vue'
+import LoginView from '@/views/auth/LoginView.vue'
+import ProfileView from '@/views/profile/ProfileView.vue'
+import NotFoundView from '@/views/error/NotFoundView.vue'
+import VideoEdit from '@/components/profile/VideoEdit.vue'
+import VideoEditDetail from '@/components/profile/VideoEditDetail.vue'
+import ProfileEditView from '@/views/profile/ProfileEditView.vue'
 import { useAuthStore } from '@/stores/useAuthStore.ts'
 
 const router = createRouter({
@@ -28,7 +28,7 @@ const router = createRouter({
     },
     {
       path: '/upload',
-      component: UploadView,
+      component: Upload,
       name: 'UPLOAD',
       beforeEnter: requireAuth,
     },
@@ -71,13 +71,13 @@ const router = createRouter({
     },
     {
       path: '/profile/:username/video/edit',
-      component: VideoEditView,
+      component: VideoEdit,
       name: 'VIDEO_EDIT',
       beforeEnter: isPageOwner,
     },
     {
       path: '/profile/:username/video/edit/:videoId',
-      component: VideoEditDetailView,
+      component: VideoEditDetail,
       name: 'VIDEO_EDIT_DETAIL',
       beforeEnter: isPageOwner,
     },

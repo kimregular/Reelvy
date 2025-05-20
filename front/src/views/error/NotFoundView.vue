@@ -2,7 +2,7 @@
 
 <template>
   <div class="container vh-100 d-flex justify-content-center align-items-center flex-column">
-    <img src="@/assets/NOT_FOUND.png" alt="NOT_FOUND" />
+    <img src="../../assets/NOT_FOUND.png" alt="NOT_FOUND" />
     <router-link :to="{ name: 'HOME' }" class="btn btn-primary mt-3">메인으로</router-link>
   </div>
 </template>
