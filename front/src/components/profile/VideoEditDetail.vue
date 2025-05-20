@@ -29,11 +29,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
 import { BASE_URL } from '@/constants/server.ts'
-import { useAuthStore } from '@/stores/useAuthStore.ts'
 
 const route = useRoute()
 const router = useRouter()
@@ -44,11 +43,8 @@ const desc = ref('')
 const status = ref('AVAILABLE')
 
 onMounted(async () => {
-  const authStore = useAuthStore()
   const response = await axios.get(`${BASE_URL}/v1/videos/${videoId}/info`, {
-    headers: {
-      Authorization: authStore.token,
-    },
+    withCredentials: true,
   })
   const video = response.data
   title.value = video.title
@@ -57,7 +53,6 @@ onMounted(async () => {
 })
 
 const submitUpdate = async () => {
-  const authStore = useAuthStore()
   await axios.patch(
     `${BASE_URL}/v1/videos/${videoId}/info`,
     {
@@ -66,9 +61,7 @@ const submitUpdate = async () => {
       videoStatus: status.value,
     },
     {
-      headers: {
-        Authorization: authStore.token,
-      },
+      withCredentials: true,
     },
   )
   alert('비디오 정보가 수정되었습니다.')
