@@ -32,7 +32,7 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
-import { BASE_URL } from '@/constants/server'
+import { BASE_URL } from '@/constants/server.ts'
 import { useAuthStore } from '@/stores/useAuthStore.ts'
 
 const route = useRoute()
