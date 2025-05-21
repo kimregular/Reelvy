@@ -10,13 +10,13 @@ import com.mysettlement.domain.user.dto.response.UserUpdateResponse;
 import com.mysettlement.domain.user.service.UserService;
 import com.mysettlement.global.annotation.Admin;
 import com.mysettlement.global.annotation.User;
+import com.mysettlement.global.util.CookieJwtUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -31,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserController {
 
 	private final UserService userService;
+	private final CookieJwtUtil cookieJwtUtil;
 
 	@PostMapping("/signup")
 	public ResponseEntity<UserSignUpResponse> singUp(@RequestBody @Valid UserSignUpRequest userSignupRequest) {
@@ -54,12 +55,7 @@ public class UserController {
 	@User
 	@PostMapping("/logout")
 	public ResponseEntity<Void> logout(HttpServletResponse response) {
-		ResponseCookie deleteCookie = ResponseCookie.from("access-token", "")
-				.httpOnly(true)
-				.path("/")
-				.maxAge(0)
-				.build();
-		response.setHeader(HttpHeaders.SET_COOKIE, deleteCookie.toString());
+		response.setHeader(HttpHeaders.SET_COOKIE, cookieJwtUtil.deleteCookieJwt().toString());
 		return ResponseEntity.ok().build();
 	}
 
