@@ -26,11 +26,19 @@ class UserResponseTest {
 				.nickname(nickname)
 				.password(password)
 				.desc(desc)
+				.userRole(role)
 				.profileImagePath(profileImagePath)
 				.backgroundImagePath(backgrounImagePath)
 				.build();
 		// when
-		UserResponse userResponse = UserResponse.of(user);
+		UserResponse userResponse = UserResponse.builder()
+				.username(user.getUsername())
+				.nickname(user.getNickname())
+				.desc(user.getDesc())
+				.profileImageUrl(user.getProfileImagePath())
+				.backgroundImageUrl(user.getBackgroundImagePath())
+				.build();
+
 
 		// then
 		assertThat(userResponse.getUsername()).isEqualTo(username);

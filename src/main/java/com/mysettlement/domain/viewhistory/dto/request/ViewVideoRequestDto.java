@@ -1,4 +1,4 @@
-package com.mysettlement.domain.viewHistory.dto.request;
+package com.mysettlement.domain.viewhistory.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 

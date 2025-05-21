@@ -18,7 +18,7 @@ public class VideoSaveResolver {
 	public String saveVideoFileInLocal(MultipartFile videoFile, String username) {
 		String cleanedFileName = sanitizeUtil.sanitizeFileName(videoFile.getOriginalFilename());
 		// 경로 침투 방지를 위해 문자열 정제
-		String basePath = filePathUtil.resolveVideoPath(username, cleanedFileName);
+		String basePath = filePathUtil.generateVideoUploadPath(username, cleanedFileName);
 		return fileSaveUtil.save(basePath, videoFile);
 	}
 }

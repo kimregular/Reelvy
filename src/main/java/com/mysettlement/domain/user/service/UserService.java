@@ -11,13 +11,16 @@ import com.mysettlement.domain.user.entity.User;
 import com.mysettlement.domain.user.exception.NoUserFoundException;
 import com.mysettlement.domain.user.handler.UserBuildHandler;
 import com.mysettlement.domain.user.handler.UserImageHandler;
+import com.mysettlement.domain.user.handler.UserResponseBuildHandler;
 import com.mysettlement.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -26,6 +29,7 @@ public class UserService {
 	private final UserRepository userRepository;
 	private final UserImageHandler userImageHandler;
 	private final UserBuildHandler userBuildHandler;
+	private final UserResponseBuildHandler userResponseBuildHandler;
 
 	public UserSignUpResponse signUp(UserSignUpRequest userSignupRequest) {
 		User newUser = userBuildHandler.buildUserWith(userSignupRequest);
@@ -42,6 +46,7 @@ public class UserService {
 	                                 MultipartFile profileImage,
 	                                 MultipartFile backgroundImage,
 	                                 UserDetails userDetails) {
+		log.info("userDetails = {}", userDetails.getUsername());
 		User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(NoUserFoundException::new);
 		user.updateUserInfoWith(userUpdateRequest);
 		userImageHandler.updateImage(user, profileImage, backgroundImage);
@@ -50,6 +55,6 @@ public class UserService {
 
 	public UserResponse getUserInfoOf(String username) {
 		User user = userRepository.findByUsername(username).orElseThrow(NoUserFoundException::new);
-		return UserResponse.of(user);
+		return userResponseBuildHandler.buildUserResponseWith(user);
 	}
 }

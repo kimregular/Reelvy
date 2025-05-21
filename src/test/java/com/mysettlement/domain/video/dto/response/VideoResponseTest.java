@@ -1,5 +1,6 @@
 package com.mysettlement.domain.video.dto.response;
 
+import com.mysettlement.domain.user.dto.response.UserResponse;
 import com.mysettlement.domain.user.entity.User;
 import com.mysettlement.domain.video.entity.Video;
 import com.mysettlement.domain.video.entity.VideoStatus;
@@ -28,7 +29,7 @@ class VideoResponseTest {
 		when(video.getVideoStatus()).thenReturn(VideoStatus.AVAILABLE);
 
 		// when
-		VideoResponse response = VideoResponse.of(video);
+		VideoResponse response = VideoResponse.of(video, UserResponse.builder().username(user.getUsername()).build());
 
 		// then
 		assertThat(response.getId()).isEqualTo(1L);

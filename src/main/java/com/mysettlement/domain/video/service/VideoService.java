@@ -1,7 +1,9 @@
 package com.mysettlement.domain.video.service;
 
+import com.mysettlement.domain.user.dto.response.UserResponse;
 import com.mysettlement.domain.user.entity.User;
 import com.mysettlement.domain.user.exception.NoUserFoundException;
+import com.mysettlement.domain.user.handler.UserResponseBuildHandler;
 import com.mysettlement.domain.user.repository.UserRepository;
 import com.mysettlement.domain.video.dto.request.VideoStatusChangeRequest;
 import com.mysettlement.domain.video.dto.request.VideoUpdateRequest;
@@ -33,6 +35,7 @@ public class VideoService {
 
     private final VideoRepository videoRepository;
     private final UserRepository userRepository;
+    private final UserResponseBuildHandler userResponseBuildHandler;
     private final VideoBuildHandler videoBuildHandler;
     private final VideoStreamingHandler videoStreamingHandler;
 
@@ -41,7 +44,8 @@ public class VideoService {
         User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(NoUserFoundException::new);
         Video newVideo = videoBuildHandler.buildVideoWith(videoUploadRequest, user);
         videoRepository.save(newVideo);
-        return VideoResponse.of(newVideo);
+        UserResponse userResponse = userResponseBuildHandler.buildUserResponseWith(user);
+        return VideoResponse.of(newVideo, userResponse);
     }
 
     public VideoStreamingResponse stream(Long videoId, HttpServletRequest request) {
@@ -50,17 +54,17 @@ public class VideoService {
     }
 
     public List<VideoResponse> getHomeVideos() {
-        return videoRepository.getVideos().stream().map(VideoResponse::of).toList();
+        return videoRepository.getVideos().stream().map(v -> VideoResponse.of(v, userResponseBuildHandler.buildUserResponseWith(v.getUser()))).toList();
     }
 
     public VideoResponse getVideo(Long videoId) {
         Video video = videoRepository.findById(videoId).orElseThrow(NoVideoFoundException::new);
-        return VideoResponse.of(video);
+        return VideoResponse.of(video, userResponseBuildHandler.buildUserResponseWith(video.getUser()));
     }
 
     public List<VideoResponse> getVideosOf(String username) {
         User user = userRepository.findByUsername(username).orElseThrow(NoUserFoundException::new);
-        return videoRepository.findAllByUserId(user.getId()).stream().filter(video -> video.getVideoStatus() != DELETED).map(VideoResponse::of).toList();
+        return videoRepository.findAllByUserId(user.getId()).stream().filter(video -> video.getVideoStatus() != DELETED).map(v -> VideoResponse.of(v, userResponseBuildHandler.buildUserResponseWith(v.getUser()))).toList();
     }
 
     @Transactional
@@ -78,7 +82,7 @@ public class VideoService {
         if (isNotAvailable(videoStatusChangeRequest.videoStatus())) throw new InvalidVideoUpdateRequestException();
 
         video.updateStatus(videoStatusChangeRequest);
-        return VideoResponse.of(video);
+        return VideoResponse.of(video, userResponseBuildHandler.buildUserResponseWith(user));
     }
 
     @Transactional
@@ -106,6 +110,6 @@ public class VideoService {
         if(user.hasNoRightToChange(video)) throw new InvalidVideoUpdateRequestException();
 
         video.changeInfoWith(videoUpdateRequestDto);
-        return VideoResponse.of(video);
+        return VideoResponse.of(video, userResponseBuildHandler.buildUserResponseWith(user));
     }
 }

@@ -27,11 +27,11 @@ public class VideoResponse {
 		this.videoStatus = videoStatus;
     }
 
-	public static VideoResponse of(Video video) {
+	public static VideoResponse of(Video video, UserResponse user) {
 		return VideoResponse.builder()
 				.id(video.getId())
 				.title(video.getVideoTitle())
-				.user(UserResponse.of(video.getUser()))
+				.user(user)
 				.desc(video.getVideoDesc())
 				.videoView(video.getVideoView())
 				.videoStatus(video.getVideoStatus())
