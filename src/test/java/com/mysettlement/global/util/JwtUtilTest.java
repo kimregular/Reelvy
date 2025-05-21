@@ -3,6 +3,7 @@ package com.mysettlement.global.util;
 import com.mysettlement.domain.user.entity.User;
 import com.mysettlement.domain.user.entity.UserRole;
 import com.mysettlement.domain.user.repository.UserRepository;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -73,24 +74,48 @@ class JwtUtilTest {
 	class ResolveTokenTests {
 
 		@Test
-		@DisplayName("헤더에 Authorization 필드가 있으면 토큰을 추출한다.")
+		@DisplayName("쿠키에 access-token 필드가 있으면 토큰을 추출한다.")
 		void test41() {
 			// given
-			String tokenvalue = "tokenValue";
+			String tokenValue = "tokenValue";
+			Cookie accessTokenCookie = new Cookie("access-token", tokenValue);
 			MockHttpServletRequest request = new MockHttpServletRequest();
-			request.addHeader(jwtUtil.getJwtHeader(), jwtUtil.getJwtBearer() + tokenvalue);
+			request.setCookies(accessTokenCookie);
+
 			// when
 			String jwt = jwtUtil.resolveToken(request);
+
 			// then
-			assertThat(jwt).isNotNull().doesNotStartWith(jwtUtil.getJwtBearer())
-					.isEqualTo(tokenvalue);
+			assertThat(jwt)
+					.isNotNull()
+					.isEqualTo(tokenValue);
 		}
 
 		@Test
-		@DisplayName("헤더에 Authorizaton 필드가 없으면 null을 반환한다.")
+		@DisplayName("쿠키에 access-token 필드가 없으면 null을 반환한다.")
 		void test42() {
+			// given
+			Cookie otherCookie = new Cookie("some-other-token", "value");
 			MockHttpServletRequest request = new MockHttpServletRequest();
+			request.setCookies(otherCookie);
+
+			// when
 			String resolvedToken = jwtUtil.resolveToken(request);
+
+			// then
+			assertThat(resolvedToken).isNull();
+		}
+
+		@Test
+		@DisplayName("요청에 쿠키가 없으면 null을 반환한다.")
+		void test43() {
+			// given
+			MockHttpServletRequest request = new MockHttpServletRequest();
+
+			// when
+			String resolvedToken = jwtUtil.resolveToken(request);
+
+			// then
 			assertThat(resolvedToken).isNull();
 		}
 	}
