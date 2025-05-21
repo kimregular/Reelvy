@@ -2,6 +2,8 @@ package com.mysettlement.global.config;
 
 import com.mysettlement.global.filter.JwtAuthenticationFilter;
 import com.mysettlement.global.filter.JwtLoginFilter;
+import com.mysettlement.global.handler.GoogleOauth2LoginSuccess;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
@@ -24,7 +26,10 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-public class WebSecurityConfig {
+@RequiredArgsConstructor
+public class SecurityConfig {
+
+	private final GoogleOauth2LoginSuccess googleOauth2LoginSuccess;
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter, JwtLoginFilter jwtLoginFilter) throws Exception {
@@ -58,6 +63,9 @@ public class WebSecurityConfig {
 
 		http.addFilterBefore(jwtAuthenticationFilter, JwtLoginFilter.class);
 		http.addFilterAt(jwtLoginFilter, UsernamePasswordAuthenticationFilter.class);
+
+		// oauth 로그인이 성공했을 경우 실행할 클래스
+		http.oauth2Login(o -> o.successHandler(googleOauth2LoginSuccess));
 
 		return http.build();
 	}

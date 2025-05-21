@@ -8,6 +8,7 @@ import com.mysettlement.domain.user.entity.User;
 import com.mysettlement.domain.user.exception.NoUserFoundException;
 import com.mysettlement.domain.user.handler.UserBuildHandler;
 import com.mysettlement.domain.user.handler.UserImageHandler;
+import com.mysettlement.domain.user.handler.UserResponseBuildHandler;
 import com.mysettlement.domain.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,14 +27,16 @@ class UserServiceTest {
 	UserRepository userRepository;
 	UserImageHandler userImageHandler;
 	UserBuildHandler userBuildHandler;
+	UserResponseBuildHandler userResponseBuildHandler;
 	UserService userService;
 
 	@BeforeEach
 	void before() {
 		userRepository = mock(UserRepository.class);
 		userImageHandler = mock(UserImageHandler.class);
+		userResponseBuildHandler = mock(UserResponseBuildHandler.class);
 		userBuildHandler = mock(UserBuildHandler.class);
-		userService = new UserService(userRepository, userImageHandler, userBuildHandler);
+		userService = new UserService(userRepository, userImageHandler, userBuildHandler, userResponseBuildHandler);
 	}
 
 	@Nested

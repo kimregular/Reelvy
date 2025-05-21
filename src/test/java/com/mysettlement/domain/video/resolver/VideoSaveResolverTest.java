@@ -35,7 +35,7 @@ class VideoSaveResolverTest {
 
         when(videoFile.getOriginalFilename()).thenReturn("video.mp4");
         when(sanitizeUtil.sanitizeFileName("video.mp4")).thenReturn("cleaned.mp4");
-        when(filePathUtil.resolveVideoPath(username, "cleaned.mp4")).thenReturn("path/to/cleaned.mp4");
+        when(filePathUtil.generateVideoUploadPath(username, "cleaned.mp4")).thenReturn("path/to/cleaned.mp4");
         when(fileSaveUtil.save("path/to/cleaned.mp4", videoFile)).thenReturn("path/to/cleaned.mp4");
 
         // when

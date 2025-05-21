@@ -1,6 +1,6 @@
-package com.mysettlement.domain.viewHistory.repository;
+package com.mysettlement.domain.viewhistory.repository;
 
-import com.mysettlement.domain.viewHistory.entity.ViewHistory;
+import com.mysettlement.domain.viewhistory.entity.ViewHistory;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

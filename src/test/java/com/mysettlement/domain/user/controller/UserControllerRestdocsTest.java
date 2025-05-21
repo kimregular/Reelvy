@@ -7,6 +7,7 @@ import com.mysettlement.domain.user.dto.response.UserResponse;
 import com.mysettlement.domain.user.dto.response.UserSignUpResponse;
 import com.mysettlement.domain.user.dto.response.UserUpdateResponse;
 import com.mysettlement.domain.user.service.UserService;
+import com.mysettlement.global.util.CookieJwtUtil;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,6 +40,9 @@ class UserControllerRestdocsTest {
 
 	@MockitoBean
 	UserService userService;
+
+	@MockitoBean
+	CookieJwtUtil cookieJwtUtil;
 
 	@Autowired
 	ObjectMapper objectMapper;

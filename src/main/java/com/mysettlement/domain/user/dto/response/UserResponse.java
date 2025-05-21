@@ -1,6 +1,5 @@
 package com.mysettlement.domain.user.dto.response;
 
-import com.mysettlement.domain.user.entity.User;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -20,15 +19,5 @@ public class UserResponse {
         this.desc = desc;
         this.profileImageUrl = profileImageUrl;
         this.backgroundImageUrl = backgroundImageUrl;
-    }
-
-    public static UserResponse of(User user) {
-        return UserResponse.builder()
-                .username(user.getUsername())
-                .nickname(user.getNickname())
-                .desc(user.getDesc())
-                .profileImageUrl(user.getProfileImagePath())
-                .backgroundImageUrl(user.getBackgroundImagePath())
-                .build();
     }
 }

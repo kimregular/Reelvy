@@ -1,4 +1,4 @@
-package com.mysettlement.domain.viewHistory.entity;
+package com.mysettlement.domain.viewhistory.entity;
 
 import com.mysettlement.domain.user.entity.User;
 import com.mysettlement.domain.video.entity.Video;

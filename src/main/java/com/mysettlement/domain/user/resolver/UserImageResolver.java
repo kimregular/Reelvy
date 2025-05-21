@@ -25,7 +25,7 @@ public class UserImageResolver {
 			fileDeleteUtil.delete(user.getImagePathOf(userImageCategory));
 		}
 		String cleanedFileName = sanitizeUtil.sanitizeFileName(image.getOriginalFilename());
-		String basePath = filePathUtil.resolveUserImagePath(user, cleanedFileName, userImageCategory);
+		String basePath = filePathUtil.generateUserImageUploadPath(user, cleanedFileName, userImageCategory);
 		return fileSaveUtil.save(basePath, image);
 	}
 }

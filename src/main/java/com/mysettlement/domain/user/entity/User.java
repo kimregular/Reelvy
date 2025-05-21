@@ -1,9 +1,8 @@
 package com.mysettlement.domain.user.entity;
 
-import com.mysettlement.global.entity.BaseEntity;
-
 import com.mysettlement.domain.user.dto.request.UserUpdateRequest;
 import com.mysettlement.domain.video.entity.Video;
+import com.mysettlement.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,6 +32,11 @@ public class User extends BaseEntity {
 
     private String password;
 
+    private String socialId;
+
+    @Enumerated(STRING)
+    private SocialType socialType;
+
     @Column(name = "user_role")
     @Enumerated(STRING)
     private UserRole userRole;
@@ -47,10 +51,12 @@ public class User extends BaseEntity {
     private String desc;
 
     @Builder
-    private User(String username, String nickname, String password, UserRole userRole, String profileImagePath, String backgroundImagePath, String desc) {
+    public User(String username, String nickname, String password, String socialId, SocialType socialType, UserRole userRole, String profileImagePath, String backgroundImagePath, String desc) {
         this.username = username;
         this.nickname = nickname;
         this.password = password;
+        this.socialId = socialId;
+        this.socialType = socialType;
         this.userRole = userRole;
         this.profileImagePath = profileImagePath;
         this.backgroundImagePath = backgroundImagePath;

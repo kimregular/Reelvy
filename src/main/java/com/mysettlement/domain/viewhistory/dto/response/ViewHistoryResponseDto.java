@@ -1,8 +1,8 @@
-package com.mysettlement.domain.viewHistory.dto.response;
+package com.mysettlement.domain.viewhistory.dto.response;
 
 import com.mysettlement.domain.user.dto.response.UserResponse;
 import com.mysettlement.domain.video.dto.response.VideoResponse;
-import com.mysettlement.domain.viewHistory.entity.ViewHistory;
+import com.mysettlement.domain.viewhistory.entity.ViewHistory;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -25,10 +25,10 @@ public class ViewHistoryResponseDto {
         this.adIds = adIds;
     }
 
-    public static ViewHistoryResponseDto of(ViewHistory viewHistory, List<Long> adIds) {
+    public static ViewHistoryResponseDto of(ViewHistory viewHistory, List<Long> adIds, UserResponse userResponse) {
         return ViewHistoryResponseDto.builder()
-                .user(UserResponse.of(viewHistory.getUser()))
-                .video(VideoResponse.of(viewHistory.getVideo()))
+                .user(userResponse)
+                .video(VideoResponse.of(viewHistory.getVideo(), userResponse))
                 .adIds(adIds)
                 .viewDate(viewHistory.getViewDate())
                 .build();
