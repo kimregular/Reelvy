@@ -37,6 +37,10 @@ const handleLogin = async () => {
     loginWarning.value = true
   }
 }
+
+const googleLogin = () => {
+  window.location.href = 'http://localhost:8080/oauth2/authorization/google'
+}
 </script>
 
 <template>
@@ -64,8 +68,7 @@ const handleLogin = async () => {
       <router-link :to="{ name: 'SIGNUP' }">
         <button type="button" class="btn btn-primary btn-sm">Wanna Sign Up?</button>
       </router-link>
+      <button class="btn btn-primary btn-sm" @click="googleLogin()">Sign with Google</button>
     </div>
   </div>
 </template>
-
-<style scoped></style>
