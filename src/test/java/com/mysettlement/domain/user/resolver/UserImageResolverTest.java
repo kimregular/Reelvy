@@ -43,7 +43,7 @@ class UserImageResolverTest {
         when(user.getImagePathOf(category)).thenReturn("old/path/image.jpg");
         when(image.getOriginalFilename()).thenReturn("new.jpg");
         when(sanitizeUtil.sanitizeFileName("new.jpg")).thenReturn("cleaned.jpg");
-        when(filePathUtil.resolveUserImagePath(user, "cleaned.jpg", category)).thenReturn("user/path/cleaned.jpg");
+        when(filePathUtil.generateUserImageUploadPath(user, "cleaned.jpg", category)).thenReturn("user/path/cleaned.jpg");
         when(fileSaveUtil.save("user/path/cleaned.jpg", image)).thenReturn("user/path/cleaned.jpg");
 
         // when
@@ -66,7 +66,7 @@ class UserImageResolverTest {
         when(user.hasImageOf(category)).thenReturn(false);
         when(image.getOriginalFilename()).thenReturn("new.jpg");
         when(sanitizeUtil.sanitizeFileName("new.jpg")).thenReturn("cleaned.jpg");
-        when(filePathUtil.resolveUserImagePath(user, "cleaned.jpg", category)).thenReturn("user/path/cleaned.jpg");
+        when(filePathUtil.generateUserImageUploadPath(user, "cleaned.jpg", category)).thenReturn("user/path/cleaned.jpg");
         when(fileSaveUtil.save("user/path/cleaned.jpg", image)).thenReturn("user/path/cleaned.jpg");
 
         // when
