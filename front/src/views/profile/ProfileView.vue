@@ -65,18 +65,14 @@ onMounted(() => getUserInfoOf())
     <div
       class="background-image"
       :style="{
-        backgroundImage: `url(${userStore.backgroundImageUrl ? `${BASE_URL}/${userStore.backgroundImageUrl}` : DEFAULT_BACKGROUND_IMAGE})`,
+        backgroundImage: `url(${userStore.backgroundImageUrl ? `${userStore.backgroundImageUrl}` : DEFAULT_BACKGROUND_IMAGE})`,
       }"
     ></div>
 
     <!-- 프로필 정보 -->
     <div class="profile-info">
       <img
-        :src="
-          userStore.profileImageUrl
-            ? `${BASE_URL}/${userStore.profileImageUrl}`
-            : DEFAULT_PROFILE_IMAGE
-        "
+        :src="userStore.profileImageUrl ? `${userStore.profileImageUrl}` : DEFAULT_PROFILE_IMAGE"
         class="profile-image"
         alt="profile"
       />
