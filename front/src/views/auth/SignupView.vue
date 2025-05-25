@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { BASE_URL } from '@/constants/server.ts'
-import axios from 'axios'
 import router from '@/router'
+import { api } from '@/api'
 
 const isInvalidInfo = ref(true) // 회원가입 버튼 비활성화 여부
 
@@ -31,7 +30,7 @@ const hasDuplicateEmail = async (email: string) => {
   isValidEmailStructure.value = true
   showEmailWarning.value = true
   try {
-    const response = await axios.post(BASE_URL + '/v1/users/check-email', { email })
+    const response = await api.post('/v1/users/check-email', { email })
     isDuplicateEmail.value = response.data.isDuplicateEmail
   } catch (error) {
     console.log(error)
@@ -93,7 +92,7 @@ const handleSignUp = async () => {
   }
 
   try {
-    await axios.post(BASE_URL + '/v1/users/signup', payload)
+    await api.post('/v1/users/signup', payload)
     await router.push('/login')
   } catch (error) {
     console.log('error!', error)

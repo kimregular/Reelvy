@@ -1,15 +1,14 @@
 <script setup lang="ts">
 import { onBeforeMount, ref } from 'vue'
-import axios from 'axios'
-import { BASE_URL } from '@/constants/server.ts'
 import Video from '@/entities/video.ts'
 import VideoCardList from '@/components/video/VideoCardList.vue'
+import { api } from '@/api'
 
 const videos = ref<Video[]>([])
 
 const requestVideos = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/v1/videos`)
+    const response = await api.get(`/v1/videos`)
     const { data } = response
     videos.value = data.map(Video.of)
   } catch (error) {

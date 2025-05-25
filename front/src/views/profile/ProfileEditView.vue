@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import axios from 'axios'
 import { BASE_URL } from '@/constants/server.ts'
 import router from '@/router'
 import { useUserStore } from '@/stores/useUserStore.ts'
+import { api } from '@/api'
 
 interface UserData {
   nickname: string
@@ -48,7 +48,7 @@ const fetchUserData = async (): Promise<void> => {
   try {
     const userStore = useUserStore()
     const username = userStore.username
-    const response = await axios.get(`${BASE_URL}/v1/users/${username}/info`)
+    const response = await api.get(`/v1/users/${username}/info`)
     const data: UserData = response.data
     userData.value = {
       nickname: data.nickname || '',
@@ -85,12 +85,7 @@ const handleSubmit = async (): Promise<void> => {
     if (backgroundImageFile.value) {
       formData.append('backgroundImage', backgroundImageFile.value)
     }
-    const response = await axios.patch(`${BASE_URL}/v1/users/update`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-      withCredentials: true,
-    })
+    const response = await api.patch(`/v1/users/update`, formData)
 
     if (response.status === 200) {
       alert('Profile updated successfully!')

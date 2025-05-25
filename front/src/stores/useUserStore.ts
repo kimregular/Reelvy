@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia'
 import type User from '@/entities/user.ts'
-import axios from 'axios'
-import { BASE_URL } from '@/constants/server.ts'
+import { api } from '@/api'
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -18,9 +17,7 @@ export const useUserStore = defineStore('user', {
 
     async init() {
       try {
-        const res = await axios.get(`${BASE_URL}/v1/users/me`, {
-          withCredentials: true,
-        })
+        const res = await api.get(`/v1/users/me`)
         this.setUser(res.data)
       } catch {
         console.info('userStore error!')

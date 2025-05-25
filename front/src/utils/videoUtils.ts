@@ -1,7 +1,6 @@
 import router from '@/router'
-import axios from 'axios'
-import { BASE_URL } from '@/constants/server.ts'
 import Video, { type VideoResponseData } from '@/entities/video.ts'
+import { api } from '@/api'
 
 export const watchOf = async (id: number) => {
   await router.push({ name: 'WATCH', query: { videoId: id } })
@@ -9,7 +8,7 @@ export const watchOf = async (id: number) => {
 
 export const getVideosOf = async (username: string) => {
   try {
-    const response = await axios.get(`${BASE_URL}/v1/videos/${username}`)
+    const response = await api.get(`/v1/videos/${username}`)
     const { data: videoData } = response
     return videoData.map((v: VideoResponseData) => Video.of(v))
   } catch (error) {
