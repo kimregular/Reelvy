@@ -1,10 +1,24 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useUserStore } from '@/stores/useUserStore.ts'
+import { api } from '@/api'
+import router from '@/router'
 
 const userStore = useUserStore()
 const loggedIn = computed(() => userStore.isLoggedIn)
 const username = computed(() => userStore.username)
+
+const handleLogout = () => {
+  api
+    .post('/v1/users/logout')
+    .then(() => {
+      userStore.clearUser()
+      router.push({ name: 'HOME' })
+    })
+    .catch((error) => {
+      console.error('로그아웃 실패!', error)
+    })
+}
 </script>
 
 <template>
@@ -40,7 +54,7 @@ const username = computed(() => userStore.username)
               </router-link>
             </li>
             <li class="nav-item">
-              <router-link class="nav-link" :to="{ name: 'LOGOUT' }">Logout</router-link>
+              <a class="nav-link" @click="handleLogout">Logout</a>
             </li>
           </template>
           <template v-else>
@@ -56,5 +70,3 @@ const username = computed(() => userStore.username)
     </div>
   </nav>
 </template>
-
-<style scoped></style>
