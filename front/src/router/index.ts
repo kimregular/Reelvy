@@ -12,8 +12,6 @@ import VideoEdit from '@/components/profile/VideoEdit.vue'
 import VideoEditDetail from '@/components/profile/VideoEditDetail.vue'
 import ProfileEditView from '@/views/profile/ProfileEditView.vue'
 import { useUserStore } from '@/stores/useUserStore.ts'
-import axios from 'axios'
-import { BASE_URL } from '@/constants/server.ts'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -45,21 +43,6 @@ const router = createRouter({
       component: LoginView,
       name: 'LOGIN',
       beforeEnter: requireAnonymous,
-    },
-    {
-      path: '/logout',
-      name: 'LOGOUT',
-      beforeEnter: async (to, from, next) => {
-        try {
-          const userStore = useUserStore()
-          await axios.post(`${BASE_URL}/v1/users/logout`, {}, { withCredentials: true })
-          userStore.clearUser()
-        } catch (e) {
-          console.error('로그아웃 실패:', e)
-        } finally {
-          next({ name: 'HOME' })
-        }
-      },
     },
     {
       path: '/profile/:username',
@@ -97,10 +80,15 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-  const userStore = useUserStore()
-  if (!userStore.isLoggedIn) {
-    await userStore.init()
+  const skipCheckRoutes = ['SIGNUP', 'LOGIN']
+
+  if (!skipCheckRoutes.includes(to.name as string)) {
+    const userStore = useUserStore()
+    if (!userStore.isLoggedIn) {
+      await userStore.init()
+    }
   }
+
   next()
 })
 
