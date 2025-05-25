@@ -3,9 +3,8 @@ import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import Video from '@/entities/video.ts'
 import { getVideosOf } from '@/utils/videoUtils.ts'
-import axios from 'axios'
-import { BASE_URL } from '@/constants/server.ts'
 import { useUserStore } from '@/stores/useUserStore.ts'
+import { api } from '@/api'
 
 const noVideo = ref(true)
 const videos = ref<Video[]>([])
@@ -20,41 +19,37 @@ const selectedStatus = ref('AVAILABLE')
 
 const router = useRouter()
 
-const updateStatus = async () => {
+const updateStatus = () => {
   if (selectedVideos.value.length === 0) return
-  try {
-    const userStore = useUserStore()
-    await axios.patch(
-      `${BASE_URL}/v1/videos/status`,
-      {
-        videoIds: selectedVideos.value,
-        videoStatus: selectedStatus.value,
-      },
-      {
-        withCredentials: true,
-      },
-    )
-    alert('상태가 변경되었습니다.')
-    const username = userStore.username
-    if (username) {
-      await requestVideos(username)
-    }
-  } catch (error) {
-    console.error('상태 변경 실패:', error)
-    alert('상태 변경에 실패했습니다.')
-  }
+
+  const userStore = useUserStore()
+  const username = userStore.username
+
+  api
+    .patch('v1/videos/status', {
+      videoIds: selectedVideos.value,
+      videoStatus: selectedStatus.value,
+    })
+    .then(() => {
+      alert('상태가 변경되었습니다.')
+      if (username) {
+        return requestVideos(username)
+      }
+    })
+    .catch((error) => {
+      console.error('상태 변경 실패', error)
+      alert('상태 변경에 실패했습니다.')
+    })
 }
 
 const requestVideos = async (username: string) => {
   videos.value = await getVideosOf(username)
   noVideo.value = videos.value.length === 0
-  console.log(videos.value)
 }
 
 onMounted(() => {
   const userStore = useUserStore()
   const username = userStore.username
-  console.log(username)
   if (!username) return
   requestVideos(username)
 })

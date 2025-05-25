@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { BASE_URL } from '@/constants/server.ts'
 import router from '@/router'
-import axios from 'axios'
+import { api } from '@/api'
 
 const videoUploadRequirements = ref({
   isVideoFileUploaded: false,
@@ -67,9 +66,7 @@ const fetchUpload = async () => {
   formData.append('desc', videoDesc.value)
 
   try {
-    await axios.post(`${BASE_URL}/v1/videos/upload`, formData, {
-      withCredentials: true,
-    })
+    await api.post(`/v1/videos/upload`, formData)
     await router.replace({ name: 'HOME' })
   } catch (error) {
     console.log('error!', error)

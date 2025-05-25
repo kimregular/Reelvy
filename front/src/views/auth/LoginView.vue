@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import axios from 'axios'
-import { BASE_URL } from '@/constants/server.ts'
 import { useRouter } from 'vue-router'
+import { api } from '@/api'
 
 const email = ref('')
 const password = ref('')
@@ -17,19 +16,10 @@ const handleLogin = async () => {
     return
   }
   try {
-    await axios.post(
-      `${BASE_URL}/v1/users/login`,
-      {
-        username: email.value,
-        password: password.value,
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        withCredentials: true,
-      },
-    )
+    await api.post(`/v1/users/login`, {
+      username: email.value,
+      password: password.value,
+    })
 
     await router.push({ name: 'HOME' }) // 홈으로 이동
   } catch (error) {

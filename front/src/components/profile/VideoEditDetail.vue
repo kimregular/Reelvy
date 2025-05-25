@@ -31,8 +31,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import axios from 'axios'
-import { BASE_URL } from '@/constants/server.ts'
+import { api } from '@/api'
 
 const route = useRoute()
 const router = useRouter()
@@ -43,9 +42,7 @@ const desc = ref('')
 const status = ref('AVAILABLE')
 
 onMounted(async () => {
-  const response = await axios.get(`${BASE_URL}/v1/videos/${videoId}/info`, {
-    withCredentials: true,
-  })
+  const response = await api.get(`/v1/videos/${videoId}/info`)
   const video = response.data
   title.value = video.title
   desc.value = video.desc
@@ -53,17 +50,11 @@ onMounted(async () => {
 })
 
 const submitUpdate = async () => {
-  await axios.patch(
-    `${BASE_URL}/v1/videos/${videoId}/info`,
-    {
-      title: title.value,
-      desc: desc.value,
-      videoStatus: status.value,
-    },
-    {
-      withCredentials: true,
-    },
-  )
+  await api.patch(`v1/videos/${videoId}/info`, {
+    title: title.value,
+    desc: desc.value,
+    videoStatus: status.value,
+  })
   alert('비디오 정보가 수정되었습니다.')
   router.back()
 }

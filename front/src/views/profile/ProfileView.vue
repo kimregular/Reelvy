@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
-import axios, { type AxiosError } from 'axios'
+import { type AxiosError } from 'axios'
 import {
-  BASE_URL,
   DEFAULT_BACKGROUND_IMAGE,
   DEFAULT_PROFILE_IMAGE,
   NOT_FOUND_RESPONSE,
@@ -13,6 +12,7 @@ import VideoCardList from '@/components/video/VideoCardList.vue'
 import { useRoute } from 'vue-router'
 import { getVideosOf } from '@/utils/videoUtils.ts'
 import { useUserStore } from '@/stores/useUserStore.ts'
+import { api } from '@/api'
 
 const userStore = useUserStore()
 const user = ref<User | null>(null)
@@ -27,7 +27,7 @@ const isProfileOwner = ref(profileUser.value === currentUser.value)
 
 const getUserInfoOf = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/v1/users/${profileUser.value}/info`)
+    const response = await api.get(`/v1/users/${profileUser.value}/info`)
     user.value = User.of(response.data)
   } catch (error: unknown) {
     if (error instanceof Error && 'response' in error) {

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import axios from 'axios'
 import { BASE_URL } from '@/constants/server.ts'
 import { useRoute } from 'vue-router'
 import type Video from '@/entities/video.ts'
+import { api } from '@/api'
 
 const video = ref<Video>()
 const loading = ref(true)
@@ -13,7 +13,7 @@ const videoId = route.query.videoId as string
 
 const fetchVideoInfo = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/v1/videos/${videoId}/info`)
+    const response = await api.get(`/v1/videos/${videoId}/info`)
     video.value = response.data
     loading.value = false
   } catch (error) {
