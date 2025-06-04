@@ -15,7 +15,7 @@ import static lombok.AccessLevel.PROTECTED;
 
 @Entity
 @Getter
-@Table(name = "VIDEO")
+@Table(name = "videos")
 @NoArgsConstructor(access = PROTECTED)
 public class Video extends BaseEntity {
 

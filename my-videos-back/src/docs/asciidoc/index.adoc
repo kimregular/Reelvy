@@ -1,9 +1,0 @@
-= MyVideos API Docs
-:doctype: book
-:source-highlighter: highlightjs
-:toc: left
-:toclevels: 2
-:seclinks:
-
-// include::{docdir}/src/docs/asciidoc/userControllerRestDoc.adoc[]
-include::{docdir}/userControllerRestDoc.adoc[]

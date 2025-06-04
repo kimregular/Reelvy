@@ -19,7 +19,7 @@ class UserUpdateResponseTest {
 		when(user.getNickname()).thenReturn("tester");
 		when(user.getProfileImagePath()).thenReturn("profile/img");
 		when(user.getBackgroundImagePath()).thenReturn("backgroundImagePath/img");
-		when(user.getDesc()).thenReturn("description for test");
+		when(user.getUserDesc()).thenReturn("description for test");
 		// when
 		UserUpdateResponse response = UserUpdateResponse.of(user);
 		// then

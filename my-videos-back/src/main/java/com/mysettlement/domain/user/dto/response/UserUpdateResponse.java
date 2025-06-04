@@ -28,7 +28,7 @@ public class UserUpdateResponse {
 				.nickname(user.getNickname())
 				.profileImage(user.getProfileImagePath())
 				.backgroundImage(user.getBackgroundImagePath())
-				.desc(user.getDesc())
+				.desc(user.getUserDesc())
 				.build();
 	}
 }

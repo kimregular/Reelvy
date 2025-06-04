@@ -16,7 +16,7 @@ import static lombok.AccessLevel.PROTECTED;
 
 @Entity
 @Getter
-@Table(name = "USERS")
+@Table(name = "users")
 @NoArgsConstructor(access = PROTECTED)
 public class User extends BaseEntity {
 
@@ -47,11 +47,11 @@ public class User extends BaseEntity {
     @Column(name = "background_image_path")
     private String backgroundImagePath;
 
-    @Column(name = "desc")
-    private String desc;
+    @Column(name = "user_desc")
+    private String userDesc;
 
     @Builder
-    public User(String username, String nickname, String password, String socialId, SocialType socialType, UserRole userRole, String profileImagePath, String backgroundImagePath, String desc) {
+    public User(String username, String nickname, String password, String socialId, SocialType socialType, UserRole userRole, String profileImagePath, String backgroundImagePath, String userDesc) {
         this.username = username;
         this.nickname = nickname;
         this.password = password;
@@ -60,12 +60,12 @@ public class User extends BaseEntity {
         this.userRole = userRole;
         this.profileImagePath = profileImagePath;
         this.backgroundImagePath = backgroundImagePath;
-        this.desc = desc;
+        this.userDesc = userDesc;
     }
 
     public void updateUserInfoWith(UserUpdateRequest userUpdateRequest) {
         this.nickname = userUpdateRequest.nickname();
-        this.desc = userUpdateRequest.desc();
+        this.userDesc = userUpdateRequest.desc();
     }
 
     public void updateProfileImagePath(String profileImagePath) {
