@@ -16,7 +16,7 @@ public class UserResponseBuildHandler {
 		return UserResponse.builder()
 				.username(user.getUsername())
 				.nickname(user.getNickname())
-				.desc(user.getDesc())
+				.desc(user.getUserDesc())
 				.profileImageUrl(filePathUtil.generateUserImageDownloadPath(user.getProfileImagePath()))
 				.backgroundImageUrl(filePathUtil.generateUserImageDownloadPath(user.getBackgroundImagePath()))
 				.build();

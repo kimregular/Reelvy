@@ -34,7 +34,7 @@ class UserResponseTest {
 		UserResponse userResponse = UserResponse.builder()
 				.username(user.getUsername())
 				.nickname(user.getNickname())
-				.desc(user.getDesc())
+				.desc(user.getUserDesc())
 				.profileImageUrl(user.getProfileImagePath())
 				.backgroundImageUrl(user.getBackgroundImagePath())
 				.build();

@@ -31,6 +31,7 @@ public class UserService {
 	private final UserBuildHandler userBuildHandler;
 	private final UserResponseBuildHandler userResponseBuildHandler;
 
+	@Transactional
 	public UserSignUpResponse signUp(UserSignUpRequest userSignupRequest) {
 		User newUser = userBuildHandler.buildUserWith(userSignupRequest);
 		userRepository.save(newUser);
