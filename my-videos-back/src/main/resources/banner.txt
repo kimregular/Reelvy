@@ -1,0 +1,15 @@
+${AnsiColor.RED}888b     d888           .d8888b.           888    888    888                                          888
+${AnsiColor.BRIGHT_RED}8888b   d8888          d88P  Y88b          888    888    888                                          888
+${AnsiColor.YELLOW}88888b.d88888          Y88b.               888    888    888                                          888
+${AnsiColor.BRIGHT_YELLOW}888Y88888P888 888  888  "Y888b.    .d88b.  888888 888888 888  .d88b.  88888b.d88b.   .d88b.  88888b.  888888
+${AnsiColor.GREEN}888 Y888P 888 888  888     "Y88b. d8P  Y8b 888    888    888 d8P  Y8b 888 "888 "88b d8P  Y8b 888 "88b 888
+${AnsiColor.BRIGHT_GREEN}888  Y8P  888 888  888       "888 88888888 888    888    888 88888888 888  888  888 88888888 888  888 888
+${AnsiColor.CYAN}888   "   888 Y88b 888 Y88b  d88P Y8b.     Y88b.  Y88b.  888 Y8b.     888  888  888 Y8b.     888  888 Y88b.
+${AnsiColor.BRIGHT_CYAN}888       888  "Y88888  "Y8888P"   "Y8888   "Y888  "Y888 888  "Y8888  888  888  888  "Y8888  888  888  "Y888
+${AnsiColor.MAGENTA}                   888
+${AnsiColor.BRIGHT_MAGENTA}              Y8b d88P
+${AnsiColor.BRIGHT_BLUE}               "Y88P"
+${AnsiColor.DEFAULT}-------------------------------------------------------------------------------------------------------------
+MySettlement    ::  Share Your Memories with Us!
+SpringBoot      ::  ${spring-boot.formatted-version}
+-------------------------------------------------------------------------------------------------------------

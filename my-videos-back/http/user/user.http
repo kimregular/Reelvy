@@ -1,0 +1,116 @@
+### Post Login Fail
+POST http://localhost:8080/v1/users/login
+Content-Type: application/json
+
+{
+  "username": "",
+  "password": ""
+}
+
+### Post Login Success
+POST http://localhost:8080/v1/users/login
+Content-Type: application/json
+
+{
+  "username": "user@user.com",
+  "password": "123123123"
+}
+
+> {%
+    // Authorization 헤더 값을 가져와 전역 변수에 저장
+    client.global.set("AUTH_HEADER", response.headers.valueOf("Authorization"));
+    console.log("Saved Authorization AppHeader:", response.headers); // 디버깅용
+%}
+
+### GET userInfo for user
+GET http://localhost:8080/v1/users/user@user.com/info
+
+### GET userInfo for admin
+GET http://localhost:8080/v1/users/info/2/admin
+Authorization: {{AUTH_HEADER}}
+
+### POST Email Check
+POST http://localhost:8080/v1/users/check-email
+Content-Type: application/json
+
+{
+  "email": "test@test.com"
+}
+
+### Post Signup
+POST http://localhost:8080/v1/users/signup
+Content-Type: application/json
+
+{
+  "email": "qwe@qwe.com",
+  "password": "qweqweqwe"
+}
+
+### Post Login Success
+POST http://localhost:8080/v1/users/login
+Content-Type: application/json
+
+{
+  "email": "qwe@qwe.com",
+  "password": "qweqweqwe"
+}
+
+> {%
+    // Authorization 헤더 값을 가져와 전역 변수에 저장
+    client.global.set("AUTH_HEADER", response.headers.valueOf("Authorization"));
+    console.log("Saved Authorization AppHeader:", response.headers); // 디버깅용
+%}
+
+### GET getUserInfo
+GET http://localhost:8080/v1/users/user@user.com/info
+Content-Type: application/json
+
+### update User info
+PATCH http://localhost:8080/v1/users/update
+Content-Type: multipart/form-data; boundary=boundary
+Authorization: {{AUTH_HEADER}}
+
+--boundary
+Content-Disposition: form-data; name="user"
+Content-Type: application/json
+
+{
+    "nickname": "newUsername",
+    "desc": "Updated description"
+}
+
+--boundary
+Content-Disposition: form-data; name="profileImage"; filename="profile.jpg"
+Content-Type: image/jpeg
+
+< ../../src/main/resources/static/temp/tempProfile.jpg
+
+--boundary
+Content-Disposition: form-data; name="backgroundImage"; filename="background.jpg"
+Content-Type: image/jpeg
+
+< ../../src/main/resources/static/temp/tempBackground.jpg
+
+--boundary--
+
+### update User info without profileImage
+PATCH http://localhost:8080/v1/users/update
+Content-Type: multipart/form-data; boundary=boundary
+Authorization: {{AUTH_HEADER}}
+
+--boundary
+Content-Disposition: form-data; name="user"
+Content-Type: application/json
+
+{
+    "username": "newUsername",
+    "desc": ""
+}
+
+--boundary
+Content-Disposition: form-data; name="backgroundImage"; filename="background.jpg"
+Content-Type: image/jpeg
+
+< ../../src/main/resources/static/images/background.jpg
+
+--boundary--

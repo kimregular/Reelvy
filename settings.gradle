@@ -1,1 +1,3 @@
-rootProject.name = 'mySettlement'
+rootProject.name = 'my-videos'
+
+include 'my-videos-back'
