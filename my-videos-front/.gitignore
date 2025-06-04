@@ -1,0 +1,20 @@
+# Node
+node_modules/
+dist/
+build/
+
+# Env
+.env
+.env.*
+
+# npm/yarn logs
+npm-debug.log
+yarn-error.log
+
+# IDE
+.vscode/
+.history/
+
+# 기타
+*.log
+.DS_Store
