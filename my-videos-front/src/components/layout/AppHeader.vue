@@ -10,7 +10,7 @@ const username = computed(() => userStore.username)
 
 const handleLogout = () => {
   api
-    .post('/v1/users/logout')
+    .delete('/v1/users/logout')
     .then(() => {
       userStore.clearUser()
       router.push({ name: 'HOME' })

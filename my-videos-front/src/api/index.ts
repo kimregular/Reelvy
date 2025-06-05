@@ -1,5 +1,7 @@
 import axios from 'axios'
 import { BASE_URL } from '@/constants/server.ts'
+import {useUserStore} from "@/stores/useUserStore.ts";
+import router from "@/router";
 
 const api = axios.create({
   baseURL: BASE_URL,
@@ -8,28 +10,30 @@ const api = axios.create({
 
 // 응답 인터셉터 추가
 api.interceptors.response.use(
-  response => response,
-  async error => {
-    const originalRequest = error.config
+  res => res,
+  async err => {
+    const originalRequest = err.config
+    const userStore = useUserStore()
 
-    // access-token 만료
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // refresh 요청에서 또 refresh 시도하지 않음
+    if (originalRequest.url?.includes('/v1/auth/refresh')) {
+      return Promise.reject(err)
+    }
+
+    if (err.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true
 
       try {
-        // refresh 요청
-        await api.post('/v1/users/refresh')
-        // 재요청
+        await api.post('/v1/auth/refresh')
         return api(originalRequest)
-      } catch (refreshError) {
-        // refresh 실패 → 로그아웃 처리
-        console.error('리프레시 실패, 로그아웃 필요')
-        window.location.href = '/login' // 또는 store.dispatch('logout')
-        return Promise.reject(refreshError)
+      } catch (e) {
+        userStore.clearUser()
+        await router.push('/login')
+        return Promise.reject(e)
       }
     }
 
-    return Promise.reject(error)
+    return Promise.reject(err)
   }
 )
 
