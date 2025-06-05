@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
-public class MySettlementGlobalExceptionHandler {
+public class MyVideosGlobalExceptionHandler {
 
-    @ExceptionHandler(MySettlementException.class)
-    public ResponseEntity<MySettlementGlobalErrorResponse> handleMySettlementException(MySettlementException e) {
+    @ExceptionHandler(MyVideosException.class)
+    public ResponseEntity<MySettlementGlobalErrorResponse> handleMySettlementException(MyVideosException e) {
         return new ResponseEntity<>(MySettlementGlobalErrorResponse.of(e), e.getStatusCode());
     }
 

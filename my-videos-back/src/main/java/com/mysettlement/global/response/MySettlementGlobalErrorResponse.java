@@ -1,6 +1,6 @@
 package com.mysettlement.global.response;
 
-import com.mysettlement.global.exception.MySettlementException;
+import com.mysettlement.global.exception.MyVideosException;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -27,7 +27,7 @@ public class MySettlementGlobalErrorResponse {
         this.validation = validation != null ? validation : new HashMap<>();
     }
 
-    public static MySettlementGlobalErrorResponse of(MySettlementException e) {
+    public static MySettlementGlobalErrorResponse of(MyVideosException e) {
         return MySettlementGlobalErrorResponse.builder()
                 .status(e.getStatusCode())
                 .message(e.getMessage())

@@ -28,7 +28,7 @@ public class FilePathUtil {
 
 	public String generateUserImageDownloadPath(String userImagePath) {
 		if(userImagePath == null) return null;
-		return userImagePath.startsWith("http") ? userImagePath : domain + userImagePath;
+		return userImagePath.startsWith("http") ? userImagePath : domain + "/" + userImagePath;
 
 	}
 }

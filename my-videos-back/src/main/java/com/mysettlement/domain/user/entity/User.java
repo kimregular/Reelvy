@@ -1,5 +1,6 @@
 package com.mysettlement.domain.user.entity;
 
+import com.mysettlement.domain.comment.entity.Comment;
 import com.mysettlement.domain.user.dto.request.UserUpdateRequest;
 import com.mysettlement.domain.video.entity.Video;
 import com.mysettlement.global.entity.BaseEntity;
@@ -51,7 +52,7 @@ public class User extends BaseEntity {
     private String userDesc;
 
     @Builder
-    public User(String username, String nickname, String password, String socialId, SocialType socialType, UserRole userRole, String profileImagePath, String backgroundImagePath, String userDesc) {
+    private User(String username, String nickname, String password, String socialId, SocialType socialType, UserRole userRole, String profileImagePath, String backgroundImagePath, String userDesc) {
         this.username = username;
         this.nickname = nickname;
         this.password = password;
@@ -78,6 +79,10 @@ public class User extends BaseEntity {
 
     public boolean hasNoRightToChange(Video video) {
         return !Objects.equals(this.getId(), video.getUser().getId());
+    }
+
+    public boolean hasNoRightToChange(Comment comment) {
+        return !comment.getUser().getId().equals(this.getId()) && !comment.getVideo().getUser().getId().equals(this.getId());
     }
 
     public boolean hasImageOf(UserImageCategory userImageCategory) {
