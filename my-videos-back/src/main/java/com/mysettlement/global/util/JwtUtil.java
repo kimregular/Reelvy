@@ -35,20 +35,13 @@ public class JwtUtil {
 		secretKey = Keys.hmacShaKeyFor(jwtProperties.SECRET_KEY().getBytes(StandardCharsets.UTF_8));
 	}
 
-	public String getJwtHeader() {
-		return jwtProperties.HEADER();
-	}
-
-	public String getJwtBearer() {
-		return jwtProperties.BEARER();
-	}
+	// ==================== Create ====================
 
 	public String createAccessToken(String username, String role, Date now) {
 		Date expiry = new Date(now.getTime() + jwtProperties.TOKEN_LIFETIME() * 60 * 1000L);
 		return Jwts.builder()
 				.claim("username", username)
 				.claim("role", role)
-				.claim("issuer", jwtProperties.ISSUER())
 				.issuedAt(now)
 				.expiration(expiry)
 				.signWith(secretKey)
@@ -59,7 +52,6 @@ public class JwtUtil {
 		Date expiry = new Date(now.getTime() + jwtProperties.REFRESH_TOKEN_LIFETIME() * 60 * 1000L);
 		return Jwts.builder()
 				.claim("username", username)
-				.claim("issuer", jwtProperties.ISSUER())
 				.issuedAt(now)
 				.expiration(expiry)
 				.signWith(secretKey)
@@ -67,51 +59,24 @@ public class JwtUtil {
 	}
 
 	public LocalDateTime getRefreshTokenExpiration(Date now) {
-		long minutes = jwtProperties.REFRESH_TOKEN_LIFETIME(); // 분 단위
+		long minutes = jwtProperties.REFRESH_TOKEN_LIFETIME();
 		Date expiry = new Date(now.getTime() + minutes * 60 * 1000L);
 		return expiry.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 	}
 
-	public String resolveAccessToken(HttpServletRequest request) {
-		if(request.getCookies() == null) {
-			log.info("No cookies found in request");
-			return null;
-		}
-
-		for (Cookie cookie : request.getCookies()) {
-			if("access-token".equals(cookie.getName())) {
-				return cookie.getValue();
-			}
-		}
-		return null;
-	}
-
-	public String resolveRefreshToken(HttpServletRequest request) {
-		if(request.getCookies() == null) {
-			log.info("No cookies found in request");
-			return null;
-		}
-
-		for (Cookie cookie : request.getCookies()) {
-			if("refresh-token".equals(cookie.getName())) {
-				return cookie.getValue();
-			}
-		}
-		return null;
-	}
+	// ==================== Parse ====================
 
 	public Claims getClaims(String token) {
 		return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload();
 	}
 
-	public Authentication getAuthentication(String token) {
-		Claims claims = getClaims(token);
-
-		String username = claims.get("username", String.class);
-
-		UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-
-		return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+	public String getUsername(String token) {
+		try {
+			return getClaims(token).get("username", String.class);
+		} catch (Exception e) {
+			log.warn("getUsername 실패: {}", e.getMessage());
+			return null;
+		}
 	}
 
 	public boolean isValidToken(String token) {
@@ -119,16 +84,60 @@ public class JwtUtil {
 			getClaims(token);
 			return true;
 		} catch (ExpiredJwtException e) {
-			log.info("Expired JWT token: 만료된 JWT token 입니다.");
+			log.info("만료된 JWT token");
 		} catch (MalformedJwtException e) {
-			log.info("Malformed JWT token: 잘못된 형식의 JWT 토큰입니다.");
+			log.info("잘못된 형식의 JWT token");
 		} catch (SecurityException e) {
-			log.info("Invalid JWT signature: 유효하지 않은 JWT 서명입니다.");
+			log.info("유효하지 않은 JWT 서명");
 		} catch (UnsupportedJwtException e) {
-			log.info("Unsupported JWT token: 지원되지 않는 JWT 토큰입니다.");
+			log.info("지원되지 않는 JWT token");
 		} catch (Exception e) {
-			log.info("Unexpected error occurred while validating JWT token: " + e.getMessage());
+			log.info("JWT 파싱 실패: {}", e.getMessage());
 		}
 		return false;
+	}
+
+	public Authentication getAuthentication(String token) {
+		String username = getUsername(token);
+		UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+		return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+	}
+
+	// ==================== Resolve ====================
+
+	public String resolveAccessToken(HttpServletRequest request) {
+		if (request.getCookies() == null) {
+			log.info("No cookies found in request");
+			return null;
+		}
+		for (Cookie cookie : request.getCookies()) {
+			if ("access-token".equals(cookie.getName())) {
+				return cookie.getValue();
+			}
+		}
+		return null;
+	}
+
+	public String resolveRefreshToken(HttpServletRequest request) {
+		if (request.getCookies() == null) {
+			log.info("No cookies found in request");
+			return null;
+		}
+		for (Cookie cookie : request.getCookies()) {
+			if ("refresh-token".equals(cookie.getName())) {
+				return cookie.getValue();
+			}
+		}
+		return null;
+	}
+
+	// ==================== Header/Bearer ====================
+
+	public String getJwtHeader() {
+		return jwtProperties.HEADER();
+	}
+
+	public String getJwtBearer() {
+		return jwtProperties.BEARER();
 	}
 }

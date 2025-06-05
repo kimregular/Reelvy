@@ -32,7 +32,6 @@ public class AuthController {
     private final UserService userService;
     private final UserRepository userRepository;
     private final RefreshTokenService refreshTokenService;
-    private final JwtUtil jwtUtil;
     private final CookieJwtUtil cookieJwtUtil;
 
     @PostMapping("/signup")
@@ -49,21 +48,25 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<String> refreshToken(HttpServletRequest request) {
-        String refreshToken = jwtUtil.resolveRefreshToken(request);
-
-        if (refreshToken == null || !jwtUtil.isValidToken(refreshToken)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 리프레시 토큰입니다.");
+    public ResponseEntity<String> refreshToken(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            refreshTokenService.reissueTokens(request, response);
+            return ResponseEntity.ok("accessToken과 refreshToken이 재발급되었습니다.");
+        } catch (IllegalArgumentException e) {
+            log.info("갱신 실패");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
-        return ResponseEntity.ok(refreshTokenService.reissueToken(refreshToken));
     }
 
     @DeleteMapping("/logout")
     public ResponseEntity<String> logout(@AuthenticationPrincipal UserDetails userDetails,
                                          HttpServletResponse response) {
-        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(NoUserFoundException::new);
-        refreshTokenService.deleteRefreshToken(user);
+        if (userDetails != null) {
+            userRepository.findByUsername(userDetails.getUsername())
+                    .ifPresent(refreshTokenService::deleteRefreshToken);
+        }
 
+        // regardless of auth state, delete cookies
         response.setHeader(HttpHeaders.SET_COOKIE, cookieJwtUtil.deleteCookieAccessToken().toString());
         response.setHeader(HttpHeaders.SET_COOKIE, cookieJwtUtil.deleteCookieRefreshToken().toString());
         return ResponseEntity.ok("Successfully logged out");
