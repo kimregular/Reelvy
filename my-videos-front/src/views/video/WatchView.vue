@@ -4,6 +4,7 @@ import { BASE_URL } from '@/constants/server.ts'
 import { useRoute } from 'vue-router'
 import type Video from '@/entities/video.ts'
 import { api } from '@/api'
+import CommentSection from "@/components/comment/CommentSection.vue";
 
 const video = ref<Video>()
 const loading = ref(true)
@@ -67,6 +68,8 @@ onMounted(() => {
           </div>
           <p class="text-muted">{{ video.desc }}</p>
           <p class="text-muted">{{ video.videoView }} views</p>
+
+          <CommentSection :video-id="videoId"/>
         </div>
       </div>
     </div>

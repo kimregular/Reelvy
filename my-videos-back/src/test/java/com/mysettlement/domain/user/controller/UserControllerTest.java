@@ -6,8 +6,6 @@ import com.mysettlement.domain.user.dto.request.EmailCheckRequest;
 import com.mysettlement.domain.user.dto.request.UserSignUpRequest;
 import com.mysettlement.domain.user.dto.response.EmailCheckResponse;
 import com.mysettlement.domain.user.dto.response.UserSignUpResponse;
-import com.mysettlement.domain.user.entity.User;
-import com.mysettlement.domain.user.entity.UserRole;
 import com.mysettlement.domain.user.repository.UserRepository;
 import com.mysettlement.global.util.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@Transactional
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class UserControllerTest {
 
@@ -39,16 +37,10 @@ class UserControllerTest {
 	@Autowired
 	JwtUtil jwtUtil;
 
+	@Transactional
 	@BeforeEach
 	void setUp() {
-		User user = User.builder()
-				.username("test@test.com")
-				.nickname("tester")
-				.desc("description for test")
-				.userRole(UserRole.USER)
-				.password("123123123")
-				.build();
-		userRepository.save(user);
+		userRepository.deleteAll();
 		userRepository.flush();
 	}
 

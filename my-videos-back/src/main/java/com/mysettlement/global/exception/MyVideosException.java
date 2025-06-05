@@ -7,11 +7,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Getter
-public abstract class MySettlementException extends RuntimeException {
+public abstract class MyVideosException extends RuntimeException {
 
     private final Map<String, String> validation = new HashMap<>();
 
-    protected MySettlementException(String message) {
+    protected MyVideosException(String message) {
         super(message);
     }
 

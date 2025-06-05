@@ -25,7 +25,7 @@ class UserResponseTest {
 				.username(username)
 				.nickname(nickname)
 				.password(password)
-				.desc(desc)
+				.userDesc(desc)
 				.userRole(role)
 				.profileImagePath(profileImagePath)
 				.backgroundImagePath(backgrounImagePath)

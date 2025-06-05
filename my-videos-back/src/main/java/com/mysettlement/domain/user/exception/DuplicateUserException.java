@@ -1,11 +1,11 @@
 package com.mysettlement.domain.user.exception;
 
-import com.mysettlement.global.exception.MySettlementException;
+import com.mysettlement.global.exception.MyVideosException;
 import org.springframework.http.HttpStatus;
 
 import static com.mysettlement.domain.user.exception.UserExceptionConstants.*;
 
-public class DuplicateUserException extends MySettlementException {
+public class DuplicateUserException extends MyVideosException {
 
     private static final String MESSAGE = DUPLICATE_USER_EXCEPTION.getMessage();
 

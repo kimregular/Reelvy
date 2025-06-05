@@ -70,3 +70,9 @@ const handleLogout = () => {
     </div>
   </nav>
 </template>
+
+<style scoped>
+a {
+  cursor: pointer;
+}
+</style>
