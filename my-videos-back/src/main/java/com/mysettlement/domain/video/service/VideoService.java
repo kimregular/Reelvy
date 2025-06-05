@@ -1,5 +1,6 @@
 package com.mysettlement.domain.video.service;
 
+import com.mysettlement.domain.like.repository.VideoLikeRepository;
 import com.mysettlement.domain.user.dto.response.UserResponse;
 import com.mysettlement.domain.user.entity.User;
 import com.mysettlement.domain.user.exception.NoUserFoundException;
@@ -15,8 +16,8 @@ import com.mysettlement.domain.video.entity.Video;
 import com.mysettlement.domain.video.exception.InvalidVideoUpdateRequestException;
 import com.mysettlement.domain.video.exception.NoVideoFoundException;
 import com.mysettlement.domain.video.handler.VideoBuildHandler;
-import com.mysettlement.domain.video.repository.VideoRepository;
 import com.mysettlement.domain.video.handler.VideoStreamingHandler;
+import com.mysettlement.domain.video.repository.VideoRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -38,6 +39,7 @@ public class VideoService {
     private final UserResponseBuildHandler userResponseBuildHandler;
     private final VideoBuildHandler videoBuildHandler;
     private final VideoStreamingHandler videoStreamingHandler;
+    private final VideoLikeRepository videoLikeRepository;
 
     @Transactional
     public VideoResponse uploadVideo(VideoUploadRequest videoUploadRequest, UserDetails userDetails) {
@@ -57,9 +59,18 @@ public class VideoService {
         return videoRepository.getVideos().stream().map(v -> VideoResponse.of(v, userResponseBuildHandler.buildUserResponseWith(v.getUser()))).toList();
     }
 
-    public VideoResponse getVideo(Long videoId) {
+    public VideoResponse getVideo(Long videoId, UserDetails userDetails) {
         Video video = videoRepository.findById(videoId).orElseThrow(NoVideoFoundException::new);
-        return VideoResponse.of(video, userResponseBuildHandler.buildUserResponseWith(video.getUser()));
+
+        if (userDetails == null) {
+            return VideoResponse.of(video, userResponseBuildHandler.buildUserResponseWith(video.getUser()));
+        }
+
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(NoUserFoundException::new);
+
+        boolean hasLiked = videoLikeRepository.existsByUserAndVideo(user, video);
+
+        return VideoResponse.of(video, userResponseBuildHandler.buildUserResponseWith(video.getUser()), hasLiked);
     }
 
     public List<VideoResponse> getVideosOf(String username) {

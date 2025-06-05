@@ -7,6 +7,7 @@ export interface VideoResponseData {
   user: UserResponseData
   desc: string
   videoStatus: string
+  hasLiked: boolean
   videoView: number
 }
 
@@ -16,6 +17,7 @@ export default class Video {
   private readonly _user: User
   private readonly _desc: string
   private readonly _videoStatus: string
+  private _hasLiked: boolean
   private readonly _videoView: number
 
   constructor(
@@ -24,6 +26,7 @@ export default class Video {
     user: User,
     desc: string,
     videoStatus: string,
+    hasLiked: boolean,
     videoView: number,
   ) {
     this._id = id
@@ -31,6 +34,7 @@ export default class Video {
     this._user = user
     this._desc = desc
     this._videoStatus = videoStatus
+    this._hasLiked = hasLiked
     this._videoView = videoView
   }
 
@@ -41,6 +45,7 @@ export default class Video {
       User.of(data.user),
       data.desc,
       data.videoStatus,
+      data.hasLiked,
       data.videoView,
     )
   }
@@ -63,6 +68,10 @@ export default class Video {
 
   get status(): string {
     return this._videoStatus
+  }
+
+  get hasLiked(): boolean {
+    return this._hasLiked
   }
 
   get videoView(): number {
