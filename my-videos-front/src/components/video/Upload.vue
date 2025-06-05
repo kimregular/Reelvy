@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import router from '@/router'
-import { api } from '@/api'
+import api from "@/api";
 
 const videoUploadRequirements = ref({
   isVideoFileUploaded: false,

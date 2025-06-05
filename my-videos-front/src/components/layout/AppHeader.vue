@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useUserStore } from '@/stores/useUserStore.ts'
-import { api } from '@/api'
+import api from "@/api";
 import router from '@/router'
 
 const userStore = useUserStore()

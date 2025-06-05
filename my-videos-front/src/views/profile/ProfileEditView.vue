@@ -3,7 +3,7 @@ import { onMounted, ref } from 'vue'
 import { BASE_URL } from '@/constants/server.ts'
 import router from '@/router'
 import { useUserStore } from '@/stores/useUserStore.ts'
-import { api } from '@/api'
+import api from "@/api";
 
 interface UserData {
   nickname: string

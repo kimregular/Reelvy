@@ -12,7 +12,7 @@ import VideoCardList from '@/components/video/VideoCardList.vue'
 import { useRoute } from 'vue-router'
 import { getVideosOf } from '@/utils/videoUtils.ts'
 import { useUserStore } from '@/stores/useUserStore.ts'
-import { api } from '@/api'
+import api from "@/api";
 
 const userStore = useUserStore()
 const user = ref<User | null>(null)

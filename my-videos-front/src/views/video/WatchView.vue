@@ -3,7 +3,7 @@ import { onMounted, ref } from 'vue'
 import { BASE_URL } from '@/constants/server.ts'
 import { useRoute } from 'vue-router'
 import type Video from '@/entities/video.ts'
-import { api } from '@/api'
+import api from "@/api";
 import CommentSection from "@/components/comment/CommentSection.vue";
 import LikeSection from "@/components/like/LikeSection.vue";
 import {useUserStore} from "@/stores/useUserStore.ts";

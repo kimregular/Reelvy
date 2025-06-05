@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {onMounted, ref, watch} from "vue";
-import {api} from "@/api";
+import api from "@/api";
 
 const props = defineProps<{ videoId: string; hasLiked: boolean }>();
 const {videoId} = props;

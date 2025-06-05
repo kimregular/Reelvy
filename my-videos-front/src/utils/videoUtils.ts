@@ -1,6 +1,6 @@
 import router from '@/router'
 import Video, { type VideoResponseData } from '@/entities/video.ts'
-import { api } from '@/api'
+import api from "@/api";
 
 export const watchOf = async (id: number) => {
   await router.push({ name: 'WATCH', query: { videoId: id } })

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import { api } from "@/api";
 import type Comment from "@/entities/comment.ts";
 import dayjs from "dayjs";
 import {useUserStore} from "@/stores/useUserStore.ts";
+import api from "@/api";
 
 const { videoId } = defineProps<{ videoId: string }>();
 const userStore = useUserStore();
