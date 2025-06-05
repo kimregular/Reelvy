@@ -44,11 +44,12 @@ public class CommentService {
                 .build();
 
         commentRepository.save(comment);
-        return new CommentResponse(1, List.of(CommentDto.of(comment)));
+        return new CommentResponse(1, List.of(CommentDto.of(comment, userDetails.getUsername())));
     }
 
-    public CommentResponse getComments(Long videoId) {
-        List<CommentDto> commentDtos = commentRepository.findByVideoId(videoId).stream().map(CommentDto::of).toList();
+    public CommentResponse getComments(Long videoId, UserDetails userDetails) {
+        String loggedUsername = userDetails == null ? " " : userDetails.getUsername();
+        List<CommentDto> commentDtos = commentRepository.findByVideoId(videoId).stream().map(comment -> CommentDto.of(comment, loggedUsername)).toList();
         return new CommentResponse(commentDtos.size(), commentDtos);
     }
 
@@ -62,7 +63,7 @@ public class CommentService {
         }
 
         comment.updateContent(commentRequest.content());
-        return new CommentResponse(1, List.of(CommentDto.of(comment)));
+        return new CommentResponse(1, List.of(CommentDto.of(comment, userDetails.getUsername())));
     }
 
     @Transactional
