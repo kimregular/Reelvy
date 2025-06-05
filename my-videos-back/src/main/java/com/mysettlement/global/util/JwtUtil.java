@@ -16,6 +16,8 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 
 @Slf4j
@@ -41,7 +43,7 @@ public class JwtUtil {
 		return jwtProperties.BEARER();
 	}
 
-	public String createJwt(String username, String role, Date now) {
+	public String createAccessToken(String username, String role, Date now) {
 		Date expiry = new Date(now.getTime() + jwtProperties.TOKEN_LIFETIME() * 60 * 1000L);
 		return Jwts.builder()
 				.claim("username", username)
@@ -53,7 +55,24 @@ public class JwtUtil {
 				.compact();
 	}
 
-	public String resolveToken(HttpServletRequest request) {
+	public String createRefreshToken(String username, Date now) {
+		Date expiry = new Date(now.getTime() + jwtProperties.REFRESH_TOKEN_LIFETIME() * 60 * 1000L);
+		return Jwts.builder()
+				.claim("username", username)
+				.claim("issuer", jwtProperties.ISSUER())
+				.issuedAt(now)
+				.expiration(expiry)
+				.signWith(secretKey)
+				.compact();
+	}
+
+	public LocalDateTime getRefreshTokenExpiration(Date now) {
+		long minutes = jwtProperties.REFRESH_TOKEN_LIFETIME(); // 분 단위
+		Date expiry = new Date(now.getTime() + minutes * 60 * 1000L);
+		return expiry.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+	}
+
+	public String resolveAccessToken(HttpServletRequest request) {
 		if(request.getCookies() == null) {
 			log.info("No cookies found in request");
 			return null;
@@ -61,6 +80,20 @@ public class JwtUtil {
 
 		for (Cookie cookie : request.getCookies()) {
 			if("access-token".equals(cookie.getName())) {
+				return cookie.getValue();
+			}
+		}
+		return null;
+	}
+
+	public String resolveRefreshToken(HttpServletRequest request) {
+		if(request.getCookies() == null) {
+			log.info("No cookies found in request");
+			return null;
+		}
+
+		for (Cookie cookie : request.getCookies()) {
+			if("refresh-token".equals(cookie.getName())) {
 				return cookie.getValue();
 			}
 		}

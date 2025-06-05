@@ -8,7 +8,7 @@ import java.time.Duration;
 @Component
 public class CookieJwtUtil {
 
-	public ResponseCookie createCookieJwt(String jwt) {
+	public ResponseCookie createCookieAccessToken(String jwt) {
 		return ResponseCookie.from("access-token", jwt)
 				.httpOnly(true)
 				.sameSite("Lax")
@@ -17,8 +17,25 @@ public class CookieJwtUtil {
 				.build();
 	}
 
-	public ResponseCookie deleteCookieJwt() {
+	public ResponseCookie deleteCookieAccessToken() {
 		return ResponseCookie.from("access-token", "")
+				.httpOnly(true)
+				.path("/")
+				.maxAge(0)
+				.build();
+	}
+
+	public ResponseCookie createCookieRefreshToken(String refreshToken) {
+		return ResponseCookie.from("refresh-token", refreshToken)
+				.httpOnly(true)
+				.sameSite("Lax")
+				.path("/")
+				.maxAge(Duration.ofDays(7)) // refresh token은 보통 7일
+				.build();
+	}
+
+	public ResponseCookie deleteCookieRefreshToken() {
+		return ResponseCookie.from("refresh-token", "")
 				.httpOnly(true)
 				.path("/")
 				.maxAge(0)
