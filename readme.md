@@ -9,6 +9,15 @@
     * [비디오 재생](#비디오-재생-)
     * [프로필 관리](#프로필-관리-)
   * [구현 기능](#구현-기능)
+    * [🔐 인증 및 인가 시스템 (JWT 기반)](#-인증-및-인가-시스템-jwt-기반)
+    * [🔓 Google OAuth2 로그인](#-google-oauth2-로그인)
+    * [🧾 REST API 및 API 문서화](#-rest-api-및-api-문서화)
+    * [📦 JPA 기반 데이터 처리](#-jpa-기반-데이터-처리)
+    * [📸 영상 업로드 & 스트리밍](#-영상-업로드--스트리밍)
+    * [🧑 내 프로필 관리](#-내-프로필-관리)
+    * [💬 댓글 기능](#-댓글-기능)
+    * [❤️ 좋아요 기능](#-좋아요-기능)
+  * [프로젝트 구조](#프로젝트-구조)
   * [Trouble Shootings](#trouble-shootings)
     * [AXIOS 응답 헤더에 Authorization 없는 문제](#axios-응답-헤더에-authorization-없는-문제)
     * [로그인 후 새로고침하면 로그아웃되던 문제](#로그인-후-새로고침하면-로그아웃되던-문제)
@@ -63,23 +72,80 @@
 백드라운드 이미지, 프로필 이미지, 업로드한 비디오 목록 등을 관리할 수 있습니다.
 
 ## 구현 기능
-🔐 인증 및 인가 시스템 구현 (JWT 기반)
-- JWT 토큰 기반 인증/인가 구현: 로그인 시 HttpOnly 쿠키에 JWT를 저장하고, 이후 인증이 필요한 요청에서 `/me` 엔드포인트를 통해 사용자 정보를 확인하도록 설계
-- Spring Security 적용: JWT 인증 필터 및 사용자 인증 절차 커스터마이징
-- Vue + Pinia 상태관리 연동: 로그인 후 사용자 정보를 Pinia 스토어에 저장하고 전역에서 활용
 
-REST API 설계 및 Spring REST Docs 적용
-- Spring REST Docs를 활용하여 테스트 기반 API 문서 자동 생성
-- AsciiDoctor 설정을 통해 문서 빌드시 정적 리소스로 포함되도록 구성
+### 🔐 인증 및 인가 시스템 (JWT 기반)
+- JWT 토큰 기반 인증 및 인가 처리
+- 로그인 시 HttpOnly 쿠키에 Access Token 저장
+- `@PreAuthorize`, 커스텀 애너테이션을 통한 메서드 보안 적용
+- 인증된 사용자만 댓글 작성, 영상 좋아요, 내 영상 관리 가능
 
-🧪 JPA 기반 데이터 처리
-- Spring Data JPA를 사용하여 실거래가 데이터 CRUD 처리
-- 페이징 및 정렬 기능 구현, 동적 쿼리 조건 지원
+### 🔓 Google OAuth2 로그인
+- Google 계정으로 로그인 가능
+- 최초 로그인 시 자동 회원가입 처리
+- 외부 프로필 이미지, 이메일 등 연동
 
-🔒 OAuth2 소셜 로그인 (Google)
-- Google OAuth2 로그인 연동
-- 로그인 성공 시 사용자 정보 추출 및 회원가입/로그인 처리
-- 프로필 이미지 등 외부 정보 기반 사용자 데이터 저장
+### 🧾 REST API 및 API 문서화
+- RESTful API 설계
+- Spring REST Docs 기반 API 문서 자동화
+- AsciiDoctor를 활용한 정적 문서 생성 및 배포 설정
+
+### 📦 JPA 기반 데이터 처리
+- Spring Data JPA를 활용한 CRUD 처리
+- 페이징 및 정렬 기능 구현
+- 동적 검색 조건 지원 (예: 영상 필터링)
+
+### 📸 영상 업로드 & 스트리밍
+- 영상 업로드 기능
+- 영상 스트리밍 지원
+- 업로드한 영상은 내 프로필에서 관리 가능
+
+### 🧑 내 프로필 관리
+- 닉네임, 소개글, 프로필 이미지 수정 가능
+- 내 영상 목록 및 좋아요 수 확인 가능
+
+### 💬 댓글 기능
+- 댓글 작성, 조회, 삭제 기능
+- 댓글 작성자 또는 영상 소유자만 삭제 가능
+- 로그인 없이 댓글 조회 가능
+
+### ❤️ 좋아요 기능
+- 로그인한 사용자는 영상에 좋아요 가능
+- 좋아요 여부는 프론트에 상태로 반영됨
+
+## 프로젝트 구조
+```md
+my-videos/
+├── my-videos-back/                   # 백엔드 (Spring Boot)
+│   ├── src/
+│   │   ├── main/
+│   │   │   ├── java/com/myvideos/
+│   │   │   │   ├── domain/          
+│   │   │   │   ├── global/          
+│   │   │   │   └── docs/            
+│   │   │   └── resources/
+│   │   │       ├── application.yml
+│   │   │       └── static/          
+│   ├── build.gradle
+│   └── settings.gradle
+│
+├── my-videos-front/                 # 프론트엔드 (Vue 3 + Vite)
+│   ├── public/
+│   ├── src/
+│   │   ├── assets/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── router/
+│   │   ├── store/                   # Pinia 스토어
+│   │   ├── utils/
+│   │   └── App.vue
+│   ├── index.html
+│   ├── vite.config.ts
+│   ├── package.json
+│   └── tsconfig.json
+│
+├── README.md
+└── .gitignore
+```
 
 ## Trouble Shootings
 
