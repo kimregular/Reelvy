@@ -42,6 +42,11 @@ public class UserService {
 		return new EmailCheckResponse(userRepository.existsByUsername(target.email()));
 	}
 
+	public User getUserByUsername(String username) {
+		return userRepository.findByUsername(username)
+				.orElseThrow(NoUserFoundException::new);
+	}
+
 	@Transactional
 	public UserUpdateResponse update(UserUpdateRequest userUpdateRequest,
 	                                 MultipartFile profileImage,

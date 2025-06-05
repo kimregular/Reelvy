@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { api } from '@/api'
+import {ref} from 'vue'
+import {useRouter} from 'vue-router'
+import api from "@/api";
 
 const email = ref('')
 const password = ref('')
@@ -15,6 +15,7 @@ const handleLogin = async () => {
     console.error('Email and password are required.')
     return
   }
+  await api.delete('/v1/users/logout').catch(() => {}) // 실패 무시
   try {
     await api.post(`/v1/users/login`, {
       username: email.value,

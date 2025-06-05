@@ -31,32 +31,11 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserController {
 
 	private final UserService userService;
-	private final CookieJwtUtil cookieJwtUtil;
-
-	@PostMapping("/signup")
-	public ResponseEntity<UserSignUpResponse> singUp(@RequestBody @Valid UserSignUpRequest userSignupRequest) {
-		log.info("user signup request : {}", userSignupRequest);
-		return ResponseEntity.status(HttpStatus.CREATED)
-				.body(userService.signUp(userSignupRequest));
-	}
-
-	@PostMapping("/check-email") // 이메일 중복 체크
-	public ResponseEntity<EmailCheckResponse> checkEmail(@RequestBody @Valid EmailCheckRequest emailCheckRequest) {
-		return ResponseEntity.status(HttpStatus.OK)
-				.body(userService.checkEmail(emailCheckRequest));
-	}
 
 	@User
 	@GetMapping("/me")
 	public ResponseEntity<UserResponse> getUserInfo(@AuthenticationPrincipal UserDetails userDetails) {
 		return ResponseEntity.ok(userService.getUserInfoOf(userDetails.getUsername()));
-	}
-
-	@User
-	@PostMapping("/logout")
-	public ResponseEntity<Void> logout(HttpServletResponse response) {
-		response.setHeader(HttpHeaders.SET_COOKIE, cookieJwtUtil.deleteCookieJwt().toString());
-		return ResponseEntity.ok().build();
 	}
 
 	@User

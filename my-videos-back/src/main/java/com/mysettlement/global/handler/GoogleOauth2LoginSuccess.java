@@ -59,9 +59,9 @@ public class GoogleOauth2LoginSuccess extends SimpleUrlAuthenticationSuccessHand
 		}
 
 		// jwt 토큰 생성
-		String jwt = jwtUtil.createJwt(user.getUsername(), user.getUserRole().name(), new Date());
+		String jwt = jwtUtil.createAccessToken(user.getUsername(), user.getUserRole().name(), new Date());
 
-		ResponseCookie jwtCookie = cookieJwtUtil.createCookieJwt(jwt);
+		ResponseCookie jwtCookie = cookieJwtUtil.createCookieAccessToken(jwt);
 		response.setHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());
 		// 클라이언트 redirect 방식으로 토큰 전달
 		response.sendRedirect("http://localhost:5173");

@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import type User from '@/entities/user.ts'
-import { api } from '@/api'
+import api from "@/api";
 
 export const useUserStore = defineStore('user', {
   state: () => ({

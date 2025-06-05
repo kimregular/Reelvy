@@ -1,8 +1,11 @@
 package com.mysettlement.global.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mysettlement.domain.auth.service.RefreshTokenService;
 import com.mysettlement.domain.user.dto.request.LoginRequest;
+import com.mysettlement.domain.user.entity.User;
 import com.mysettlement.domain.user.exception.NoUserFoundException;
+import com.mysettlement.domain.user.service.UserService;
 import com.mysettlement.global.util.CookieJwtUtil;
 import com.mysettlement.global.util.JwtUtil;
 import jakarta.servlet.FilterChain;
@@ -22,6 +25,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Slf4j
@@ -30,11 +34,15 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
     private final JwtUtil jwtUtil;
     private final ObjectMapper objectMapper;
     private final CookieJwtUtil cookieJwtUtil;
+    private final RefreshTokenService refreshTokenService;
+    private final UserService userService;
 
-    public JwtLoginFilter(JwtUtil jwtUtil, ObjectMapper objectMapper, CookieJwtUtil cookieJwtUtil, AuthenticationManager authenticationManager) {
+    public JwtLoginFilter(JwtUtil jwtUtil, ObjectMapper objectMapper, CookieJwtUtil cookieJwtUtil, AuthenticationManager authenticationManager, RefreshTokenService refreshTokenService, UserService userService) {
         this.jwtUtil = jwtUtil;
         this.objectMapper = objectMapper;
         this.cookieJwtUtil = cookieJwtUtil;
+        this.refreshTokenService = refreshTokenService;
+        this.userService = userService;
         super.setAuthenticationManager(authenticationManager);
         setFilterProcessesUrl("/v1/users/login");
     }
@@ -53,10 +61,24 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         UserDetails userDetails = (UserDetails) authResult.getPrincipal();
+
+        String username = userDetails.getUsername();
         String role = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).findFirst().orElseThrow(NoUserFoundException::new);
-        String token = jwtUtil.createJwt(userDetails.getUsername(), role, new Date());
-        ResponseCookie cookieJwt = cookieJwtUtil.createCookieJwt(token);
-        response.setHeader(HttpHeaders.SET_COOKIE, cookieJwt.toString());
+        Date now = new Date();
+
+        String accessToken = jwtUtil.createAccessToken(username, role, now);
+        String refreshToken = jwtUtil.createRefreshToken(username, now);
+
+        User user = userService.getUserByUsername(username);
+        LocalDateTime refreshTokenExpiration = jwtUtil.getRefreshTokenExpiration(now);
+        refreshTokenService.saveOrUpdateRefreshToken(user, refreshToken, refreshTokenExpiration);
+
+        // 쿠키 생성 및 설정
+        ResponseCookie accessCookie = cookieJwtUtil.createCookieAccessToken(accessToken);
+        ResponseCookie refreshCookie = cookieJwtUtil.createCookieRefreshToken(refreshToken);
+
+        response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
     }
 
     @Override

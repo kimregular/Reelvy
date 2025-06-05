@@ -2,7 +2,7 @@
 import { onBeforeMount, ref } from 'vue'
 import Video from '@/entities/video.ts'
 import VideoCardList from '@/components/video/VideoCardList.vue'
-import { api } from '@/api'
+import api from "@/api";
 
 const videos = ref<Video[]>([])
 

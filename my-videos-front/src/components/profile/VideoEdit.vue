@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 import Video from '@/entities/video.ts'
 import { getVideosOf } from '@/utils/videoUtils.ts'
 import { useUserStore } from '@/stores/useUserStore.ts'
-import { api } from '@/api'
+import api from "@/api";
 
 const noVideo = ref(true)
 const videos = ref<Video[]>([])

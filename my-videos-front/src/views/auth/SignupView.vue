@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import router from '@/router'
-import { api } from '@/api'
+import api from "@/api";
 
 const isInvalidInfo = ref(true) // 회원가입 버튼 비활성화 여부
 

@@ -61,7 +61,7 @@ class JwtUtilTest {
 			String role = "ROLE";
 			Date registeredTime = new Date();
 			// when
-			String jwt = jwtUtil.createJwt(username, role, registeredTime);
+			String jwt = jwtUtil.createAccessToken(username, role, registeredTime);
 			// then
 			assertThat(jwtUtil.getClaims(jwt).get("username", String.class)).isEqualTo(username);
 			assertThat(jwtUtil.getClaims(jwt).get("role", String.class)).isEqualTo(role);
@@ -83,7 +83,7 @@ class JwtUtilTest {
 			request.setCookies(accessTokenCookie);
 
 			// when
-			String jwt = jwtUtil.resolveToken(request);
+			String jwt = jwtUtil.resolveAccessToken(request);
 
 			// then
 			assertThat(jwt)
@@ -100,7 +100,7 @@ class JwtUtilTest {
 			request.setCookies(otherCookie);
 
 			// when
-			String resolvedToken = jwtUtil.resolveToken(request);
+			String resolvedToken = jwtUtil.resolveAccessToken(request);
 
 			// then
 			assertThat(resolvedToken).isNull();
@@ -113,7 +113,7 @@ class JwtUtilTest {
 			MockHttpServletRequest request = new MockHttpServletRequest();
 
 			// when
-			String resolvedToken = jwtUtil.resolveToken(request);
+			String resolvedToken = jwtUtil.resolveAccessToken(request);
 
 			// then
 			assertThat(resolvedToken).isNull();
@@ -135,7 +135,7 @@ class JwtUtilTest {
 					.password("1234")
 					.userRole(UserRole.USER).build();
 			userRepository.save(user);
-			String jwt = jwtUtil.createJwt(username, "ROLE", new Date());
+			String jwt = jwtUtil.createAccessToken(username, "ROLE", new Date());
 			// when
 			Authentication authentication = jwtUtil.getAuthentication(jwt);
 			// then
@@ -146,7 +146,7 @@ class JwtUtilTest {
 		@Test
 		@DisplayName("존재하지 않는 유저로 인증받으면 예외를 던진다.")
 		void getAuthenticationWithNonExistentUser() {
-			String token = jwtUtil.createJwt("nonExistentUser", "ROLE_USER", new Date());
+			String token = jwtUtil.createAccessToken("nonExistentUser", "ROLE_USER", new Date());
 			assertThatThrownBy(() -> jwtUtil.getAuthentication(token))
 					.isInstanceOf(UsernameNotFoundException.class);
 		}
@@ -164,7 +164,7 @@ class JwtUtilTest {
 		@Test
 		@DisplayName("만료된 토큰은 false 출력")
 		void testExpiredTokenThrowsException() {
-			String expiredToken = jwtUtil.createJwt(username, role, new Date(registeredTime.getTime() - 200000000)); // 실제 만료된 JWT 필요
+			String expiredToken = jwtUtil.createAccessToken(username, role, new Date(registeredTime.getTime() - 200000000)); // 실제 만료된 JWT 필요
 			assertThat(jwtUtil.isValidToken(expiredToken)).isFalse();
 		}
 
