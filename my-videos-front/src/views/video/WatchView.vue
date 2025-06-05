@@ -5,12 +5,15 @@ import { useRoute } from 'vue-router'
 import type Video from '@/entities/video.ts'
 import { api } from '@/api'
 import CommentSection from "@/components/comment/CommentSection.vue";
+import LikeSection from "@/components/like/LikeSection.vue";
+import {useUserStore} from "@/stores/useUserStore.ts";
 
 const video = ref<Video>()
 const loading = ref(true)
 const streamUrl = ref<string>('')
 const route = useRoute()
 const videoId = route.query.videoId as string
+const userStore = useUserStore();
 
 const fetchVideoInfo = async () => {
   try {
@@ -69,6 +72,7 @@ onMounted(() => {
           <p class="text-muted">{{ video.desc }}</p>
           <p class="text-muted">{{ video.videoView }} views</p>
 
+          <LikeSection v-if="userStore.isLoggedIn" :video-id="videoId" :hasLiked="video.hasLiked"/>
           <CommentSection :video-id="videoId"/>
         </div>
       </div>

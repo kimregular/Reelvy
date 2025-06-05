@@ -14,17 +14,19 @@ public class VideoResponse {
 	private final UserResponse user;
 	private final String desc;
 	private final long videoView;
+	private final Boolean hasLiked;
 	private final VideoStatus videoStatus;
 
 
 	@Builder
-	private VideoResponse(Long id, String title, UserResponse user, String desc, long videoView, VideoStatus videoStatus) {
+	private VideoResponse(Long id, String title, UserResponse user, String desc, long videoView, Boolean hasLiked, VideoStatus videoStatus) {
         this.id = id;
         this.title = title;
         this.user = user;
         this.desc = desc;
 		this.videoView = videoView;
-		this.videoStatus = videoStatus;
+        this.hasLiked = hasLiked;
+        this.videoStatus = videoStatus;
     }
 
 	public static VideoResponse of(Video video, UserResponse user) {
@@ -34,6 +36,18 @@ public class VideoResponse {
 				.user(user)
 				.desc(video.getVideoDesc())
 				.videoView(video.getVideoView())
+				.videoStatus(video.getVideoStatus())
+				.build();
+	}
+
+	public static VideoResponse of(Video video, UserResponse user, boolean hasLiked) {
+		return VideoResponse.builder()
+				.id(video.getId())
+				.title(video.getVideoTitle())
+				.user(user)
+				.desc(video.getVideoDesc())
+				.videoView(video.getVideoView())
+				.hasLiked(hasLiked)
 				.videoStatus(video.getVideoStatus())
 				.build();
 	}
