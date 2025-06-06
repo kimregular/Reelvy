@@ -23,11 +23,11 @@ const profileUser = ref(route.params.username)
 const currentUser = ref(userStore.username)
 
 const isLoggedIn = ref(userStore.isLoggedIn)
-const isProfileOwner = ref(profileUser.value === currentUser.value)
+const isProfileOwner = ref(isLoggedIn && profileUser.value === currentUser.value)
 
 const getUserInfoOf = async () => {
   try {
-    const response = await api.get(`/v1/users/${profileUser.value}/info`)
+    const response = await api.get(`/v1/users/public/${profileUser.value}/info`)
     user.value = User.of(response.data)
   } catch (error: unknown) {
     if (error instanceof Error && 'response' in error) {
@@ -56,33 +56,33 @@ watch(user, (newUser) => {
   if (newUser?.username) requestVideos()
 })
 
-onMounted(() => getUserInfoOf())
+onMounted(getUserInfoOf)
 </script>
 
 <template>
-  <div v-if="isLoggedIn" class="profile-container">
+  <div class="profile-container">
     <!-- 배경 이미지 -->
     <div
       class="background-image"
       :style="{
-        backgroundImage: `url(${userStore.backgroundImageUrl ? `${userStore.backgroundImageUrl}` : DEFAULT_BACKGROUND_IMAGE})`,
+        backgroundImage: `url(${user?.backgroundImageUrl ? `${user?.backgroundImageUrl}` : DEFAULT_BACKGROUND_IMAGE})`,
       }"
     ></div>
 
     <!-- 프로필 정보 -->
     <div class="profile-info">
       <img
-        :src="userStore.profileImageUrl ? `${userStore.profileImageUrl}` : DEFAULT_PROFILE_IMAGE"
+        :src="user?.profileImageUrl ? `${user?.profileImageUrl}` : DEFAULT_PROFILE_IMAGE"
         class="profile-image"
         alt="profile"
       />
       <div class="nickname-container">
-        <h2 class="nickname">{{ userStore.nickname }}</h2>
+        <h2 class="nickname">{{ user?.nickname }}</h2>
       </div>
     </div>
 
-    <div v-if="userStore.desc" class="container description-container">
-      <p class="description text-muted fs-6 mb-0">{{ userStore.desc }}</p>
+    <div v-if="user?.desc" class="container description-container">
+      <p class="description text-muted fs-6 mb-0">{{ user?.desc }}</p>
     </div>
   </div>
 

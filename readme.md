@@ -30,11 +30,16 @@
     * [서비스단에는 private 클래스가 없어야한다!](#서비스단에는-private-클래스가-없어야한다)
     * [프론트에서 쿠키에 접근하지 못하도록 HTTPONLY 설정 진행](#프론트에서-쿠키에-접근하지-못하도록-httponly-설정-진행)
   * [리팩토링](#리팩토링)
-    * [1. 유저 프로필 사진 저장 로직 개선](#1-유저-프로필-사진-저장-로직-개선)
-    * [2. 평문처럼 읽히는 코드를 만들고 싶다!](#2-평문처럼-읽히는-코드를-만들고-싶다-)
-    * [3. SALT 추가 로직 테스트하기](#3-salt-추가-로직-테스트하기)
-    * [4. Vue.js Component와 View 분리하기](#4-vuejs-component와-view-분리하기)
-    * [5. HttpOnly 쿠키로 jwt 발급, 사용하기](#5-httponly-쿠키로-jwt-발급-사용하기)
+    * [01. 유저 프로필 사진 저장 로직 개선](#01-유저-프로필-사진-저장-로직-개선)
+    * [02. 평문처럼 읽히는 코드를 만들고 싶다!](#02-평문처럼-읽히는-코드를-만들고-싶다-)
+    * [03. SALT 추가 로직 테스트하기](#03-salt-추가-로직-테스트하기)
+    * [04. Vue.js Component와 View 분리하기](#04-vuejs-component와-view-분리하기)
+    * [05. HttpOnly 쿠키로 jwt 발급, 사용하기](#05-httponly-쿠키로-jwt-발급-사용하기)
+    * [06. 유저 이미지 출력 로직 개선](#06-유저-이미지-출력-로직-개선)
+    * [07.메서드 기반 인증 관리와 uri](#07메서드-기반-인증-관리와-uri)
+    * [08. 좋아요 기능 개발](#08-좋아요-기능-개발)
+    * [09. 댓글을 삭제하려면 조건이 어떻다구요?](#09-댓글을-삭제하려면-조건이-어떻다구요)
+    * [10. RefreshToken](#10-refreshtoken)
 <!-- TOC -->
 
 ## 사용자 동영상 공유 플랫폼
@@ -402,8 +407,13 @@ public RoleHierarchy roleHierarchy() {
 
 ## 리팩토링
 > 내용을 다 담기에는 가독성이 좋지 않아 링크로 대체 합니다.
-### [1. 유저 프로필 사진 저장 로직 개선](https://velog.io/@regular_jk_kim/유저-프로필-사진-저장-로직-개선)
-### [2. 평문처럼 읽히는 코드를 만들고 싶다!](https://velog.io/@regular_jk_kim/평문처럼-읽히는-코드를-만들고-싶다)
-### [3. SALT 추가 로직 테스트하기](https://velog.io/@regular_jk_kim/SALT-추가-로직-테스트하기)
-### [4. Vue.js Component와 View 분리하기](https://velog.io/@regular_jk_kim/Vue.js-Component와-View-분리하기)
-### [5. HttpOnly 쿠키로 jwt 발급, 사용하기](https://velog.io/@regular_jk_kim/HttpOnly-쿠키로-jwt-발급-사용하기)
+### [01. 유저 프로필 사진 저장 로직 개선](https://velog.io/@regular_jk_kim/유저-프로필-사진-저장-로직-개선)
+### [02. 평문처럼 읽히는 코드를 만들고 싶다!](https://velog.io/@regular_jk_kim/평문처럼-읽히는-코드를-만들고-싶다)
+### [03. SALT 추가 로직 테스트하기](https://velog.io/@regular_jk_kim/SALT-추가-로직-테스트하기)
+### [04. Vue.js Component와 View 분리하기](https://velog.io/@regular_jk_kim/Vue.js-Component와-View-분리하기)
+### [05. HttpOnly 쿠키로 jwt 발급, 사용하기](https://velog.io/@regular_jk_kim/HttpOnly-쿠키로-jwt-발급-사용하기)
+### [06. 유저 이미지 출력 로직 개선](https://velog.io/@regular_jk_kim/유저-이미지-출력-로직-개선)
+### [07.메서드 기반 인증 관리와 uri](https://velog.io/@regular_jk_kim/메서드-기반-인증-관리와-uri)
+### [08. 좋아요 기능 개발](https://velog.io/@regular_jk_kim/좋아요-기능-개발)
+### [09. 댓글을 삭제하려면 조건이 어떻다구요?](https://velog.io/@regular_jk_kim/댓글을-삭제하려면-조건이-어떻다구요)
+### [10. RefreshToken](https://velog.io/@regular_jk_kim/RefreshToken)

@@ -17,7 +17,7 @@ const handleLogin = async () => {
   }
   await api.delete('/v1/users/logout').catch(() => {}) // 실패 무시
   try {
-    await api.post(`/v1/users/login`, {
+    await api.post(`/v1/users/public/login`, {
       username: email.value,
       password: password.value,
     })

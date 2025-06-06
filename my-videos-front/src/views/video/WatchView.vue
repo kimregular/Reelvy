@@ -17,7 +17,7 @@ const userStore = useUserStore();
 
 const fetchVideoInfo = async () => {
   try {
-    const response = await api.get(`/v1/videos/${videoId}/info`)
+    const response = await api.get(`/v1/videos/public/${videoId}/info`)
     video.value = response.data
     loading.value = false
   } catch (error) {
@@ -27,7 +27,7 @@ const fetchVideoInfo = async () => {
 
 const fetchVideoStreaming = async () => {
   try {
-    streamUrl.value = `${BASE_URL}/v1/videos/${videoId}/stream`
+    streamUrl.value = `${BASE_URL}/v1/videos/public/${videoId}/stream`
   } catch (error) {
     console.error('Failed to load video stream:', error)
   }

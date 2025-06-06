@@ -30,7 +30,7 @@ const hasDuplicateEmail = async (email: string) => {
   isValidEmailStructure.value = true
   showEmailWarning.value = true
   try {
-    const response = await api.post('/v1/users/check-email', { email })
+    const response = await api.post('/v1/users/public/check-email', { email })
     isDuplicateEmail.value = response.data.isDuplicateEmail
   } catch (error) {
     console.log(error)
@@ -92,7 +92,7 @@ const handleSignUp = async () => {
   }
 
   try {
-    await api.post('/v1/users/signup', payload)
+    await api.post('/v1/users/public/signup', payload)
     await router.push('/login')
   } catch (error) {
     console.log('error!', error)

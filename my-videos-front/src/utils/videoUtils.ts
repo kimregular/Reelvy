@@ -8,7 +8,7 @@ export const watchOf = async (id: number) => {
 
 export const getVideosOf = async (username: string) => {
   try {
-    const response = await api.get(`/v1/videos/${username}`)
+    const response = await api.get(`/v1/videos/public/${username}`)
     const { data: videoData } = response
     return videoData.map((v: VideoResponseData) => Video.of(v))
   } catch (error) {

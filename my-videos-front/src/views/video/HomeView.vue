@@ -8,7 +8,7 @@ const videos = ref<Video[]>([])
 
 const requestVideos = async () => {
   try {
-    const response = await api.get(`/v1/videos`)
+    const response = await api.get(`/v1/videos/public`)
     const { data } = response
     videos.value = data.map(Video.of)
   } catch (error) {

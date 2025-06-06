@@ -1,38 +1,32 @@
 package com.mysettlement.domain.auth.controller;
 
+
 import com.mysettlement.domain.auth.service.RefreshTokenService;
 import com.mysettlement.domain.user.dto.request.EmailCheckRequest;
 import com.mysettlement.domain.user.dto.request.UserSignUpRequest;
 import com.mysettlement.domain.user.dto.response.EmailCheckResponse;
 import com.mysettlement.domain.user.dto.response.UserSignUpResponse;
-import com.mysettlement.domain.user.entity.User;
-import com.mysettlement.domain.user.exception.NoUserFoundException;
-import com.mysettlement.domain.user.repository.UserRepository;
 import com.mysettlement.domain.user.service.UserService;
-import com.mysettlement.global.util.CookieJwtUtil;
-import com.mysettlement.global.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1/users")
-public class AuthController {
+@RequestMapping("/v1/users/public")
+public class AuthPublicController {
 
     private final UserService userService;
-    private final UserRepository userRepository;
     private final RefreshTokenService refreshTokenService;
-    private final CookieJwtUtil cookieJwtUtil;
 
     @PostMapping("/signup")
     public ResponseEntity<UserSignUpResponse> singUp(@RequestBody @Valid UserSignUpRequest userSignupRequest) {
@@ -56,19 +50,5 @@ public class AuthController {
             log.info("갱신 실패");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
-    }
-
-    @DeleteMapping("/logout")
-    public ResponseEntity<String> logout(@AuthenticationPrincipal UserDetails userDetails,
-                                         HttpServletResponse response) {
-        if (userDetails != null) {
-            userRepository.findByUsername(userDetails.getUsername())
-                    .ifPresent(refreshTokenService::deleteRefreshToken);
-        }
-
-        // regardless of auth state, delete cookies
-        response.setHeader(HttpHeaders.SET_COOKIE, cookieJwtUtil.deleteCookieAccessToken().toString());
-        response.setHeader(HttpHeaders.SET_COOKIE, cookieJwtUtil.deleteCookieRefreshToken().toString());
-        return ResponseEntity.ok("Successfully logged out");
     }
 }

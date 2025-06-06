@@ -42,23 +42,22 @@ public class SecurityConfig {
         http.formLogin(AbstractHttpConfigurer::disable);
         http.httpBasic(AbstractHttpConfigurer::disable);
 
-        http.authorizeHttpRequests(auth ->
-                auth
-                        .requestMatchers(
-                                new AntPathRequestMatcher("/favicon.ico"),
-                                new AntPathRequestMatcher("/error"),
-                                new AntPathRequestMatcher("/h2-console/**"),
-                                new AntPathRequestMatcher("/docs/**"),
-                                new AntPathRequestMatcher("/app/uploads/**"),
-                                new AntPathRequestMatcher("/images/**")
-                        ).permitAll()
-                        .requestMatchers(
-                                new AntPathRequestMatcher("/v1/users/**"),
-                                new AntPathRequestMatcher("/v1/videos/**")
-                        ).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/v1/comments/**").permitAll()
-                        .requestMatchers("/v1/comments/**").authenticated()
-                        .anyRequest().denyAll()
+        http.authorizeHttpRequests(auth -> auth
+                // 공통 정적 리소스: 항상 허용
+                .requestMatchers(
+                        "/favicon.ico",
+                        "/error",
+                        "/h2-console/**",
+                        "/docs/**",
+                        "/app/uploads/**",
+                        "/images/**"
+                ).permitAll()
+
+                // 도메인 내 공개 API: /v1/{domain}/public/** → 항상 허용
+                .requestMatchers("/v1/*/public/**").permitAll()
+
+                // 이외 모든 API는 인증 필요 → 메서드 단위 @User, @Admin 등으로 제어
+                .anyRequest().authenticated()
         );
 
         http.addFilterBefore(jwtAuthenticationFilter, JwtLoginFilter.class);

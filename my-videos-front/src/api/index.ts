@@ -10,30 +10,30 @@ const api = axios.create({
 
 // 응답 인터셉터 추가
 api.interceptors.response.use(
-  res => res,
-  async err => {
-    const originalRequest = err.config
+  response => response,
+  async (error) => {
+    const originalRequest = error.config
     const userStore = useUserStore()
 
     // refresh 요청에서 또 refresh 시도하지 않음
-    if (originalRequest.url?.includes('/v1/auth/refresh')) {
-      return Promise.reject(err)
+    if (originalRequest.url?.includes('/v1/users/public/refresh')) {
+      return Promise.reject(error)
     }
 
-    if (err.response?.status === 401 && !originalRequest._retry) {
+    if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true
 
       try {
-        await api.post('/v1/auth/refresh')
+        await api.post('/v1/users/public/refresh')
         return api(originalRequest)
       } catch (e) {
         userStore.clearUser()
-        await router.push('/login')
+        await router.push({name: 'LOGIN'})
         return Promise.reject(e)
       }
     }
 
-    return Promise.reject(err)
+    return Promise.reject(error)
   }
 )
 

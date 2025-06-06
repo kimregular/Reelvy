@@ -3,6 +3,7 @@ package com.mysettlement.global.util;
 import com.mysettlement.domain.user.entity.User;
 import com.mysettlement.domain.user.entity.UserRole;
 import com.mysettlement.domain.user.repository.UserRepository;
+import com.mysettlement.global.jwt.JwtProvider;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -22,10 +23,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
-class JwtUtilTest {
+class JwtProviderTest {
 
 	@Autowired
-	private JwtUtil jwtUtil;
+	private JwtProvider jwtProvider;
 
 	@Autowired
 	private UserRepository userRepository;
@@ -37,7 +38,7 @@ class JwtUtilTest {
 		@DisplayName("헤더 키값은 Authorization이다.")
 		void test1() {
 			// given
-			String header = jwtUtil.getJwtHeader();
+			String header = jwtProvider.getJwtHeader();
 			// when
 			// then
 			assertThat(header).isEqualTo("Authorization");
@@ -47,7 +48,7 @@ class JwtUtilTest {
 		@DisplayName("헤더 값의 처음은 'BEARER ' 이다.")
 		void test2() {
 			// given
-			String bearer = jwtUtil.getJwtBearer();
+			String bearer = jwtProvider.getJwtBearer();
 			// when
 			// then
 			assertThat(bearer).isEqualTo("Bearer ");
@@ -61,11 +62,11 @@ class JwtUtilTest {
 			String role = "ROLE";
 			Date registeredTime = new Date();
 			// when
-			String jwt = jwtUtil.createAccessToken(username, role, registeredTime);
+			String jwt = jwtProvider.createToken(username, role, registeredTime);
 			// then
-			assertThat(jwtUtil.getClaims(jwt).get("username", String.class)).isEqualTo(username);
-			assertThat(jwtUtil.getClaims(jwt).get("role", String.class)).isEqualTo(role);
-			assertThat(jwtUtil.getClaims(jwt).getIssuedAt()).isCloseTo(registeredTime, 1000);
+			assertThat(jwtProvider.getClaims(jwt).get("username", String.class)).isEqualTo(username);
+			assertThat(jwtProvider.getClaims(jwt).get("role", String.class)).isEqualTo(role);
+			assertThat(jwtProvider.getClaims(jwt).getIssuedAt()).isCloseTo(registeredTime, 1000);
 		}
 	}
 
@@ -83,7 +84,7 @@ class JwtUtilTest {
 			request.setCookies(accessTokenCookie);
 
 			// when
-			String jwt = jwtUtil.resolveAccessToken(request);
+			String jwt = jwtProvider.resolveAccessToken(request);
 
 			// then
 			assertThat(jwt)
@@ -100,7 +101,7 @@ class JwtUtilTest {
 			request.setCookies(otherCookie);
 
 			// when
-			String resolvedToken = jwtUtil.resolveAccessToken(request);
+			String resolvedToken = jwtProvider.resolveAccessToken(request);
 
 			// then
 			assertThat(resolvedToken).isNull();
@@ -113,7 +114,7 @@ class JwtUtilTest {
 			MockHttpServletRequest request = new MockHttpServletRequest();
 
 			// when
-			String resolvedToken = jwtUtil.resolveAccessToken(request);
+			String resolvedToken = jwtProvider.resolveAccessToken(request);
 
 			// then
 			assertThat(resolvedToken).isNull();
@@ -135,9 +136,9 @@ class JwtUtilTest {
 					.password("1234")
 					.userRole(UserRole.USER).build();
 			userRepository.save(user);
-			String jwt = jwtUtil.createAccessToken(username, "ROLE", new Date());
+			String jwt = jwtProvider.createToken(username, "ROLE", new Date());
 			// when
-			Authentication authentication = jwtUtil.getAuthentication(jwt);
+			Authentication authentication = jwtProvider.getAuthentication(jwt);
 			// then
 			assertThat(authentication).isNotNull()
 					.isInstanceOf(UsernamePasswordAuthenticationToken.class);
@@ -146,8 +147,8 @@ class JwtUtilTest {
 		@Test
 		@DisplayName("존재하지 않는 유저로 인증받으면 예외를 던진다.")
 		void getAuthenticationWithNonExistentUser() {
-			String token = jwtUtil.createAccessToken("nonExistentUser", "ROLE_USER", new Date());
-			assertThatThrownBy(() -> jwtUtil.getAuthentication(token))
+			String token = jwtProvider.createToken("nonExistentUser", "ROLE_USER", new Date());
+			assertThatThrownBy(() -> jwtProvider.getAuthentication(token))
 					.isInstanceOf(UsernameNotFoundException.class);
 		}
 	}
@@ -164,22 +165,22 @@ class JwtUtilTest {
 		@Test
 		@DisplayName("만료된 토큰은 false 출력")
 		void testExpiredTokenThrowsException() {
-			String expiredToken = jwtUtil.createAccessToken(username, role, new Date(registeredTime.getTime() - 200000000)); // 실제 만료된 JWT 필요
-			assertThat(jwtUtil.isValidToken(expiredToken)).isFalse();
+			String expiredToken = jwtProvider.createToken(username, role, new Date(registeredTime.getTime() - 200000000)); // 실제 만료된 JWT 필요
+			assertThat(jwtProvider.isValidToken(expiredToken)).isFalse();
 		}
 
 		@Test
 		@DisplayName("형식에 맞지 않는 토큰은 false 출력")
 		void testMalformedTokenThrowsException() {
 			String malformedToken = "this.is.not.a.valid.jwt";
-			assertThat(jwtUtil.isValidToken(malformedToken)).isFalse();
+			assertThat(jwtProvider.isValidToken(malformedToken)).isFalse();
 		}
 
 		@Test
 		@DisplayName("지원되지 않는 형식의 JWT는 false 출력")
 		void testUnsupportedTokenThrowsException() {
 			String unsupportedToken = "eyJhbGciOiJQUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.J5W09-rNx0pt5_HBiydR-vOluS6oD-RpYNa8PVWwMcBDQSXiw6-EPW8iSsalXPspGj3ouQjAnOP_4-zrlUUlvUIt2T79XyNeiKuooyIFvka3Y5NnGiOUBHWvWcWp4RcQFMBrZkHtJM23sB5D7Wxjx0-HFeNk-Y3UJgeJVhg5NaWXypLkC4y0ADrUBfGAxhvGdRdULZivfvzuVtv6AzW6NRuEE6DM9xpoWX_4here-yvLS2YPiBTZ8xbB3axdM99LhES-n52lVkiX5AWg2JJkEROZzLMpaacA_xlbUz_zbIaOaoqk8gB5oO7kI6sZej3QAdGigQy-hXiRnW_L98d4GQ"; // 지원되지 않는 알고리즘으로 생성된 JWT 필요
-			assertThat(jwtUtil.isValidToken(unsupportedToken)).isFalse();
+			assertThat(jwtProvider.isValidToken(unsupportedToken)).isFalse();
 		}
 	}
 }
