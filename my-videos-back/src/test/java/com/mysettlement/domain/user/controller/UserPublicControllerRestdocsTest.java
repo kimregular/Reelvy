@@ -31,9 +31,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-@Import(UserControllerRestdocsTest.TestConfig.class)
-@WebMvcTest(UserController.class)
-class UserControllerRestdocsTest {
+@Import(UserPublicControllerRestdocsTest.TestConfig.class)
+@WebMvcTest(UserPublicController.class)
+class UserPublicControllerRestdocsTest {
 
 	@Autowired
 	MockMvc mockMvc;

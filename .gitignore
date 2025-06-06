@@ -12,6 +12,7 @@ Thumbs.db
 app/*
 
 # IDE
+.gradle/
 .idea/
 *.iml
 *.ipr

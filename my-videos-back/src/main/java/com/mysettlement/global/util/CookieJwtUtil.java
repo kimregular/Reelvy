@@ -1,41 +1,28 @@
 package com.mysettlement.global.util;
 
+import com.mysettlement.global.jwt.JwtConstants;
+import com.mysettlement.global.jwt.JwtUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
-import java.time.Duration;
-
 @Component
+@RequiredArgsConstructor
 public class CookieJwtUtil {
 
-	public ResponseCookie createCookieAccessToken(String jwt) {
-		return ResponseCookie.from("access-token", jwt)
+	private final JwtUtil jwtUtil;
+
+	public ResponseCookie createCookieToken(String jwt, JwtConstants tokenType) {
+		return ResponseCookie.from(tokenType.getCookieName(), jwt)
 				.httpOnly(true)
 				.sameSite("Lax")
 				.path("/")
-				.maxAge(Duration.ofHours(3))
+				.maxAge(jwtUtil.getLifeTimeOf(tokenType))
 				.build();
 	}
 
-	public ResponseCookie deleteCookieAccessToken() {
-		return ResponseCookie.from("access-token", "")
-				.httpOnly(true)
-				.path("/")
-				.maxAge(0)
-				.build();
-	}
-
-	public ResponseCookie createCookieRefreshToken(String refreshToken) {
-		return ResponseCookie.from("refresh-token", refreshToken)
-				.httpOnly(true)
-				.sameSite("Lax")
-				.path("/")
-				.maxAge(Duration.ofDays(7)) // refresh token은 보통 7일
-				.build();
-	}
-
-	public ResponseCookie deleteCookieRefreshToken() {
-		return ResponseCookie.from("refresh-token", "")
+	public ResponseCookie deleteCookieToken(JwtConstants tokenType) {
+		return ResponseCookie.from(tokenType.getCookieName(), "")
 				.httpOnly(true)
 				.path("/")
 				.maxAge(0)

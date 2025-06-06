@@ -1,16 +1,18 @@
 package com.mysettlement.domain.like.controller;
 
 import com.mysettlement.domain.like.service.VideoLikeService;
+import com.mysettlement.global.annotation.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+@User
 @RestController
-@RequestMapping("/v1/videos")
 @RequiredArgsConstructor
-public class VideoLikeController {
+@RequestMapping("/v1/videos")
+public class VideoLikePermittedController {
 
     private final VideoLikeService videoLikeService;
 
@@ -24,10 +26,5 @@ public class VideoLikeController {
     public ResponseEntity<Void> unLikeVideo(@PathVariable Long videoId, @AuthenticationPrincipal UserDetails userDetails) {
         videoLikeService.unlike(videoId, userDetails);
         return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/{videoId}/like-count")
-    public ResponseEntity<Long> getLikeCount(@PathVariable Long videoId) {
-        return ResponseEntity.ok(videoLikeService.likeCount(videoId));
     }
 }

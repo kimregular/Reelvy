@@ -14,7 +14,7 @@ const editingId = ref<number | null>(null);
 const editContent = ref('');
 
 const fetchComments = async () => {
-  const response = await api.get(`/v1/comments`, {
+  const response = await api.get(`/v1/comments/public`, {
     params: { videoId },
   });
   comments.value = response.data.comments;

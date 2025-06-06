@@ -7,7 +7,7 @@ import com.mysettlement.domain.user.dto.request.UserSignUpRequest;
 import com.mysettlement.domain.user.dto.response.EmailCheckResponse;
 import com.mysettlement.domain.user.dto.response.UserSignUpResponse;
 import com.mysettlement.domain.user.repository.UserRepository;
-import com.mysettlement.global.util.JwtUtil;
+import com.mysettlement.global.jwt.JwtProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class UserControllerTest {
+class UserPublicControllerTest {
 
 	@Autowired
 	ObjectMapper objectMapper;
@@ -35,7 +35,7 @@ class UserControllerTest {
 	UserRepository userRepository;
 
 	@Autowired
-	JwtUtil jwtUtil;
+	JwtProvider jwtProvider;
 
 	@Transactional
 	@BeforeEach

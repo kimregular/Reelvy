@@ -1,18 +1,15 @@
 package com.mysettlement.global.handler;
 
+import com.mysettlement.domain.auth.service.RefreshTokenService;
 import com.mysettlement.domain.user.entity.SocialType;
 import com.mysettlement.domain.user.entity.User;
 import com.mysettlement.domain.user.entity.UserRole;
 import com.mysettlement.domain.user.repository.UserRepository;
-import com.mysettlement.global.util.CookieJwtUtil;
-import com.mysettlement.global.util.JwtUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -20,7 +17,6 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.Date;
 
 @Component
 @Slf4j
@@ -28,8 +24,7 @@ import java.util.Date;
 public class GoogleOauth2LoginSuccess extends SimpleUrlAuthenticationSuccessHandler {
 
 	private final UserRepository userRepository;
-	private final JwtUtil jwtUtil;
-	private final CookieJwtUtil cookieJwtUtil;
+	private final RefreshTokenService refreshTokenService;
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -59,10 +54,7 @@ public class GoogleOauth2LoginSuccess extends SimpleUrlAuthenticationSuccessHand
 		}
 
 		// jwt 토큰 생성
-		String jwt = jwtUtil.createAccessToken(user.getUsername(), user.getUserRole().name(), new Date());
-
-		ResponseCookie jwtCookie = cookieJwtUtil.createCookieAccessToken(jwt);
-		response.setHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());
+		refreshTokenService.issueNewTokens(user, response);
 		// 클라이언트 redirect 방식으로 토큰 전달
 		response.sendRedirect("http://localhost:5173");
 	}

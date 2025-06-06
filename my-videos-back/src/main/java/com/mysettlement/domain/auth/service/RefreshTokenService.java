@@ -3,19 +3,27 @@ package com.mysettlement.domain.auth.service;
 import com.mysettlement.domain.auth.entity.RefreshToken;
 import com.mysettlement.domain.auth.repository.RefreshTokenRepository;
 import com.mysettlement.domain.user.entity.User;
+import com.mysettlement.domain.user.exception.NoUserFoundException;
 import com.mysettlement.domain.user.repository.UserRepository;
+import com.mysettlement.global.jwt.JwtProvider;
+import com.mysettlement.global.jwt.CookieJwtResolver;
+import com.mysettlement.global.jwt.JwtUtil;
 import com.mysettlement.global.util.CookieJwtUtil;
-import com.mysettlement.global.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 
+import static com.mysettlement.global.jwt.JwtConstants.ACCESS_TOKEN;
+import static com.mysettlement.global.jwt.JwtConstants.REFRESH_TOKEN;
+
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -23,13 +31,16 @@ public class RefreshTokenService {
 
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserRepository userRepository;
-    private final JwtUtil jwtUtil;
     private final CookieJwtUtil cookieJwtUtil;
+    private final JwtProvider jwtProvider;
+    private final CookieJwtResolver cookieJwtResolver;
+    private final JwtUtil jwtUtil;
 
     public void reissueTokens(HttpServletRequest request, HttpServletResponse response) {
-        // 1. JWT 유효성 체크는 controller에서 완료됨
-        String refreshToken = jwtUtil.resolveRefreshToken(request);
+        // 1. rt 유효성 체크
+        String refreshToken = cookieJwtResolver.resolveToken(request, REFRESH_TOKEN);
         if (refreshToken == null || !jwtUtil.isValidToken(refreshToken)) {
+            // 요청에 동봉된 rt 유효성 검사
             throw new IllegalArgumentException("유효하지 않은 리프레시 토큰입니다.");
         }
 
@@ -42,35 +53,50 @@ public class RefreshTokenService {
         RefreshToken stored = refreshTokenRepository.findByUser(user)
                 .orElseThrow(() -> new IllegalArgumentException("리프레시 토큰 없음"));
 
+        // 4. 요청 rt와 db rt 비교 (값이 다르면 재사용임)
         if (!stored.getToken().equals(refreshToken)) {
+            log.warn("[TOKEN REUSE DETECTED] username={}, usedToken={}", username, refreshToken);
+
+            // 해당 유저의 세션 강제 만료
+            refreshTokenRepository.deleteByUser(user);
+
             throw new IllegalArgumentException("일치하지 않는 리프레시 토큰");
         }
 
-        if (stored.isExpired()) {
-            throw new IllegalArgumentException("리프레시 토큰 만료됨");
+        // 5. db rt 유효성 검사
+        if (!jwtUtil.isValidToken(stored.getToken())) {
+            throw new IllegalArgumentException("유효하지 않은 리프레시 토큰입니다.");
         }
 
-        // 4. 새 토큰 생성
+        // 6. 갱신
+        issueNewTokens(user, response);
+    }
+
+    public void issueNewTokens(User user, HttpServletResponse response) {
         Date now = new Date();
-        String newAccessToken = jwtUtil.createAccessToken(user.getUsername(), user.getUserRole().getCode(), now);
-        String newRefreshToken = jwtUtil.createRefreshToken(user.getUsername(), now);
-        LocalDateTime refreshExpiresAt = jwtUtil.getRefreshTokenExpiration(now);
+        String accessToken = jwtProvider.createToken(user, now, ACCESS_TOKEN);
+        String refreshToken = jwtProvider.createToken(user, now, REFRESH_TOKEN);
 
-        // 5. DB 업데이트
-        saveOrUpdateRefreshToken(user, newRefreshToken, refreshExpiresAt);
+        saveOrUpdateRefreshToken(user, refreshToken);
 
-        // 6. 쿠키로 내려주기
-        response.setHeader(HttpHeaders.SET_COOKIE, cookieJwtUtil.createCookieAccessToken(newAccessToken).toString());
-        response.setHeader(HttpHeaders.SET_COOKIE, cookieJwtUtil.createCookieRefreshToken(newRefreshToken).toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, cookieJwtUtil.createCookieToken(accessToken, ACCESS_TOKEN).toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, cookieJwtUtil.createCookieToken(refreshToken, REFRESH_TOKEN).toString());
     }
 
-    public void saveOrUpdateRefreshToken(User user, String token, LocalDateTime expiresAt) {
+    public void saveOrUpdateRefreshToken(User user, String token) {
         refreshTokenRepository.findByUser(user).ifPresentOrElse(
-                refreshToken -> refreshToken.update(token, expiresAt),
-                () -> refreshTokenRepository.save(new RefreshToken(user, token, expiresAt)));
+                refreshToken -> refreshToken.update(token),
+                () -> refreshTokenRepository.save(new RefreshToken(user, token)));
     }
 
-    public void deleteRefreshToken(User user) {
-        refreshTokenRepository.deleteByUser(user);
+    public void deleteRefreshToken(UserDetails userDetails, HttpServletResponse response) {
+        // 로그인 여부에 상관없이 로그아웃 처리
+        response.addHeader(HttpHeaders.SET_COOKIE, cookieJwtUtil.deleteCookieToken(ACCESS_TOKEN).toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, cookieJwtUtil.deleteCookieToken(REFRESH_TOKEN).toString());
+
+        if (userDetails != null) {
+            User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(NoUserFoundException::new);
+            refreshTokenRepository.deleteByUser(user);
+        }
     }
 }
