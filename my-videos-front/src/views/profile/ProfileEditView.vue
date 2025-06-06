@@ -48,7 +48,7 @@ const fetchUserData = async (): Promise<void> => {
   try {
     const userStore = useUserStore()
     const username = userStore.username
-    const response = await api.get(`/v1/users/${username}/info`)
+    const response = await api.get(`/v1/users/public/${username}/info`)
     const data: UserData = response.data
     userData.value = {
       nickname: data.nickname || '',
@@ -140,7 +140,7 @@ onMounted(() => {
         <div v-if="userData.profileImageUrl" class="image-preview">
           <label for="curProfile">Current Profile Image</label>
           <img
-            :src="`${BASE_URL}/${userData.profileImageUrl}`"
+            :src="`${userData.profileImageUrl}`"
             id="curProfile"
             alt="Current profile"
           />
@@ -163,7 +163,7 @@ onMounted(() => {
         <div v-if="userData.backgroundImageUrl" class="image-preview">
           <label for="curBackground">Current Background Image</label>
           <img
-            :src="`${BASE_URL}/${userData.backgroundImageUrl}`"
+            :src="`${userData.backgroundImageUrl}`"
             id="curBackground"
             alt="Current background"
           />
