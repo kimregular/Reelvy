@@ -27,23 +27,22 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static com.mysettlement.domain.video.entity.VideoStatus.DELETED;
-import static com.mysettlement.domain.video.entity.VideoStatus.isNotAvailable;
+import static com.mysettlement.domain.video.entity.VideoStatus.notAvailable;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class VideoService {
 
-    private final VideoRepository videoRepository;
     private final UserRepository userRepository;
-    private final UserResponseBuildHandler userResponseBuildHandler;
+    private final VideoRepository videoRepository;
     private final VideoBuildHandler videoBuildHandler;
-    private final VideoStreamingHandler videoStreamingHandler;
     private final VideoLikeRepository videoLikeRepository;
+    private final VideoStreamingHandler videoStreamingHandler;
+    private final UserResponseBuildHandler userResponseBuildHandler;
 
     @Transactional
-    public VideoResponse uploadVideo(VideoUploadRequest videoUploadRequest, UserDetails userDetails) {
-        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(NoUserFoundException::new);
+    public VideoResponse uploadVideo(VideoUploadRequest videoUploadRequest, User user) {
         Video newVideo = videoBuildHandler.buildVideoWith(videoUploadRequest, user);
         videoRepository.save(newVideo);
         UserResponse userResponse = userResponseBuildHandler.buildUserResponseWith(user);
@@ -56,7 +55,11 @@ public class VideoService {
     }
 
     public List<VideoResponse> getHomeVideos() {
-        return videoRepository.getVideos().stream().map(v -> VideoResponse.of(v, userResponseBuildHandler.buildUserResponseWith(v.getUser()))).toList();
+        return videoRepository
+                .getVideos()
+                .stream()
+                .map(v -> VideoResponse.of(v, userResponseBuildHandler.buildUserResponseWith(v.getUser())))
+                .toList();
     }
 
     public VideoResponse getVideo(Long videoId, UserDetails userDetails) {
@@ -75,34 +78,33 @@ public class VideoService {
 
     public List<VideoResponse> getVideosOf(String username) {
         User user = userRepository.findByUsername(username).orElseThrow(NoUserFoundException::new);
-        return videoRepository.findAllByUserId(user.getId()).stream().filter(video -> video.getVideoStatus() != DELETED).map(v -> VideoResponse.of(v, userResponseBuildHandler.buildUserResponseWith(v.getUser()))).toList();
+        return videoRepository
+                .findAllByUserId(user.getId())
+                .stream()
+                .filter(video -> video.getVideoStatus() != DELETED)
+                .map(v -> VideoResponse.of(v, userResponseBuildHandler.buildUserResponseWith(v.getUser())))
+                .toList();
     }
 
     @Transactional
-    public VideoResponse changeVideoStatus(Long videoId, VideoStatusChangeRequest videoStatusChangeRequest, UserDetails userDetails) {
-        // 유저 조회
-        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(NoUserFoundException::new);
-
-        // 비디오 조회
+    public VideoResponse changeVideoStatus(Long videoId,
+                                           VideoStatusChangeRequest videoStatusChangeRequest,
+                                           User user) {
         Video video = videoRepository.findById(videoId).orElseThrow(NoVideoFoundException::new);
-
-        // 주인 확인
         if(user.hasNoRightToChange(video)) throw new InvalidVideoUpdateRequestException();
-
-        // 상태 변경 가능 확인
-        if (isNotAvailable(videoStatusChangeRequest.videoStatus())) throw new InvalidVideoUpdateRequestException();
-
+        if (notAvailable(videoStatusChangeRequest.videoStatus())) throw new InvalidVideoUpdateRequestException();
         video.updateStatus(videoStatusChangeRequest);
         return VideoResponse.of(video, userResponseBuildHandler.buildUserResponseWith(user));
     }
 
     @Transactional
     public void changeVideosStatus(VideosStatusChangeRequest videosStatusChangeRequest,
-                                   UserDetails userDetails) {
-
-        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(NoUserFoundException::new);
-
-        List<Video> videos = videoRepository.findAllByUserId(user.getId()).stream().filter(video -> videosStatusChangeRequest.videoIds().contains(video.getId())).toList();
+                                   User user) {
+        List<Video> videos = videoRepository
+                .findAllByUserId(user.getId())
+                .stream()
+                .filter(video -> videosStatusChangeRequest.videoIds().contains(video.getId()))
+                .toList();
 
         for (Video video : videos) {
             video.updateStatus(videosStatusChangeRequest.videoStatus());
@@ -110,16 +112,9 @@ public class VideoService {
     }
 
     @Transactional
-    public VideoResponse updateVideoInfo(Long videoId, VideoUpdateRequest videoUpdateRequestDto, UserDetails userDetails) {
-        // 유저 조회
-        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(NoUserFoundException::new);
-
-        // 비디오 확인
+    public VideoResponse updateVideoInfo(Long videoId, VideoUpdateRequest videoUpdateRequestDto, User user) {
         Video video = videoRepository.findById(videoId).orElseThrow(NoVideoFoundException::new);
-
-        // 주인 확인
         if(user.hasNoRightToChange(video)) throw new InvalidVideoUpdateRequestException();
-
         video.changeInfoWith(videoUpdateRequestDto);
         return VideoResponse.of(video, userResponseBuildHandler.buildUserResponseWith(user));
     }
