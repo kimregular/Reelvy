@@ -15,7 +15,6 @@ import com.mysettlement.domain.user.handler.UserResponseBuildHandler;
 import com.mysettlement.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -51,12 +50,15 @@ public class UserService {
 	public UserUpdateResponse update(UserUpdateRequest userUpdateRequest,
 	                                 MultipartFile profileImage,
 	                                 MultipartFile backgroundImage,
-	                                 UserDetails userDetails) {
-		log.info("userDetails = {}", userDetails.getUsername());
-		User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(NoUserFoundException::new);
+	                                 User user) {
+		log.info("userDetails = {}", user.getUsername());
 		user.updateUserInfoWith(userUpdateRequest);
 		userImageHandler.updateImage(user, profileImage, backgroundImage);
 		return UserUpdateResponse.of(user);
+	}
+
+	public UserResponse getUserInfoOf(User user) {
+		return userResponseBuildHandler.buildUserResponseWith(user);
 	}
 
 	public UserResponse getUserInfoOf(String username) {

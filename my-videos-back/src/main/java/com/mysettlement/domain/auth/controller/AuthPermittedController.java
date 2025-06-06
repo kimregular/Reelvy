@@ -1,7 +1,7 @@
 package com.mysettlement.domain.auth.controller;
 
 import com.mysettlement.domain.auth.service.RefreshTokenService;
-import com.mysettlement.global.annotation.User;
+import com.mysettlement.global.annotation.UserOnly;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@User
 @Slf4j
+@UserOnly
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/v1/users")

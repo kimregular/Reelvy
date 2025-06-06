@@ -29,12 +29,12 @@ import static com.mysettlement.global.jwt.JwtConstants.REFRESH_TOKEN;
 @RequiredArgsConstructor
 public class RefreshTokenService {
 
-    private final RefreshTokenRepository refreshTokenRepository;
-    private final UserRepository userRepository;
-    private final CookieJwtUtil cookieJwtUtil;
-    private final JwtProvider jwtProvider;
-    private final CookieJwtResolver cookieJwtResolver;
     private final JwtUtil jwtUtil;
+    private final JwtProvider jwtProvider;
+    private final CookieJwtUtil cookieJwtUtil;
+    private final UserRepository userRepository;
+    private final CookieJwtResolver cookieJwtResolver;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     public void reissueTokens(HttpServletRequest request, HttpServletResponse response) {
         // 1. rt 유효성 체크

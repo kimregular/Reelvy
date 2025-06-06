@@ -8,8 +8,6 @@ import com.mysettlement.domain.comment.exception.InvalidCommentUpdateRequestExce
 import com.mysettlement.domain.comment.exception.NoCommentFoundException;
 import com.mysettlement.domain.comment.repository.CommentRepository;
 import com.mysettlement.domain.user.entity.User;
-import com.mysettlement.domain.user.exception.NoUserFoundException;
-import com.mysettlement.domain.user.repository.UserRepository;
 import com.mysettlement.domain.video.entity.Video;
 import com.mysettlement.domain.video.exception.NoVideoFoundException;
 import com.mysettlement.domain.video.repository.VideoRepository;
@@ -26,17 +24,16 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class CommentService {
 
-    private final CommentRepository commentRepository;
-    private final UserRepository userRepository;
     private final VideoRepository videoRepository;
+    private final CommentRepository commentRepository;
 
 
     @Transactional
     public CommentResponse createComment(Long videoId,
                                          CommentRequest commentRequest,
-                                         UserDetails userDetails) {
+                                         User user) {
         Video video = videoRepository.findById(videoId).orElseThrow(NoVideoFoundException::new);
-        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(NoUserFoundException::new);
+
         Comment comment = Comment.builder()
                 .user(user)
                 .content(commentRequest.content())
@@ -44,7 +41,7 @@ public class CommentService {
                 .build();
 
         commentRepository.save(comment);
-        return new CommentResponse(1, List.of(CommentDto.of(comment, userDetails.getUsername())));
+        return new CommentResponse(1, List.of(CommentDto.of(comment, user.getUsername())));
     }
 
     public CommentResponse getComments(Long videoId, UserDetails userDetails) {
@@ -54,22 +51,20 @@ public class CommentService {
     }
 
     @Transactional
-    public CommentResponse update(Long commentId, @Valid CommentRequest commentRequest, UserDetails userDetails) {
+    public CommentResponse update(Long commentId, @Valid CommentRequest commentRequest, User user) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(NoCommentFoundException::new);
-        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(NoUserFoundException::new);
 
         if(user.hasNoRightToChange(comment)) {
             throw new InvalidCommentUpdateRequestException();
         }
 
         comment.updateContent(commentRequest.content());
-        return new CommentResponse(1, List.of(CommentDto.of(comment, userDetails.getUsername())));
+        return new CommentResponse(1, List.of(CommentDto.of(comment, user.getUsername())));
     }
 
     @Transactional
-    public void delete(Long commentId, UserDetails userDetails) {
+    public void delete(Long commentId, User user) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(NoCommentFoundException::new);
-        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(NoUserFoundException::new);
 
         if(user.hasNoRightToChange(comment)) {
             throw new InvalidCommentUpdateRequestException();
