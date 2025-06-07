@@ -3,20 +3,16 @@ package com.my_videos.global.resolver;
 import com.my_videos.domain.comment.entity.Comment;
 import com.my_videos.domain.comment.exception.NoCommentFoundException;
 import com.my_videos.domain.comment.repository.CommentRepository;
-import com.my_videos.domain.video.exception.NoVideoFoundException;
 import com.my_videos.global.annotation.TargetComment;
+import com.my_videos.global.util.PathVariableExtractor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
-import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import org.springframework.web.servlet.HandlerMapping;
-
-import java.util.Map;
 
 @Slf4j
 @Component
@@ -24,6 +20,7 @@ import java.util.Map;
 public class TargetCommentArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final CommentRepository commentRepository;
+    private final PathVariableExtractor pathVariableExtractor;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -32,12 +29,7 @@ public class TargetCommentArgumentResolver implements HandlerMethodArgumentResol
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        Map<String, String> uriTemplates = (Map<String, String>) webRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
-        String commentIdStr = uriTemplates.get("commentId");
-        if(commentIdStr == null){
-            throw new NoVideoFoundException();
-        }
-        Long videoId = Long.valueOf(commentIdStr);
-        return commentRepository.findById(videoId).orElseThrow(NoCommentFoundException::new);
+        Long commentId = pathVariableExtractor.extractAsLong(webRequest, "commentId");
+        return commentRepository.findById(commentId).orElseThrow(NoCommentFoundException::new);
     }
 }
