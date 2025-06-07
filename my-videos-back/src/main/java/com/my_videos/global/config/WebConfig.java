@@ -1,6 +1,7 @@
 package com.my_videos.global.config;
 
 import com.my_videos.global.resolver.LoginUserArgumentResolver;
+import com.my_videos.global.resolver.TargetCommentArgumentResolver;
 import com.my_videos.global.resolver.TargetVideoArgumentResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,8 +16,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
 
-	private final LoginUserArgumentResolver loginUserArgumentResolver;
+	private final LoginUserArgumentResolver targetUserArgumentResolver;
 	private final TargetVideoArgumentResolver targetVideoArgumentResolver;
+	private final TargetCommentArgumentResolver targetCommentArgumentResolver;
 
 	@Value("${app.upload-dir}")
 	private String uploadDir;
@@ -29,7 +31,8 @@ public class WebConfig implements WebMvcConfigurer {
 
 	@Override
 	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-		resolvers.add(loginUserArgumentResolver);
+		resolvers.add(targetUserArgumentResolver);
 		resolvers.add(targetVideoArgumentResolver);
+		resolvers.add(targetCommentArgumentResolver);
 	}
 }
