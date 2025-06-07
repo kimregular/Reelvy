@@ -14,9 +14,7 @@ const editingId = ref<number | null>(null);
 const editContent = ref('');
 
 const fetchComments = async () => {
-  const response = await api.get(`/v1/comments/public`, {
-    params: { videoId },
-  });
+  const response = await api.get(`/v1/comments/public/${videoId}`);
   comments.value = response.data.comments;
   commentCount.value = response.data.commentCount;
 };
@@ -24,10 +22,8 @@ const fetchComments = async () => {
 const postComment = async () => {
   if (!newComment.value.trim()) return;
   try {
-    await api.post(`/v1/comments`, {
+    await api.post(`/v1/comments/${videoId}`, {
       content: newComment.value,
-    }, {
-      params: { videoId }
     });
     newComment.value = '';
     await fetchComments();

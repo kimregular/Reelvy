@@ -6,22 +6,22 @@ import com.my_videos.domain.video.dto.request.VideoUpdateRequest;
 import com.my_videos.domain.video.dto.request.VideoUploadRequest;
 import com.my_videos.domain.video.dto.request.VideosStatusChangeRequest;
 import com.my_videos.domain.video.dto.response.VideoResponse;
+import com.my_videos.domain.video.entity.Video;
 import com.my_videos.domain.video.service.VideoService;
 import com.my_videos.global.annotation.LoginUser;
+import com.my_videos.global.annotation.TargetVideo;
 import com.my_videos.global.annotation.UserOnly;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @UserOnly
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/v1/videos")
-@PreAuthorize("hasRole('USER')")
 public class VideoPermittedController {
 
 	private final VideoService videoService;
@@ -33,17 +33,17 @@ public class VideoPermittedController {
 	}
 
 	@PatchMapping("/{videoId}/info")
-	public ResponseEntity<VideoResponse> updateVideo(@PathVariable Long videoId,
-	                                                 @Valid @RequestBody VideoUpdateRequest videoUpdateRequestDto,
+	public ResponseEntity<VideoResponse> updateVideo(@TargetVideo Video video,
+													 @Valid @RequestBody VideoUpdateRequest videoUpdateRequestDto,
 													 @LoginUser User user) {
-		return ResponseEntity.ok(videoService.updateVideoInfo(videoId, videoUpdateRequestDto, user));
+		return ResponseEntity.ok(videoService.updateVideoInfo(video, videoUpdateRequestDto, user));
 	}
 
 	@PatchMapping("/{videoId}/status")
-	public ResponseEntity<VideoResponse> changeVideoStatus(@PathVariable Long videoId,
+	public ResponseEntity<VideoResponse> changeVideoStatus(@TargetVideo Video video,
 	                                                       @Valid @RequestBody VideoStatusChangeRequest videoStatusChangeRequest,
 														   @LoginUser User user) {
-		return ResponseEntity.ok(videoService.changeVideoStatus(videoId, videoStatusChangeRequest, user));
+		return ResponseEntity.ok(videoService.changeVideoStatus(video, videoStatusChangeRequest, user));
 	}
 
 	@PatchMapping("/status")

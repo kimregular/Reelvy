@@ -14,7 +14,6 @@ import com.my_videos.domain.video.dto.response.VideoResponse;
 import com.my_videos.domain.video.dto.response.VideoStreamingResponse;
 import com.my_videos.domain.video.entity.Video;
 import com.my_videos.domain.video.exception.InvalidVideoUpdateRequestException;
-import com.my_videos.domain.video.exception.NoVideoFoundException;
 import com.my_videos.domain.video.handler.VideoBuildHandler;
 import com.my_videos.domain.video.handler.VideoStreamingHandler;
 import com.my_videos.domain.video.repository.VideoRepository;
@@ -49,8 +48,7 @@ public class VideoService {
         return VideoResponse.of(newVideo, userResponse);
     }
 
-    public VideoStreamingResponse stream(Long videoId, HttpServletRequest request) {
-        Video video = videoRepository.findById(videoId).orElseThrow(NoVideoFoundException::new);
+    public VideoStreamingResponse stream(Video video, HttpServletRequest request) {
         return videoStreamingHandler.resolve(video, request);
     }
 
@@ -62,9 +60,7 @@ public class VideoService {
                 .toList();
     }
 
-    public VideoResponse getVideo(Long videoId, UserDetails userDetails) {
-        Video video = videoRepository.findById(videoId).orElseThrow(NoVideoFoundException::new);
-
+    public VideoResponse getVideo(Video video, UserDetails userDetails) {
         if (userDetails == null) {
             return VideoResponse.of(video, userResponseBuildHandler.buildUserResponseWith(video.getUser()));
         }
@@ -87,10 +83,9 @@ public class VideoService {
     }
 
     @Transactional
-    public VideoResponse changeVideoStatus(Long videoId,
+    public VideoResponse changeVideoStatus(Video video,
                                            VideoStatusChangeRequest videoStatusChangeRequest,
                                            User user) {
-        Video video = videoRepository.findById(videoId).orElseThrow(NoVideoFoundException::new);
         if(user.hasNoRightToChange(video)) throw new InvalidVideoUpdateRequestException();
         if (notAvailable(videoStatusChangeRequest.videoStatus())) throw new InvalidVideoUpdateRequestException();
         video.updateStatus(videoStatusChangeRequest);
@@ -112,8 +107,7 @@ public class VideoService {
     }
 
     @Transactional
-    public VideoResponse updateVideoInfo(Long videoId, VideoUpdateRequest videoUpdateRequestDto, User user) {
-        Video video = videoRepository.findById(videoId).orElseThrow(NoVideoFoundException::new);
+    public VideoResponse updateVideoInfo(Video video, VideoUpdateRequest videoUpdateRequestDto, User user) {
         if(user.hasNoRightToChange(video)) throw new InvalidVideoUpdateRequestException();
         video.changeInfoWith(videoUpdateRequestDto);
         return VideoResponse.of(video, userResponseBuildHandler.buildUserResponseWith(user));

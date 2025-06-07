@@ -2,7 +2,9 @@ package com.my_videos.domain.video.controller;
 
 import com.my_videos.domain.video.dto.response.VideoResponse;
 import com.my_videos.domain.video.dto.response.VideoStreamingResponse;
+import com.my_videos.domain.video.entity.Video;
 import com.my_videos.domain.video.service.VideoService;
+import com.my_videos.global.annotation.TargetVideo;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -29,15 +31,15 @@ public class VideoPublicController {
     }
 
     @GetMapping("/{videoId}/info")
-    public ResponseEntity<VideoResponse> getVideo(@PathVariable Long videoId,
+    public ResponseEntity<VideoResponse> getVideo(@TargetVideo Video video,
                                                   @AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.ok(videoService.getVideo(videoId, userDetails));
+        return ResponseEntity.ok(videoService.getVideo(video, userDetails));
     }
 
     @GetMapping(value = "/{videoId}/stream")
-    public ResponseEntity<StreamingResponseBody> getVideoStream(@PathVariable Long videoId,
+    public ResponseEntity<StreamingResponseBody> getVideoStream(@TargetVideo Video video,
                                                                 HttpServletRequest request) {
-        VideoStreamingResponse videoStreamingResponse = videoService.stream(videoId, request);
+        VideoStreamingResponse videoStreamingResponse = videoService.stream(video, request);
         return ResponseEntity.status(videoStreamingResponse.getStatus()).headers(videoStreamingResponse.getHeaders()).body(videoStreamingResponse.getStreamingResponseBody());
     }
 
