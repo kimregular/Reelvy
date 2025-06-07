@@ -14,29 +14,29 @@ import java.util.Map;
 import static lombok.AccessLevel.PRIVATE;
 
 @Getter
-public class MySettlementGlobalErrorResponse {
+public class MyVideosGlobalErrorResponse {
 
     private final HttpStatus status;
     private final String message;
     private final Map<String, String> validation;
 
     @Builder(access = PRIVATE)
-    private MySettlementGlobalErrorResponse(HttpStatus status, String message, Map<String, String> validation) {
+    private MyVideosGlobalErrorResponse(HttpStatus status, String message, Map<String, String> validation) {
         this.status = status;
         this.message = message;
         this.validation = validation != null ? validation : new HashMap<>();
     }
 
-    public static MySettlementGlobalErrorResponse of(MyVideosException e) {
-        return MySettlementGlobalErrorResponse.builder()
+    public static MyVideosGlobalErrorResponse of(MyVideosException e) {
+        return MyVideosGlobalErrorResponse.builder()
                 .status(e.getStatusCode())
                 .message(e.getMessage())
                 .validation(e.getValidation())
                 .build();
     }
 
-    public static MySettlementGlobalErrorResponse of(MethodArgumentNotValidException e) {
-        return MySettlementGlobalErrorResponse.builder()
+    public static MyVideosGlobalErrorResponse of(MethodArgumentNotValidException e) {
+        return MyVideosGlobalErrorResponse.builder()
                 .status(HttpStatus.BAD_REQUEST)
                 .message("유효하지 않은 요청입니다.")
                 .validation(getErrorField(e))
