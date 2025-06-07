@@ -5,7 +5,6 @@ import com.my_videos.domain.comment.dto.request.CommentRequest;
 import com.my_videos.domain.comment.dto.response.CommentResponse;
 import com.my_videos.domain.comment.entity.Comment;
 import com.my_videos.domain.comment.exception.InvalidCommentUpdateRequestException;
-import com.my_videos.domain.comment.exception.NoCommentFoundException;
 import com.my_videos.domain.comment.repository.CommentRepository;
 import com.my_videos.domain.user.entity.User;
 import com.my_videos.domain.video.entity.Video;
@@ -25,7 +24,6 @@ import java.util.List;
 public class CommentService {
 
     private final CommentRepository commentRepository;
-
 
     @Transactional
     public CommentResponse createComment(Video video,
@@ -48,9 +46,7 @@ public class CommentService {
     }
 
     @Transactional
-    public CommentResponse update(Long commentId, @Valid CommentRequest commentRequest, User user) {
-        Comment comment = commentRepository.findById(commentId).orElseThrow(NoCommentFoundException::new);
-
+    public CommentResponse update(Comment comment, @Valid CommentRequest commentRequest, User user) {
         if(user.hasNoRightToChange(comment)) {
             throw new InvalidCommentUpdateRequestException();
         }
@@ -60,9 +56,7 @@ public class CommentService {
     }
 
     @Transactional
-    public void delete(Long commentId, User user) {
-        Comment comment = commentRepository.findById(commentId).orElseThrow(NoCommentFoundException::new);
-
+    public void delete(Comment comment, User user) {
         if(user.hasNoRightToChange(comment)) {
             throw new InvalidCommentUpdateRequestException();
         }

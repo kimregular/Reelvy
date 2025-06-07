@@ -24,7 +24,7 @@ public class Comment extends BaseEntity {
     @Column(nullable = false)
     private String content;
 
-    @ManyToOne(fetch = LAZY)
+    @ManyToOne(fetch = LAZY, optional = false)
     private User user;
 
     @ManyToOne(fetch = LAZY)
