@@ -1,6 +1,6 @@
 package com.my_videos.global.exception;
 
-import com.my_videos.global.response.MySettlementGlobalErrorResponse;
+import com.my_videos.global.response.MyVideosGlobalErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,13 +15,13 @@ import java.nio.file.AccessDeniedException;
 public class MyVideosGlobalExceptionHandler {
 
     @ExceptionHandler(MyVideosException.class)
-    public ResponseEntity<MySettlementGlobalErrorResponse> handleMySettlementException(MyVideosException e) {
-        return new ResponseEntity<>(MySettlementGlobalErrorResponse.of(e), e.getStatusCode());
+    public ResponseEntity<MyVideosGlobalErrorResponse> handleMySettlementException(MyVideosException e) {
+        return new ResponseEntity<>(MyVideosGlobalErrorResponse.of(e), e.getStatusCode());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<MySettlementGlobalErrorResponse> handleJsonMappingException(MethodArgumentNotValidException e) {
-        return new ResponseEntity<>(MySettlementGlobalErrorResponse.of(e), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<MyVideosGlobalErrorResponse> handleJsonMappingException(MethodArgumentNotValidException e) {
+        return new ResponseEntity<>(MyVideosGlobalErrorResponse.of(e), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
