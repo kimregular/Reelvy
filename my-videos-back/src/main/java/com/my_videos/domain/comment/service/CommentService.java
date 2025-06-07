@@ -9,31 +9,28 @@ import com.my_videos.domain.comment.exception.NoCommentFoundException;
 import com.my_videos.domain.comment.repository.CommentRepository;
 import com.my_videos.domain.user.entity.User;
 import com.my_videos.domain.video.entity.Video;
-import com.my_videos.domain.video.exception.NoVideoFoundException;
-import com.my_videos.domain.video.repository.VideoRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class CommentService {
 
-    private final VideoRepository videoRepository;
     private final CommentRepository commentRepository;
 
 
     @Transactional
-    public CommentResponse createComment(Long videoId,
+    public CommentResponse createComment(Video video,
                                          CommentRequest commentRequest,
                                          User user) {
-        Video video = videoRepository.findById(videoId).orElseThrow(NoVideoFoundException::new);
-
         Comment comment = Comment.builder()
                 .user(user)
                 .content(commentRequest.content())
@@ -44,9 +41,9 @@ public class CommentService {
         return new CommentResponse(1, List.of(CommentDto.of(comment, user.getUsername())));
     }
 
-    public CommentResponse getComments(Long videoId, UserDetails userDetails) {
+    public CommentResponse getComments(Video video, UserDetails userDetails) {
         String loggedUsername = userDetails == null ? " " : userDetails.getUsername();
-        List<CommentDto> commentDtos = commentRepository.findByVideoId(videoId).stream().map(comment -> CommentDto.of(comment, loggedUsername)).toList();
+        List<CommentDto> commentDtos = commentRepository.findByVideoId(video.getId()).stream().map(comment -> CommentDto.of(comment, loggedUsername)).toList();
         return new CommentResponse(commentDtos.size(), commentDtos);
     }
 
