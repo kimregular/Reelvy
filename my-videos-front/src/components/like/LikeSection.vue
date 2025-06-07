@@ -16,7 +16,7 @@ watch(() => props.hasLiked,
 
 const fetchLikeCount = async () => {
   try {
-    const response = await api.get(`/v1/videos/${videoId}/like-count`);
+    const response = await api.get(`/v1/videos/public/${videoId}/like-count`);
     likeCount.value = response.data;
   } catch (error) {
     console.log(error);
