@@ -1,3 +1,5 @@
+<img alt="Reelvy Icon" height="100" src="readme-asset/favicon.ico" width="100"/>
+
 # Reelvy
 
 <!-- TOC -->

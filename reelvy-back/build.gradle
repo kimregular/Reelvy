@@ -77,6 +77,8 @@ asciidoctor {
     baseDirFollowsSourceDir()
 }
 
+tasks.register("prepareKotlinBuildScriptModel"){}
+
 bootJar {
     dependsOn asciidoctor
 
