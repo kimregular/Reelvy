@@ -1,3 +1,3 @@
-rootProject.name = 'my-videos'
+rootProject.name = 'Reelvy'
 
-include 'my-videos-back'
+include 'reelvy-back'

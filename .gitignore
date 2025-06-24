@@ -8,8 +8,9 @@ Thumbs.db
 *.orig
 *.icloud
 
-# my-videos
+# reelvy
 app/*
+build/*
 
 # IDE
 .gradle/

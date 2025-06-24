@@ -1,7 +1,7 @@
-# MyVideo
+# Reelvy
 
 <!-- TOC -->
-* [MyVideo](#myvideo)
+* [Reelvy](#reelvy)
   * [사용자 동영상 공유 플랫폼](#사용자-동영상-공유-플랫폼)
   * [🛠 기술 스택](#-기술-스택)
   * [구현 화면](#구현-화면)
@@ -120,11 +120,11 @@
 
 ## 프로젝트 구조
 ```md
-my-videos/
-├── my-videos-back/                   # 백엔드 (Spring Boot)
+reelvy/
+├── reelvy-back/                   # 백엔드 (Spring Boot)
 │   ├── src/
 │   │   ├── main/
-│   │   │   ├── java/com/myvideos/
+│   │   │   ├── java/com/reelvy/
 │   │   │   │   ├── domain/          
 │   │   │   │   ├── global/          
 │   │   │   │   └── docs/            
@@ -134,7 +134,7 @@ my-videos/
 │   ├── build.gradle
 │   └── settings.gradle
 │
-├── my-videos-front/                 # 프론트엔드 (Vue 3 + Vite)
+├── reelvy-front/                 # 프론트엔드 (Vue 3 + Vite)
 │   ├── public/
 │   ├── src/
 │   │   ├── assets/
