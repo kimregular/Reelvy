@@ -1,4 +1,4 @@
-<img alt="Reelvy Icon" height="100" src="readme-asset/favicon.ico" width="100"/>
+<img alt="Reelvy Icon" height="300" src="readme-asset/favicon.ico" width="300"/>
 
 # Reelvy
 
