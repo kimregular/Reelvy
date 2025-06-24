@@ -10,7 +10,7 @@ Thumbs.db
 
 # reelvy
 app/*
-build/*
+**/build/
 
 # IDE
 .gradle/
