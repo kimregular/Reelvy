@@ -51,11 +51,9 @@
 - 프론트엔드 : 뷰.js
 
 ## 🛠 기술 스택
-- Backend: Java 17, Spring Boot, Spring Security, Spring Data JPA, Spring REST Docs
-- Frontend: Vue.js 3, Pinia, Axios
+- Backend: Java, Spring Boot, Spring Security, Spring Data JPA, Spring REST Docs
+- Frontend: TypeScript, Vue.js 3, Pinia, Axios
 - Database: MySQL
-- Auth: JWT 기반 인증/인가, Google OAuth2
-- Infra: REST API, CORS 설정, HttpOnly 쿠키, RoleHierarchy
 
 ## 구현 화면
 
