@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class UserResponseTest {
+class UserDetailInfoResponseTest {
 
 	@Test
 	@DisplayName("유저 객체로 유저 응답 DTO을 생성할 수 있다.")
@@ -31,7 +31,7 @@ class UserResponseTest {
 				.backgroundImagePath(backgrounImagePath)
 				.build();
 		// when
-		UserResponse userResponse = UserResponse.builder()
+		UserDetailInfoResponse userDetailInfoResponse = UserDetailInfoResponse.builder()
 				.username(user.getUsername())
 				.nickname(user.getNickname())
 				.desc(user.getUserDesc())
@@ -41,10 +41,10 @@ class UserResponseTest {
 
 
 		// then
-		assertThat(userResponse.getUsername()).isEqualTo(username);
-		assertThat(userResponse.getNickname()).isEqualTo(nickname);
-		assertThat(userResponse.getDesc()).isEqualTo(desc);
-		assertThat(userResponse.getProfileImageUrl()).isEqualTo(profileImagePath);
-		assertThat(userResponse.getBackgroundImageUrl()).isEqualTo(backgrounImagePath);
+		assertThat(userDetailInfoResponse.getUsername()).isEqualTo(username);
+		assertThat(userDetailInfoResponse.getNickname()).isEqualTo(nickname);
+		assertThat(userDetailInfoResponse.getDesc()).isEqualTo(desc);
+		assertThat(userDetailInfoResponse.getProfileImageUrl()).isEqualTo(profileImagePath);
+		assertThat(userDetailInfoResponse.getBackgroundImageUrl()).isEqualTo(backgrounImagePath);
 	}
 }
