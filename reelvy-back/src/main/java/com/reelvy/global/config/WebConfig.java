@@ -1,9 +1,6 @@
 package com.reelvy.global.config;
 
-import com.reelvy.global.resolver.LoginUserArgumentResolver;
-import com.reelvy.global.resolver.TargetCommentArgumentResolver;
-import com.reelvy.global.resolver.TargetUserArgumentResolver;
-import com.reelvy.global.resolver.TargetVideoArgumentResolver;
+import com.reelvy.global.resolver.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -21,7 +18,7 @@ public class WebConfig implements WebMvcConfigurer {
 	private final TargetUserArgumentResolver targetUserArgumentResolver;
 	private final TargetVideoArgumentResolver targetVideoArgumentResolver;
 	private final TargetCommentArgumentResolver targetCommentArgumentResolver;
-
+	private final OptionalLoginUserArgumentResolver optionalLoginUserArgumentResolver;
 
 	@Value("${app.upload-dir}")
 	private String uploadDir;
@@ -38,5 +35,6 @@ public class WebConfig implements WebMvcConfigurer {
 		resolvers.add(targetUserArgumentResolver);
 		resolvers.add(targetVideoArgumentResolver);
 		resolvers.add(targetCommentArgumentResolver);
+		resolvers.add(optionalLoginUserArgumentResolver);
 	}
 }
