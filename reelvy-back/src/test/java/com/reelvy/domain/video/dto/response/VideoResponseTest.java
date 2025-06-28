@@ -1,6 +1,6 @@
 package com.reelvy.domain.video.dto.response;
 
-import com.reelvy.domain.user.dto.response.UserResponse;
+import com.reelvy.domain.user.dto.response.UserDetailInfoResponse;
 import com.reelvy.domain.user.entity.User;
 import com.reelvy.domain.video.entity.Video;
 import com.reelvy.domain.video.entity.VideoStatus;
@@ -29,7 +29,7 @@ class VideoResponseTest {
 		when(video.getVideoStatus()).thenReturn(VideoStatus.AVAILABLE);
 
 		// when
-		VideoResponse response = VideoResponse.of(video, UserResponse.builder().username(user.getUsername()).build());
+		VideoResponse response = VideoResponse.of(video, UserDetailInfoResponse.builder().username(user.getUsername()).build());
 
 		// then
 		assertThat(response.getId()).isEqualTo(1L);

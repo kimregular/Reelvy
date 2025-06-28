@@ -1,7 +1,6 @@
 package com.reelvy.domain.video.service;
 
 import com.reelvy.domain.like.repository.VideoLikeRepository;
-import com.reelvy.domain.user.dto.response.UserResponse;
 import com.reelvy.domain.user.entity.User;
 import com.reelvy.domain.user.exception.NoUserFoundException;
 import com.reelvy.domain.user.handler.UserResponseBuildHandler;
@@ -41,11 +40,10 @@ public class VideoService {
     private final UserResponseBuildHandler userResponseBuildHandler;
 
     @Transactional
-    public VideoResponse uploadVideo(VideoUploadRequest videoUploadRequest, User user) {
-        Video newVideo = videoBuildHandler.buildVideoWith(videoUploadRequest, user);
+    public VideoResponse uploadVideo(VideoUploadRequest videoUploadRequest, User me) {
+        Video newVideo = videoBuildHandler.buildVideoWith(videoUploadRequest, me);
         videoRepository.save(newVideo);
-        UserResponse userResponse = userResponseBuildHandler.buildUserResponseWith(user);
-        return VideoResponse.of(newVideo, userResponse);
+        return VideoResponse.of(newVideo, userResponseBuildHandler.buildSimpleUserResponse(me));
     }
 
     public VideoStreamingResponse stream(Video video, HttpServletRequest request) {
@@ -56,20 +54,20 @@ public class VideoService {
         return videoRepository
                 .getVideos()
                 .stream()
-                .map(v -> VideoResponse.of(v, userResponseBuildHandler.buildUserResponseWith(v.getUser())))
+                .map(v -> VideoResponse.of(v, userResponseBuildHandler.buildSimpleUserResponse(v.getUser())))
                 .toList();
     }
 
     public VideoResponse getVideo(Video video, UserDetails userDetails) {
         if (userDetails == null) {
-            return VideoResponse.of(video, userResponseBuildHandler.buildUserResponseWith(video.getUser()));
+            return VideoResponse.of(video, userResponseBuildHandler.buildSimpleUserResponse(video.getUser()));
         }
 
         User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(NoUserFoundException::new);
 
         boolean hasLiked = videoLikeRepository.existsByUserAndVideo(user, video);
 
-        return VideoResponse.of(video, userResponseBuildHandler.buildUserResponseWith(video.getUser()), hasLiked);
+        return VideoResponse.of(video, userResponseBuildHandler.buildSimpleUserResponse(video.getUser()), hasLiked);
     }
 
     public List<VideoResponse> getVideosOf(String username) {
@@ -78,7 +76,7 @@ public class VideoService {
                 .findAllByUserId(user.getId())
                 .stream()
                 .filter(video -> video.getVideoStatus() != DELETED)
-                .map(v -> VideoResponse.of(v, userResponseBuildHandler.buildUserResponseWith(v.getUser())))
+                .map(v -> VideoResponse.of(v, userResponseBuildHandler.buildSimpleUserResponse(v.getUser())))
                 .toList();
     }
 
@@ -89,7 +87,7 @@ public class VideoService {
         if(user.hasNoRightToChange(video)) throw new InvalidVideoUpdateRequestException();
         if (notAvailable(videoStatusChangeRequest.videoStatus())) throw new InvalidVideoUpdateRequestException();
         video.updateStatus(videoStatusChangeRequest);
-        return VideoResponse.of(video, userResponseBuildHandler.buildUserResponseWith(user));
+        return VideoResponse.of(video, userResponseBuildHandler.buildSimpleUserResponse(user));
     }
 
     @Transactional
@@ -110,6 +108,6 @@ public class VideoService {
     public VideoResponse updateVideoInfo(Video video, VideoUpdateRequest videoUpdateRequestDto, User user) {
         if(user.hasNoRightToChange(video)) throw new InvalidVideoUpdateRequestException();
         video.changeInfoWith(videoUpdateRequestDto);
-        return VideoResponse.of(video, userResponseBuildHandler.buildUserResponseWith(user));
+        return VideoResponse.of(video, userResponseBuildHandler.buildSimpleUserResponse(user));
     }
 }
