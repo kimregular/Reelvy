@@ -42,6 +42,6 @@ public class CommentPermittedController {
     public ResponseEntity<Void> deleteComment(@TargetComment Comment comment,
                                               @LoginUser User user) {
         commentService.delete(comment, user);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }
