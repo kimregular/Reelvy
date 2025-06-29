@@ -1,7 +1,9 @@
 package com.reelvy.domain.user.controller;
 
-import com.reelvy.domain.user.dto.response.UserResponse;
+import com.reelvy.domain.user.dto.response.UserDetailInfoResponse;
+import com.reelvy.domain.user.entity.User;
 import com.reelvy.domain.user.service.UserService;
+import com.reelvy.global.annotation.OptionalLoginUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +22,8 @@ public class UserPublicController {
 	private final UserService userService;
 
 	@GetMapping("/{username}/info")
-	public ResponseEntity<UserResponse> getUserInfo(@PathVariable String username) {
-		return ResponseEntity.ok(userService.getUserInfoOf(username));
+	public ResponseEntity<UserDetailInfoResponse> getProfile(@OptionalLoginUser User meOrNull,
+															 @PathVariable String username) {
+		return ResponseEntity.ok(userService.getUserInfoOf(meOrNull, username));
 	}
 }

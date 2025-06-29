@@ -1,6 +1,6 @@
 package com.reelvy.domain.video.dto.response;
 
-import com.reelvy.domain.user.dto.response.UserResponse;
+import com.reelvy.domain.user.dto.response.UserSimpleInfoResponse;
 import com.reelvy.domain.video.entity.Video;
 import com.reelvy.domain.video.entity.VideoStatus;
 import lombok.Builder;
@@ -11,7 +11,7 @@ public class VideoResponse {
 
 	private final Long id;
 	private final String title;
-	private final UserResponse user;
+	private final UserSimpleInfoResponse user;
 	private final String desc;
 	private final long videoView;
 	private final Boolean hasLiked;
@@ -19,7 +19,7 @@ public class VideoResponse {
 
 
 	@Builder
-	private VideoResponse(Long id, String title, UserResponse user, String desc, long videoView, Boolean hasLiked, VideoStatus videoStatus) {
+	private VideoResponse(Long id, String title, UserSimpleInfoResponse user, String desc, long videoView, Boolean hasLiked, VideoStatus videoStatus) {
         this.id = id;
         this.title = title;
         this.user = user;
@@ -29,7 +29,7 @@ public class VideoResponse {
         this.videoStatus = videoStatus;
     }
 
-	public static VideoResponse of(Video video, UserResponse user) {
+	public static VideoResponse of(Video video, UserSimpleInfoResponse user) {
 		return VideoResponse.builder()
 				.id(video.getId())
 				.title(video.getVideoTitle())
@@ -40,7 +40,7 @@ public class VideoResponse {
 				.build();
 	}
 
-	public static VideoResponse of(Video video, UserResponse user, boolean hasLiked) {
+	public static VideoResponse of(Video video, UserSimpleInfoResponse user, boolean hasLiked) {
 		return VideoResponse.builder()
 				.id(video.getId())
 				.title(video.getVideoTitle())

@@ -1,10 +1,11 @@
 package com.reelvy.domain.user.service;
 
+import com.reelvy.domain.follow.repository.FollowRepository;
 import com.reelvy.domain.user.dto.request.EmailCheckRequest;
 import com.reelvy.domain.user.dto.request.UserSignUpRequest;
 import com.reelvy.domain.user.dto.request.UserUpdateRequest;
 import com.reelvy.domain.user.dto.response.EmailCheckResponse;
-import com.reelvy.domain.user.dto.response.UserResponse;
+import com.reelvy.domain.user.dto.response.UserDetailInfoResponse;
 import com.reelvy.domain.user.dto.response.UserSignUpResponse;
 import com.reelvy.domain.user.dto.response.UserUpdateResponse;
 import com.reelvy.domain.user.entity.User;
@@ -26,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserService {
 
 	private final UserRepository userRepository;
+	private final FollowRepository followRepository;
 	private final UserImageHandler userImageHandler;
 	private final UserBuildHandler userBuildHandler;
 	private final UserResponseBuildHandler userResponseBuildHandler;
@@ -57,12 +59,28 @@ public class UserService {
 		return UserUpdateResponse.of(user);
 	}
 
-	public UserResponse getUserInfoOf(User user) {
-		return userResponseBuildHandler.buildUserResponseWith(user);
+//	public UserResponse getUserInfoOf(User user) {
+//		return userResponseBuildHandler.buildOtherResponseWith(user);
+//	}
+
+	public UserDetailInfoResponse getMyInfo(User me) {
+		return userResponseBuildHandler.buildMyProfileResponse(me);
 	}
 
-	public UserResponse getUserInfoOf(String username) {
-		User user = userRepository.findByUsername(username).orElseThrow(NoUserFoundException::new);
-		return userResponseBuildHandler.buildUserResponseWith(user);
+	public UserDetailInfoResponse getUserInfoOf(User meOrNull, String username) {
+		User target = userRepository.findByUsername(username).orElseThrow(NoUserFoundException::new);
+
+		if(meOrNull == null) {
+			return userResponseBuildHandler.buildOtherResponseWith(target, false);
+		}
+
+		boolean isMe = meOrNull.getUsername().equals(username);
+
+		if (isMe) {
+			return userResponseBuildHandler.buildMyProfileResponse(target);
+		} else {
+			boolean isFollowed = followRepository.existsByFollowerAndFollowed(meOrNull, target);
+			return userResponseBuildHandler.buildOtherResponseWith(target, isFollowed);
+		}
 	}
 }
