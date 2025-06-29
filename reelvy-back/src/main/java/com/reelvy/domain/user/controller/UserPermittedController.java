@@ -5,7 +5,9 @@ import com.reelvy.domain.user.dto.response.UserDetailInfoResponse;
 import com.reelvy.domain.user.dto.response.UserUpdateResponse;
 import com.reelvy.domain.user.entity.User;
 import com.reelvy.domain.user.service.UserService;
+import com.reelvy.global.annotation.AdminOnly;
 import com.reelvy.global.annotation.LoginUser;
+import com.reelvy.global.annotation.OptionalLoginUser;
 import com.reelvy.global.annotation.UserOnly;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,9 +36,10 @@ public class UserPermittedController {
         return ResponseEntity.ok(userService.update(userUpdateRequest, profileImage, backgroundImage, user));
     }
 
-//    @AdminOnly
-//    @GetMapping("/{username}/info/admin")
-//    public ResponseEntity<UserDetailInfoResponse> getAdminInfo(@PathVariable String username) {
-//        return ResponseEntity.ok(userService.getUserInfoOf(username));
-//    }
+    @AdminOnly
+    @GetMapping("/{username}/info/admin")
+    public ResponseEntity<UserDetailInfoResponse> getAdminInfo(@OptionalLoginUser User meOrNull,
+                                                               @PathVariable String username) {
+        return ResponseEntity.ok(userService.getUserInfoOf(meOrNull, username));
+    }
 }
